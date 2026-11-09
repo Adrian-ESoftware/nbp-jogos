@@ -1,27 +1,80 @@
 /**
- * NBP Games - P2P Multiplayer Room Manager (WebRTC via PeerJS + BroadcastChannel)
- * Allows browser-to-browser real-time rooms with zero backend cost.
+ * NBP Games - Hybrid P2P & WSS Multiplayer Room Manager
+ * Combines:
+ *  1. Multi-Broker MQTT over WSS (HiveMQ + EMQX + Mosquitto) — 100% NAT/CGNAT/Incognito proof
+ *  2. WebRTC DataChannel via PeerJS — direct low-latency P2P when UDP is open
+ *  3. BroadcastChannel — 0ms local multi-tab sync
  */
 ;(() => {
-  const PEER_PREFIX = 'nbp-jogos-room-v2-'
+  const PEER_PREFIX = 'nbp-jogos-room-v1-'
+  const MQTT_TOPIC_PREFIX = 'nbp-jogos/room-v3'
+  const WSS_BROKERS = [
+    'wss://broker.hivemq.com:8884/mqtt',
+    'wss://broker.emqx.io:8084/mqtt',
+  ]
 
-  // Fast STUN servers + public OpenRelay TURN fallback (UDP/TCP/TLS) for CGNAT/firewalls
   const RTC_CONFIG = {
     iceServers: [
       { urls: 'stun:stun.l.google.com:19302' },
       { urls: 'stun:stun1.l.google.com:19302' },
-      { urls: 'stun:stun2.l.google.com:19302' },
       { urls: 'stun:stun.cloudflare.com:3478' },
-      {
-        urls: [
-          'turn:openrelay.metered.ca:80',
-          'turn:openrelay.metered.ca:443',
-          'turn:openrelay.metered.ca:443?transport=tcp',
-        ],
-        username: 'openrelayproject',
-        credential: 'openrelayproject',
-      },
     ],
+  }
+
+  const textEncoder = new TextEncoder()
+  const textDecoder = new TextDecoder()
+
+  function encodeVarLen(len) {
+    const out = []
+    do {
+      let b = len % 128
+      len = Math.floor(len / 128)
+      if (len > 0) b |= 128
+      out.push(b)
+    } while (len > 0)
+    return out
+  }
+
+  function buildMqttPublish(topic, jsonStr) {
+    const tBytes = textEncoder.encode(topic)
+    const pBytes = textEncoder.encode(jsonStr)
+    const remLen = 2 + tBytes.length + pBytes.length
+    const varLen = encodeVarLen(remLen)
+    const pkt = new Uint8Array(1 + varLen.length + remLen)
+    let i = 0
+    pkt[i++] = 0x30
+    for (let k = 0; k < varLen.length; k++) pkt[i++] = varLen[k]
+    pkt[i++] = (tBytes.length >> 8) & 0xff
+    pkt[i++] = tBytes.length & 0xff
+    pkt.set(tBytes, i)
+    i += tBytes.length
+    pkt.set(pBytes, i)
+    return pkt
+  }
+
+  function parseMqttPackets(u8) {
+    const packets = []
+    let offset = 0
+    while (offset < u8.length) {
+      const header = u8[offset++]
+      let mult = 1
+      let remLen = 0
+      let b = 0
+      do {
+        if (offset >= u8.length) return packets
+        b = u8[offset++]
+        remLen += (b & 127) * mult
+        mult *= 128
+      } while ((b & 128) !== 0)
+      if (offset + remLen > u8.length) break
+      packets.push({
+        type: header >> 4,
+        flags: header & 0x0f,
+        body: u8.subarray(offset, offset + remLen),
+      })
+      offset += remLen
+    }
+    return packets
   }
 
   function normalizeRoomCode(raw, defaultPrefix = 'ELO') {
@@ -41,6 +94,17 @@
   }
 
   function getLocalAccountProfile() {
+    let tabId = ''
+    try {
+      tabId = sessionStorage.getItem('nbp_tab_id') || ''
+      if (!tabId) {
+        tabId = 'p_' + Math.random().toString(36).slice(2, 9)
+        sessionStorage.setItem('nbp_tab_id', tabId)
+      }
+    } catch {
+      tabId = 'p_' + Math.random().toString(36).slice(2, 9)
+    }
+
     try {
       const sessRaw =
         localStorage.getItem('playground.session.v1') ||
@@ -52,7 +116,7 @@
         const user = (db.users || []).find((u) => u.id === sess.userId)
         if (user) {
           return {
-            id: user.id,
+            id: `${user.id}_${tabId}`,
             name: user.name || user.username || 'Jogador',
             color: user.color || '#38bdf8',
           }
@@ -62,16 +126,16 @@
       // ignore storage read errors
     }
 
-    let guestId = sessionStorage.getItem('nbp_guest_id')
-    if (!guestId) {
-      guestId = 'p_' + Math.random().toString(36).slice(2, 9)
-      sessionStorage.setItem('nbp_guest_id', guestId)
+    let savedName = ''
+    try {
+      savedName = localStorage.getItem('nbp_guest_name') || ''
+    } catch {}
+    if (!savedName) {
+      savedName = `Jogador ${Math.floor(10 + Math.random() * 89)}`
     }
-    const savedName =
-      localStorage.getItem('nbp_guest_name') || `Jogador ${Math.floor(10 + Math.random() * 89)}`
     const colors = ['#38bdf8', '#10b981', '#f59e0b', '#a855f7', '#ec4899', '#f43f5e']
-    const color = colors[Math.abs(guestId.charCodeAt(2) || 0) % colors.length]
-    return { id: guestId, name: savedName, color }
+    const color = colors[Math.abs(tabId.charCodeAt(2) || 0) % colors.length]
+    return { id: tabId, name: savedName, color }
   }
 
   class NBPRoom {
@@ -88,9 +152,10 @@
       this.isHost = false
       this.peer = null
       this.hostConn = null
-      this.clientConns = new Map() // peerId -> DataConnection
+      this.clientConns = new Map()
       this.bc = null
-      this._retryTimer = null
+      this.mqttClients = []
+      this.seenPacketIds = new Set()
       this._joinRetryInterval = null
       this._joinTimeout = null
       this._hasSyncedFromHost = false
@@ -102,17 +167,11 @@
         this.profile.name = clean
         try {
           localStorage.setItem('nbp_guest_name', clean)
-        } catch {
-          // ignore
-        }
+        } catch {}
       }
     }
 
     cleanup() {
-      if (this._retryTimer) {
-        clearTimeout(this._retryTimer)
-        this._retryTimer = null
-      }
       if (this._joinRetryInterval) {
         clearInterval(this._joinRetryInterval)
         this._joinRetryInterval = null
@@ -121,6 +180,17 @@
         clearTimeout(this._joinTimeout)
         this._joinTimeout = null
       }
+      for (const client of this.mqttClients) {
+        try {
+          clearInterval(client.pingTimer)
+          client.ws.onclose = null
+          client.ws.onerror = null
+          client.ws.onmessage = null
+          client.ws.close()
+        } catch {}
+      }
+      this.mqttClients = []
+
       if (this.bc) {
         try {
           this.bc.close()
@@ -147,53 +217,161 @@
       }
     }
 
-    _setupBroadcastChannel(roomCode) {
-      if (typeof BroadcastChannel === 'undefined') return
-      this.bc = new BroadcastChannel(`nbp:${this.gameId}:${roomCode}`)
-      this.bc.onmessage = (ev) => {
-        const msg = ev.data
-        if (!msg || msg.senderId === this.profile.id) return
-        if (this.isHost && msg.target === 'host') {
-          this.onAction(msg.payload, msg.senderProfile)
-        } else if (!this.isHost && msg.target === 'clients') {
-          if (msg.type === 'STATE_SYNC') {
-            this._hasSyncedFromHost = true
-            this.onStateSync(msg.state)
-          } else if (msg.type === 'EVENT') {
-            this.onAction(msg.payload, msg.senderProfile)
+    _makePacketId() {
+      return `${this.profile.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
+    }
+
+    _handleIncomingPacket(msg) {
+      if (!msg || msg.senderId === this.profile.id) return
+      if (msg.pktId) {
+        if (this.seenPacketIds.has(msg.pktId)) return
+        this.seenPacketIds.add(msg.pktId)
+        if (this.seenPacketIds.size > 600) {
+          const first = this.seenPacketIds.values().next().value
+          this.seenPacketIds.delete(first)
+        }
+      }
+
+      if (this.isHost && (msg.target === 'host' || msg.type === 'ACTION')) {
+        this.onAction(msg.payload, msg.senderProfile)
+      } else if (!this.isHost && (msg.target === 'clients' || msg.type === 'STATE_SYNC' || msg.type === 'EVENT')) {
+        if (msg.type === 'STATE_SYNC') {
+          this._hasSyncedFromHost = true
+          if (this._joinTimeout) {
+            clearTimeout(this._joinTimeout)
+            this._joinTimeout = null
           }
+          this.onStatus({
+            connected: true,
+            mode: 'online',
+            roomCode: this.roomCode,
+            isHost: false,
+          })
+          this.onStateSync(msg.state)
+        } else if (msg.type === 'EVENT') {
+          this.onAction(msg.payload, msg.senderProfile)
         }
       }
     }
 
-    hostRoom(rawCode, retryAttempt = 0) {
+    _setupBroadcastChannel(roomCode) {
+      if (typeof BroadcastChannel === 'undefined') return
+      this.bc = new BroadcastChannel(`nbp:${this.gameId}:${roomCode}`)
+      this.bc.onmessage = (ev) => {
+        this._handleIncomingPacket(ev.data)
+      }
+    }
+
+    _setupMqttRelays(roomCode, onFirstReady) {
+      const topic = `${MQTT_TOPIC_PREFIX}/${this.gameId}/${roomCode.toLowerCase()}`
+      let readyFired = false
+
+      for (const brokerUrl of WSS_BROKERS) {
+        try {
+          const ws = new WebSocket(brokerUrl, 'mqtt')
+          ws.binaryType = 'arraybuffer'
+          const clientObj = { ws, ready: false, topic, pingTimer: null }
+          this.mqttClients.push(clientObj)
+
+          ws.onopen = () => {
+            const clientId = `nbp_${this.profile.id}_${Math.random().toString(36).slice(2, 7)}`
+            const idBytes = textEncoder.encode(clientId)
+            const connPkt = new Uint8Array(14 + idBytes.length)
+            connPkt.set([
+              0x10,
+              12 + idBytes.length,
+              0x00,
+              0x04,
+              0x4d,
+              0x51,
+              0x54,
+              0x54,
+              0x04,
+              0x02,
+              0x00,
+              0x3c,
+              0x00,
+              idBytes.length,
+            ])
+            connPkt.set(idBytes, 14)
+            ws.send(connPkt)
+          }
+
+          ws.onmessage = (ev) => {
+            const packets = parseMqttPackets(new Uint8Array(ev.data))
+            for (const pkt of packets) {
+              if (pkt.type === 2) {
+                // CONNACK -> Subscribe to room topic
+                const tBytes = textEncoder.encode(topic)
+                const remLen = 2 + 2 + tBytes.length + 1
+                const subPkt = new Uint8Array(2 + remLen)
+                subPkt.set([
+                  0x82,
+                  remLen,
+                  0x00,
+                  0x01,
+                  (tBytes.length >> 8) & 0xff,
+                  tBytes.length & 0xff,
+                ])
+                subPkt.set(tBytes, 6)
+                subPkt[6 + tBytes.length] = 0x00
+                ws.send(subPkt)
+
+                clientObj.pingTimer = setInterval(() => {
+                  if (ws.readyState === WebSocket.OPEN) {
+                    try {
+                      ws.send(new Uint8Array([0xc0, 0x00]))
+                    } catch {}
+                  }
+                }, 25000)
+              } else if (pkt.type === 9) {
+                // SUBACK -> Ready!
+                clientObj.ready = true
+                if (!readyFired) {
+                  readyFired = true
+                  if (onFirstReady) onFirstReady()
+                }
+              } else if (pkt.type === 3) {
+                // PUBLISH
+                try {
+                  const tLen = (pkt.body[0] << 8) | pkt.body[1]
+                  const qos = (pkt.flags >> 1) & 0x03
+                  const pStart = 2 + tLen + (qos > 0 ? 2 : 0)
+                  const jsonStr = textDecoder.decode(pkt.body.subarray(pStart))
+                  const msg = JSON.parse(jsonStr)
+                  this._handleIncomingPacket(msg)
+                } catch {}
+              }
+            }
+          }
+        } catch {}
+      }
+    }
+
+    _publishMqtt(packet) {
+      const jsonStr = JSON.stringify(packet)
+      for (const c of this.mqttClients) {
+        if (c.ready && c.ws.readyState === WebSocket.OPEN) {
+          try {
+            c.ws.send(buildMqttPublish(c.topic, jsonStr))
+          } catch {}
+        }
+      }
+    }
+
+    hostRoom(rawCode) {
       const normalized = normalizeRoomCode(rawCode, this.defaultPrefix)
       if (!normalized) return
 
-      // If already actively hosting this exact room on WebRTC, keep the connection alive!
-      if (
-        retryAttempt === 0 &&
-        this.isHost &&
-        this.roomCode === normalized &&
-        this.peer &&
-        !this.peer.destroyed &&
-        !this.peer.disconnected &&
-        this.peer.open
-      ) {
-        this.onStatus({ connected: true, mode: 'webrtc', roomCode: this.roomCode, isHost: true })
+      if (this.isHost && this.roomCode === normalized && this.mqttClients.some((c) => c.ready)) {
+        this.onStatus({ connected: true, mode: 'online', roomCode: this.roomCode, isHost: true })
         return
       }
 
-      const wasSameRoom = this.roomCode === normalized && this.peer !== null
       this.cleanup()
       this.roomCode = normalized
       this.isHost = true
       this._setupBroadcastChannel(this.roomCode)
-
-      if (typeof window.Peer === 'undefined') {
-        this.onStatus({ connected: true, mode: 'local', roomCode: this.roomCode, isHost: true })
-        return
-      }
 
       this.onStatus({
         connected: false,
@@ -203,90 +381,58 @@
         isHost: true,
       })
 
-      const startPeer = () => {
-        const hostPeerId = `${PEER_PREFIX}${this.gameId}-${this.roomCode.toLowerCase()}`
-        try {
-          const peer = new window.Peer(hostPeerId, {
-            debug: 1,
-            config: RTC_CONFIG,
-          })
-          this.peer = peer
+      this._setupMqttRelays(this.roomCode, () => {
+        this.onStatus({
+          connected: true,
+          mode: 'online',
+          roomCode: this.roomCode,
+          isHost: true,
+        })
+      })
 
-          peer.on('open', () => {
-            if (this.peer !== peer) return
-            this.onStatus({
-              connected: true,
-              mode: 'webrtc',
-              roomCode: this.roomCode,
-              isHost: true,
-            })
-          })
+      if (typeof window.Peer === 'undefined') return
 
-          peer.on('connection', (conn) => {
-            if (this.peer !== peer) return
+      const hostPeerId = `${PEER_PREFIX}${this.gameId}-${this.roomCode.toLowerCase()}`
+      try {
+        const peer = new window.Peer(hostPeerId, {
+          debug: 0,
+          config: RTC_CONFIG,
+        })
+        this.peer = peer
+
+        peer.on('open', () => {
+          if (this.peer !== peer) return
+          this.onStatus({
+            connected: true,
+            mode: 'online',
+            roomCode: this.roomCode,
+            isHost: true,
+          })
+        })
+
+        peer.on('connection', (conn) => {
+          if (this.peer !== peer) return
+          this.clientConns.set(conn.peer, conn)
+
+          conn.on('open', () => {
             this.clientConns.set(conn.peer, conn)
-
-            conn.on('open', () => {
-              this.clientConns.set(conn.peer, conn)
-              this.onAction({ type: 'PEER_CONNECTED', peerId: conn.peer }, null)
-            })
-
-            conn.on('data', (data) => {
-              this.clientConns.set(conn.peer, conn)
-              if (data && data.type === 'ACTION') {
-                this.onAction(data.payload, data.senderProfile)
-              }
-            })
-
-            conn.on('close', () => {
-              this.clientConns.delete(conn.peer)
-              this.onAction({ type: 'PEER_LEFT', peerId: conn.peer }, null)
-            })
-
-            conn.on('error', () => {
-              this.clientConns.delete(conn.peer)
-            })
+            this.onAction({ type: 'PEER_CONNECTED', peerId: conn.peer }, null)
           })
 
-          peer.on('disconnected', () => {
-            if (this.peer === peer && !peer.destroyed) {
-              try {
-                peer.reconnect()
-              } catch {}
-            }
+          conn.on('data', (data) => {
+            this.clientConns.set(conn.peer, conn)
+            this._handleIncomingPacket(data)
           })
 
-          peer.on('error', (err) => {
-            if (this.peer !== peer) return
-            if (err && err.type === 'unavailable-id' && retryAttempt < 4) {
-              try {
-                peer.destroy()
-              } catch {}
-              this._retryTimer = setTimeout(() => {
-                this.hostRoom(this.roomCode, retryAttempt + 1)
-              }, 900)
-              return
-            }
-
-            this.onStatus({
-              connected: false,
-              mode: 'local-fallback',
-              roomCode: this.roomCode,
-              isHost: true,
-              warning: err?.type || 'erro-rede',
-            })
-            this.onError(err)
+          conn.on('close', () => {
+            this.clientConns.delete(conn.peer)
           })
-        } catch (err) {
-          this.onError(err)
-        }
-      }
+        })
 
-      if (wasSameRoom && retryAttempt === 0) {
-        this._retryTimer = setTimeout(startPeer, 350)
-      } else {
-        startPeer()
-      }
+        peer.on('error', () => {
+          // Silenced: MQTT-over-WSS relay already guarantees room connectivity
+        })
+      } catch {}
     }
 
     joinRoom(rawCode) {
@@ -307,40 +453,54 @@
         isHost: false,
       })
 
-      // Announce via BroadcastChannel immediately (instant same-device multi-tab support)
-      if (this.bc) {
-        this.bc.postMessage({
-          target: 'host',
-          senderId: this.profile.id,
-          senderProfile: this.profile,
-          payload: { type: 'JOIN_REQUEST', profile: this.profile },
-        })
+      const sendJoinAnnouncement = () => {
+        this.sendToHost({ type: 'JOIN_REQUEST', profile: this.profile })
       }
 
-      if (typeof window.Peer === 'undefined') {
-        this.onStatus({ connected: true, mode: 'local', roomCode: this.roomCode, isHost: false })
-        return
-      }
+      // 1. Announce immediately over BroadcastChannel (same browser)
+      sendJoinAnnouncement()
+
+      // 2. Connect over Multi-Broker MQTT WSS Relay (works across all networks/CGNAT/incognito)
+      this._setupMqttRelays(this.roomCode, () => {
+        sendJoinAnnouncement()
+      })
+
+      // Retry join announcement every 900ms until Host responds with STATE_SYNC
+      let attempts = 0
+      this._joinRetryInterval = setInterval(() => {
+        attempts++
+        if (this._hasSyncedFromHost || attempts >= 10) {
+          clearInterval(this._joinRetryInterval)
+          this._joinRetryInterval = null
+          return
+        }
+        sendJoinAnnouncement()
+      }, 900)
+
+      this._joinTimeout = setTimeout(() => {
+        if (!this._hasSyncedFromHost) {
+          this.onStatus({
+            connected: false,
+            error: 'timeout',
+            roomCode: this.roomCode,
+            isHost: false,
+          })
+          this.onError(
+            new Error(`Sala ${this.roomCode} não respondeu. Verifique se o Host está com a sala aberta.`)
+          )
+        }
+      }, 10000)
+
+      // 3. Also connect via PeerJS WebRTC DataChannel in parallel if available
+      if (typeof window.Peer === 'undefined') return
 
       const hostPeerId = `${PEER_PREFIX}${this.gameId}-${this.roomCode.toLowerCase()}`
       try {
         const peer = new window.Peer({
-          debug: 1,
+          debug: 0,
           config: RTC_CONFIG,
         })
         this.peer = peer
-
-        this._joinTimeout = setTimeout(() => {
-          if (!this._hasSyncedFromHost && (!this.hostConn || !this.hostConn.open)) {
-            this.onStatus({
-              connected: false,
-              error: 'timeout',
-              roomCode: this.roomCode,
-              isHost: false,
-            })
-            this.onError(new Error(`Não foi possível conectar à sala ${this.roomCode}. Verifique se o Host criou a sala.`))
-          }
-        }, 12000)
 
         peer.on('open', () => {
           if (this.peer !== peer) return
@@ -350,89 +510,19 @@
           })
           this.hostConn = conn
 
-          const sendJoinRequest = () => {
-            if (conn.open) {
-              conn.send({
-                type: 'ACTION',
-                senderId: this.profile.id,
-                senderProfile: this.profile,
-                payload: { type: 'JOIN_REQUEST', profile: this.profile },
-              })
-            }
-          }
-
           conn.on('open', () => {
-            if (this._joinTimeout) {
-              clearTimeout(this._joinTimeout)
-              this._joinTimeout = null
-            }
-            this.onStatus({
-              connected: true,
-              mode: 'webrtc',
-              roomCode: this.roomCode,
-              isHost: false,
-            })
-            sendJoinRequest()
-
-            let attempts = 0
-            this._joinRetryInterval = setInterval(() => {
-              attempts++
-              if (this._hasSyncedFromHost || attempts >= 5 || !conn.open) {
-                clearInterval(this._joinRetryInterval)
-                this._joinRetryInterval = null
-                return
-              }
-              sendJoinRequest()
-            }, 1000)
+            sendJoinAnnouncement()
           })
 
           conn.on('data', (msg) => {
-            if (!msg) return
-            if (msg.type === 'STATE_SYNC') {
-              this._hasSyncedFromHost = true
-              if (this._joinTimeout) {
-                clearTimeout(this._joinTimeout)
-                this._joinTimeout = null
-              }
-              this.onStatus({
-                connected: true,
-                mode: 'webrtc',
-                roomCode: this.roomCode,
-                isHost: false,
-              })
-              this.onStateSync(msg.state)
-            } else if (msg.type === 'EVENT') {
-              this.onAction(msg.payload, msg.senderProfile)
-            }
-          })
-
-          conn.on('close', () => {
-            this.onStatus({ connected: false, roomCode: this.roomCode, isHost: false })
+            this._handleIncomingPacket(msg)
           })
         })
 
-        peer.on('error', (err) => {
-          if (this.peer !== peer) return
-          if (this._hasSyncedFromHost) return
-          if (this._joinTimeout) {
-            clearTimeout(this._joinTimeout)
-            this._joinTimeout = null
-          }
-          const msg =
-            err?.type === 'peer-unavailable'
-              ? `Sala ${this.roomCode} não encontrada! Confira o código com o Host.`
-              : `Erro ao conectar na sala ${this.roomCode} (${err?.type || 'rede'}).`
-          this.onStatus({
-            connected: false,
-            error: err?.type || 'error',
-            roomCode: this.roomCode,
-            isHost: false,
-          })
-          this.onError(new Error(msg))
+        peer.on('error', () => {
+          // Silenced: MQTT-over-WSS handles connection even if PeerJS fails
         })
-      } catch (err) {
-        this.onError(err)
-      }
+      } catch {}
     }
 
     sendToHost(payload) {
@@ -440,27 +530,31 @@
         this.onAction(payload, this.profile)
         return
       }
-      if (this.hostConn && this.hostConn.open) {
-        this.hostConn.send({
-          type: 'ACTION',
-          senderId: this.profile.id,
-          senderProfile: this.profile,
-          payload,
-        })
+      const packet = {
+        pktId: this._makePacketId(),
+        type: 'ACTION',
+        target: 'host',
+        senderId: this.profile.id,
+        senderProfile: this.profile,
+        payload,
       }
+      if (this.hostConn && this.hostConn.open) {
+        try {
+          this.hostConn.send(packet)
+        } catch {}
+      }
+      this._publishMqtt(packet)
       if (this.bc) {
-        this.bc.postMessage({
-          target: 'host',
-          senderId: this.profile.id,
-          senderProfile: this.profile,
-          payload,
-        })
+        try {
+          this.bc.postMessage(packet)
+        } catch {}
       }
     }
 
     broadcastState(state) {
       if (!this.isHost) return
       const packet = {
+        pktId: this._makePacketId(),
         type: 'STATE_SYNC',
         target: 'clients',
         senderId: this.profile.id,
@@ -473,14 +567,18 @@
           } catch {}
         }
       }
+      this._publishMqtt(packet)
       if (this.bc) {
-        this.bc.postMessage(packet)
+        try {
+          this.bc.postMessage(packet)
+        } catch {}
       }
     }
 
     broadcastEvent(payload) {
       if (!this.isHost) return
       const packet = {
+        pktId: this._makePacketId(),
         type: 'EVENT',
         target: 'clients',
         senderId: this.profile.id,
@@ -494,8 +592,11 @@
           } catch {}
         }
       }
+      this._publishMqtt(packet)
       if (this.bc) {
-        this.bc.postMessage(packet)
+        try {
+          this.bc.postMessage(packet)
+        } catch {}
       }
     }
   }

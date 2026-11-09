@@ -1,0 +1,5 @@
+/vendor/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/games/*
+  Cache-Control: public, max-age=0, must-revalidate
