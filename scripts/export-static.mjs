@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const publicOutDir = path.join(rootDir, '.output', 'public')
-const basePath = (process.env.VITE_BASE_PATH || '/nbp-jogos/').replace(/\/$/, '')
+const basePath = (process.env.VITE_BASE_PATH || '/').replace(/\/$/, '')
 
 function fixAssetBasePaths(html) {
   if (!basePath) return html
