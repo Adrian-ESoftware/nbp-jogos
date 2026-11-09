@@ -978,9 +978,9 @@
 
     const aliveCount = vsState.players.filter((p) => !p.eliminated).length
     vsAliveBadge.textContent =
-      vsState.status === 'playing' && isRoyale
+      vsState.status === 'playing'
         ? `🔥 ${aliveCount}/${vsState.players.length} vivos!`
-        : 'Quem errar 3 perde!'
+        : 'Jogo vai até todos errarem 3!'
 
     const myIdx = vsState.players.findIndex((p) => p.id === vsRoom?.profile.id)
     const mySlot = myIdx !== -1 ? myIdx : 0
@@ -1240,23 +1240,25 @@
 
     if (player.eliminated) {
       const alive = vsState.players.filter((p) => !p.eliminated)
-      if (alive.length <= 1) {
+      if (alive.length === 0) {
         clearInterval(vsBotInterval)
-        const champion = alive[0] || vsState.players.slice().sort((a, b) => b.score - a.score)[0]
+        const sorted = vsState.players.slice().sort((a, b) => b.score - a.score)
+        const champion = sorted[0]
+        const lastPlace = sorted[sorted.length - 1]
         vsState.status = 'gameover'
         vsState.winner = champion
-        vsState.loser = player
+        vsState.loser = lastPlace
         syncVersusToClients()
         vsRoom.broadcastEvent({
           type: 'VS_OVER',
           winner: champion,
-          loser: player,
+          loser: lastPlace,
         })
-        showVersusGameOverModal(champion, player)
+        showVersusGameOverModal(champion, lastPlace)
         return
       }
 
-      const elimMsg = `💥 ${player.name} errou 3 bandeiras e foi eliminado(a)! Restam ${alive.length} vivos!`
+      const elimMsg = `💥 ${player.name} perdeu as 3 vidas (${player.score} pts)! Restam ${alive.length} jogador(es) em jogo!`
       showToast(elimMsg, 2600)
       vsRoom.broadcastEvent({ type: 'TOAST', message: elimMsg })
     }
@@ -1275,7 +1277,7 @@
     }
 
     const ranking = [...vsState.players]
-      .sort((a, b) => Number(a.eliminated) - Number(b.eliminated) || b.score - a.score)
+      .sort((a, b) => b.score - a.score)
       .map((p, idx) => `${idx + 1}º ${p.name} (${p.score} pts · ${p.errors}/3 erros)`)
       .join(' · ')
 
@@ -1286,9 +1288,7 @@
           : `🏆 Você Venceu o Duelo 1v1!`
         : `🏆 ${winner ? winner.name : 'Adversário'} Venceu!`,
       customReason ||
-        (isRoyale
-          ? `${winner ? winner.name : 'Sobrevivente'} foi o último sobrevivente entre ${vsState.players.length} jogadores!`
-          : `${loser ? loser.name : 'Jogador'} errou 3 bandeiras primeiro!`),
+        `Todos perderam as 3 vidas! ${winner ? winner.name : 'Campeão'} venceu com a maior pontuação (${winner ? winner.score : 0} pts)!`,
       ranking
     )
   }
@@ -1357,7 +1357,7 @@
     const wasPlaying = vsState.status === 'playing'
 
     vsState.players.splice(idx, 1)
-    if (vsState.players.length < 2) {
+    if (!wasPlaying && vsState.players.length < 2) {
       vsState.players.push(createBotPlayer(0))
     }
 
@@ -1367,10 +1367,11 @@
 
     if (wasPlaying) {
       const alive = vsState.players.filter((p) => !p.eliminated)
-      if (alive.length <= 1) {
+      if (alive.length === 0) {
         clearInterval(vsBotInterval)
+        const sorted = vsState.players.slice().sort((a, b) => b.score - a.score)
         vsState.status = 'gameover'
-        vsState.winner = alive[0] || vsState.players[0]
+        vsState.winner = sorted[0] || vsState.players[0]
         vsState.loser = { name: leavingName, score: 0, errors: 3 }
         syncVersusToClients()
         vsRoom.broadcastEvent({
@@ -1381,7 +1382,7 @@
         showVersusGameOverModal(
           vsState.winner,
           vsState.loser,
-          `${leavingName} saiu da partida!`
+          `${leavingName} saiu e todos os jogadores restantes já terminaram!`
         )
         return
       }
@@ -1402,7 +1403,7 @@
 
     const nextHost = vsState.players.find((p) => !p.isBot)
     if (!nextHost || nextHost.id === vsRoom.profile.id) {
-      if (vsState.players.length < 2) {
+      if (vsState.status !== 'playing' && vsState.players.length < 2) {
         vsState.players.push(createBotPlayer(0))
       }
       vsRoom.promoteToHost(vsState.players)
@@ -1412,11 +1413,12 @@
 
       if (vsState.status === 'playing') {
         const alive = vsState.players.filter((p) => !p.eliminated)
-        if (alive.length <= 1) {
+        if (alive.length === 0) {
+          const sorted = vsState.players.slice().sort((a, b) => b.score - a.score)
           vsState.status = 'gameover'
-          vsState.winner = alive[0] || vsState.players[0]
+          vsState.winner = sorted[0] || vsState.players[0]
           syncVersusToClients()
-          showVersusGameOverModal(vsState.winner, { name: hostName, score: 0, errors: 3 }, `${hostName} saiu da partida!`)
+          showVersusGameOverModal(vsState.winner, { name: hostName, score: 0, errors: 3 }, `${hostName} saiu e todos os jogadores restantes já terminaram!`)
           return
         }
         startVersusBotsLoop()
