@@ -2,12 +2,42 @@
   "version": 1,
   "games": [
     {
+      "id": "burro",
+      "title": "BURRO!",
+      "description": "Reúna os amigos em uma mesa multiplayer de cartas: combine cores e números, use cartas especiais e grite BURRO antes de ficar sem cartas!",
+      "developer": "NBP Games",
+      "genres": [
+        "Cartas",
+        "Party",
+        "Multiplayer"
+      ],
+      "modes": [
+        "multiplayer"
+      ],
+      "status": "published",
+      "featured": true,
+      "engine": "html5",
+      "assets": {
+        "cover": "/games/burro/cover.svg",
+        "banner": "/games/burro/banner.svg",
+        "icon": "/games/burro/icon.svg"
+      },
+      "entry": "/games/burro/index.html"
+    },
+    {
       "id": "corrente-nbp",
       "title": "Última Letra · Corrente",
       "description": "Multiplayer P2P em tempo real! Escolha 1 entre 4 letras iniciais, forme palavras da língua portuguesa (+626.000 aceitas) sem repetir e passe a vez: a última letra vira o início da palavra do próximo amigo — evoluindo para as 2 últimas letras conforme a corrente cresce!",
       "developer": "NBP Games",
-      "genres": ["Palavras", "Party", "Multiplayer"],
-      "modes": ["singleplayer", "multiplayer"],
+      "genres": [
+        "Palavras",
+        "Party",
+        "Multiplayer"
+      ],
+      "modes": [
+        "singleplayer",
+        "multiplayer"
+      ],
       "status": "published",
       "featured": true,
       "engine": "html5",
@@ -23,8 +53,14 @@
       "title": "Termo, Dueto & Quarteto",
       "description": "Desafie seu vocabulário em português descobrindo 1, 2 ou 4 palavras simultâneas! Conta com +6.600 palavras-alvo divididas em 3 níveis de dificuldade (Fácil, Médio e Difícil), +16.200 palpites aceitos, acentuação automática e código de sala para competir com amigos.",
       "developer": "NBP Games",
-      "genres": ["Palavras", "Puzzle"],
-      "modes": ["singleplayer", "multiplayer"],
+      "genres": [
+        "Palavras",
+        "Puzzle"
+      ],
+      "modes": [
+        "singleplayer",
+        "multiplayer"
+      ],
       "status": "published",
       "featured": true,
       "engine": "html5",
@@ -40,8 +76,15 @@
       "title": "Atlas & Bandeiras",
       "description": "5 modos geográficos em 1: Quiz de Bandeiras, Flagle & Bússola, Mais ou Menos de População, Duelo Versus 1v1 e Battle Royale para até 6 Players (cada jogador recebe bandeiras diferentes e quem errar 3 é eliminado até sobrar 1 campeão)! Inclui 250 países + 27 Estados do Brasil.",
       "developer": "NBP Games",
-      "genres": ["Geografia", "Quiz", "Puzzle"],
-      "modes": ["singleplayer", "multiplayer"],
+      "genres": [
+        "Geografia",
+        "Quiz",
+        "Puzzle"
+      ],
+      "modes": [
+        "singleplayer",
+        "multiplayer"
+      ],
       "status": "published",
       "featured": true,
       "engine": "html5",
