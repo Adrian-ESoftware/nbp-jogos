@@ -1,9 +1,10 @@
 /**
  * NBP Games - Hybrid P2P & WSS Multiplayer Room Manager
  * Combines:
- *  1. Multi-Broker MQTT over WSS (HiveMQ + EMQX + Mosquitto) — 100% NAT/CGNAT/Incognito proof
+ *  1. Multi-Broker MQTT over WSS (HiveMQ + EMQX) — 100% NAT/CGNAT/Incognito proof
  *  2. WebRTC DataChannel via PeerJS — direct low-latency P2P when UDP is open
  *  3. BroadcastChannel — 0ms local multi-tab sync
+ *  4. Presence & Heartbeat Monitor — detects player/host disconnects & supports Host Migration
  */
 ;(() => {
   const PEER_PREFIX = 'nbp-jogos-room-v1-'
@@ -12,6 +13,10 @@
     'wss://broker.hivemq.com:8884/mqtt',
     'wss://broker.emqx.io:8084/mqtt',
   ]
+
+  const HEARTBEAT_INTERVAL_MS = 2800
+  const CLIENT_TIMEOUT_MS = 8200
+  const HOST_TIMEOUT_MS = 8800
 
   const RTC_CONFIG = {
     iceServers: [
@@ -153,12 +158,25 @@
       this.peer = null
       this.hostConn = null
       this.clientConns = new Map()
+      this.peerIdToPlayerId = new Map()
+      this.clientLastSeen = new Map() // playerId -> timestamp
       this.bc = null
       this.mqttClients = []
       this.seenPacketIds = new Set()
       this._joinRetryInterval = null
       this._joinTimeout = null
+      this._heartbeatTimer = null
       this._hasSyncedFromHost = false
+      this._lastHostSeenAt = 0
+      this._currentHostId = ''
+
+      this._boundUnload = () => {
+        this._sendLeaveSignal()
+      }
+      if (typeof window !== 'undefined') {
+        window.addEventListener('pagehide', this._boundUnload)
+        window.addEventListener('beforeunload', this._boundUnload)
+      }
     }
 
     setPlayerName(name) {
@@ -171,7 +189,33 @@
       }
     }
 
-    cleanup() {
+    _sendLeaveSignal() {
+      if (!this.roomCode) return
+      try {
+        if (this.isHost) {
+          this.broadcastEvent({
+            type: 'HOST_LEFT',
+            hostId: this.profile.id,
+            hostName: this.profile.name,
+          })
+        } else {
+          this.sendToHost({
+            type: 'PLAYER_LEFT',
+            playerId: this.profile.id,
+            playerName: this.profile.name,
+          })
+        }
+      } catch {}
+    }
+
+    cleanup(notifyLeave = true) {
+      if (notifyLeave && this.roomCode) {
+        this._sendLeaveSignal()
+      }
+      if (this._heartbeatTimer) {
+        clearInterval(this._heartbeatTimer)
+        this._heartbeatTimer = null
+      }
       if (this._joinRetryInterval) {
         clearInterval(this._joinRetryInterval)
         this._joinRetryInterval = null
@@ -190,6 +234,8 @@
         } catch {}
       }
       this.mqttClients = []
+      this.clientLastSeen.clear()
+      this.peerIdToPlayerId.clear()
 
       if (this.bc) {
         try {
@@ -217,11 +263,61 @@
       }
     }
 
+    _startHeartbeatLoop() {
+      if (this._heartbeatTimer) {
+        clearInterval(this._heartbeatTimer)
+      }
+      this._lastHostSeenAt = Date.now()
+
+      this._heartbeatTimer = setInterval(() => {
+        const now = Date.now()
+        if (this.isHost) {
+          // 1. Broadcast host heartbeat so clients know host is alive
+          const pingPkt = {
+            pktId: this._makePacketId(),
+            type: 'HOST_PING',
+            target: 'clients',
+            senderId: this.profile.id,
+          }
+          for (const conn of this.clientConns.values()) {
+            if (conn.open) {
+              try {
+                conn.send(pingPkt)
+              } catch {}
+            }
+          }
+          this._publishMqtt(pingPkt)
+          if (this.bc) {
+            try {
+              this.bc.postMessage(pingPkt)
+            } catch {}
+          }
+
+          // 2. Check if any client timed out
+          for (const [playerId, lastSeen] of this.clientLastSeen.entries()) {
+            if (now - lastSeen > CLIENT_TIMEOUT_MS) {
+              this.clientLastSeen.delete(playerId)
+              this.onAction({ type: 'PLAYER_LEFT', playerId }, null)
+            }
+          }
+        } else {
+          // Client sends heartbeat to Host
+          if (this._hasSyncedFromHost) {
+            this.sendToHost({ type: 'HEARTBEAT', profile: this.profile })
+            if (now - this._lastHostSeenAt > HOST_TIMEOUT_MS) {
+              this._lastHostSeenAt = now
+              this.onAction({ type: 'HOST_LEFT', hostId: this._currentHostId }, null)
+            }
+          }
+        }
+      }, HEARTBEAT_INTERVAL_MS)
+    }
+
     _makePacketId() {
       return `${this.profile.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
     }
 
-    _handleIncomingPacket(msg) {
+    _handleIncomingPacket(msg, fromPeerId = null) {
       if (!msg || msg.senderId === this.profile.id) return
       if (msg.pktId) {
         if (this.seenPacketIds.has(msg.pktId)) return
@@ -233,8 +329,32 @@
       }
 
       if (this.isHost && (msg.target === 'host' || msg.type === 'ACTION')) {
+        if (msg.senderId) {
+          this.clientLastSeen.set(msg.senderId, Date.now())
+          if (fromPeerId) {
+            this.peerIdToPlayerId.set(fromPeerId, msg.senderId)
+          }
+        }
+        if (msg.payload?.type === 'PLAYER_LEFT') {
+          this.clientLastSeen.delete(msg.payload.playerId || msg.senderId)
+        }
+        if (msg.payload?.type === 'HEARTBEAT') {
+          // Update presence only; if Host doesn't know this player yet, treat as JOIN_REQUEST
+          this.onAction({ type: 'HEARTBEAT', profile: msg.payload.profile || msg.senderProfile }, msg.senderProfile)
+          return
+        }
         this.onAction(msg.payload, msg.senderProfile)
-      } else if (!this.isHost && (msg.target === 'clients' || msg.type === 'STATE_SYNC' || msg.type === 'EVENT')) {
+      } else if (
+        !this.isHost &&
+        (msg.target === 'clients' || msg.type === 'STATE_SYNC' || msg.type === 'EVENT' || msg.type === 'HOST_PING')
+      ) {
+        this._lastHostSeenAt = Date.now()
+        if (msg.senderId) {
+          this._currentHostId = msg.senderId
+        }
+        if (msg.type === 'HOST_PING') {
+          return
+        }
         if (msg.type === 'STATE_SYNC') {
           this._hasSyncedFromHost = true
           if (this._joinTimeout) {
@@ -301,7 +421,6 @@
             const packets = parseMqttPackets(new Uint8Array(ev.data))
             for (const pkt of packets) {
               if (pkt.type === 2) {
-                // CONNACK -> Subscribe to room topic
                 const tBytes = textEncoder.encode(topic)
                 const remLen = 2 + 2 + tBytes.length + 1
                 const subPkt = new Uint8Array(2 + remLen)
@@ -325,14 +444,12 @@
                   }
                 }, 25000)
               } else if (pkt.type === 9) {
-                // SUBACK -> Ready!
                 clientObj.ready = true
                 if (!readyFired) {
                   readyFired = true
                   if (onFirstReady) onFirstReady()
                 }
               } else if (pkt.type === 3) {
-                // PUBLISH
                 try {
                   const tLen = (pkt.body[0] << 8) | pkt.body[1]
                   const qos = (pkt.flags >> 1) & 0x03
@@ -359,40 +476,9 @@
       }
     }
 
-    hostRoom(rawCode) {
-      const normalized = normalizeRoomCode(rawCode, this.defaultPrefix)
-      if (!normalized) return
-
-      if (this.isHost && this.roomCode === normalized && this.mqttClients.some((c) => c.ready)) {
-        this.onStatus({ connected: true, mode: 'online', roomCode: this.roomCode, isHost: true })
-        return
-      }
-
-      this.cleanup()
-      this.roomCode = normalized
-      this.isHost = true
-      this._setupBroadcastChannel(this.roomCode)
-
-      this.onStatus({
-        connected: false,
-        connecting: true,
-        mode: 'connecting',
-        roomCode: this.roomCode,
-        isHost: true,
-      })
-
-      this._setupMqttRelays(this.roomCode, () => {
-        this.onStatus({
-          connected: true,
-          mode: 'online',
-          roomCode: this.roomCode,
-          isHost: true,
-        })
-      })
-
+    _initHostPeer(roomCode) {
       if (typeof window.Peer === 'undefined') return
-
-      const hostPeerId = `${PEER_PREFIX}${this.gameId}-${this.roomCode.toLowerCase()}`
+      const hostPeerId = `${PEER_PREFIX}${this.gameId}-${roomCode.toLowerCase()}`
       try {
         const peer = new window.Peer(hostPeerId, {
           debug: 0,
@@ -421,29 +507,112 @@
 
           conn.on('data', (data) => {
             this.clientConns.set(conn.peer, conn)
-            this._handleIncomingPacket(data)
+            this._handleIncomingPacket(data, conn.peer)
           })
 
           conn.on('close', () => {
             this.clientConns.delete(conn.peer)
+            const pid = this.peerIdToPlayerId.get(conn.peer)
+            if (pid) {
+              this.peerIdToPlayerId.delete(conn.peer)
+              this.clientLastSeen.delete(pid)
+              this.onAction({ type: 'PLAYER_LEFT', playerId: pid }, null)
+            }
           })
         })
 
-        peer.on('error', () => {
-          // Silenced: MQTT-over-WSS relay already guarantees room connectivity
-        })
+        peer.on('error', () => {})
       } catch {}
+    }
+
+    hostRoom(rawCode) {
+      const normalized = normalizeRoomCode(rawCode, this.defaultPrefix)
+      if (!normalized) return
+
+      if (this.isHost && this.roomCode === normalized && this.mqttClients.some((c) => c.ready)) {
+        this.onStatus({ connected: true, mode: 'online', roomCode: this.roomCode, isHost: true })
+        return
+      }
+
+      this.cleanup(true)
+      this.roomCode = normalized
+      this.isHost = true
+      this._setupBroadcastChannel(this.roomCode)
+      this._startHeartbeatLoop()
+
+      this.onStatus({
+        connected: false,
+        connecting: true,
+        mode: 'connecting',
+        roomCode: this.roomCode,
+        isHost: true,
+      })
+
+      this._setupMqttRelays(this.roomCode, () => {
+        this.onStatus({
+          connected: true,
+          mode: 'online',
+          roomCode: this.roomCode,
+          isHost: true,
+        })
+      })
+
+      this._initHostPeer(this.roomCode)
+    }
+
+    // Seamlessly promotes an already-connected Client to Host when the previous Host leaves
+    promoteToHost(existingPlayers = []) {
+      if (this.isHost) return
+      if (this._joinRetryInterval) {
+        clearInterval(this._joinRetryInterval)
+        this._joinRetryInterval = null
+      }
+      if (this._joinTimeout) {
+        clearTimeout(this._joinTimeout)
+        this._joinTimeout = null
+      }
+      if (this.hostConn) {
+        try {
+          this.hostConn.close()
+        } catch {}
+        this.hostConn = null
+      }
+      if (this.peer) {
+        try {
+          this.peer.destroy()
+        } catch {}
+        this.peer = null
+      }
+
+      this.isHost = true
+      this.clientLastSeen.clear()
+      const now = Date.now()
+      for (const p of existingPlayers) {
+        if (!p.isBot && p.id !== this.profile.id) {
+          this.clientLastSeen.set(p.id, now)
+        }
+      }
+
+      this._startHeartbeatLoop()
+      this._initHostPeer(this.roomCode)
+      this.onStatus({
+        connected: true,
+        mode: 'online',
+        roomCode: this.roomCode,
+        isHost: true,
+      })
     }
 
     joinRoom(rawCode) {
       const normalized = normalizeRoomCode(rawCode, this.defaultPrefix)
       if (!normalized) return
 
-      this.cleanup()
+      this.cleanup(true)
       this.roomCode = normalized
       this.isHost = false
       this._hasSyncedFromHost = false
       this._setupBroadcastChannel(this.roomCode)
+      this._startHeartbeatLoop()
 
       this.onStatus({
         connected: false,
@@ -457,15 +626,12 @@
         this.sendToHost({ type: 'JOIN_REQUEST', profile: this.profile })
       }
 
-      // 1. Announce immediately over BroadcastChannel (same browser)
       sendJoinAnnouncement()
 
-      // 2. Connect over Multi-Broker MQTT WSS Relay (works across all networks/CGNAT/incognito)
       this._setupMqttRelays(this.roomCode, () => {
         sendJoinAnnouncement()
       })
 
-      // Retry join announcement every 900ms until Host responds with STATE_SYNC
       let attempts = 0
       this._joinRetryInterval = setInterval(() => {
         attempts++
@@ -491,7 +657,6 @@
         }
       }, 10000)
 
-      // 3. Also connect via PeerJS WebRTC DataChannel in parallel if available
       if (typeof window.Peer === 'undefined') return
 
       const hostPeerId = `${PEER_PREFIX}${this.gameId}-${this.roomCode.toLowerCase()}`
@@ -519,9 +684,7 @@
           })
         })
 
-        peer.on('error', () => {
-          // Silenced: MQTT-over-WSS handles connection even if PeerJS fails
-        })
+        peer.on('error', () => {})
       } catch {}
     }
 

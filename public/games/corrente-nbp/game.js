@@ -713,6 +713,129 @@
   }
 
   // ==================== P2P ROOM SETUP ====================
+  function ensureBotIfAloneInLobby() {
+    if (gameState.status === 'lobby' && gameState.players.length === 1) {
+      gameState.players.push({
+        id: 'bot_initial',
+        name: BOT_NAMES[0].name,
+        color: BOT_NAMES[0].color,
+        isBot: true,
+        lives: 3,
+        score: 0,
+        eliminated: false,
+      })
+    }
+  }
+
+  function handlePlayerLeftOnHost(leavingPlayerId) {
+    if (!room.isHost || !leavingPlayerId || leavingPlayerId === room.profile.id) return
+    const idx = gameState.players.findIndex((p) => p.id === leavingPlayerId && !p.isBot)
+    if (idx === -1) return
+
+    const leavingPlayer = gameState.players[idx]
+    const wasTheirTurn = gameState.status === 'playing' && gameState.turnIndex === idx
+
+    gameState.players.splice(idx, 1)
+    if (idx < gameState.turnIndex) {
+      gameState.turnIndex = Math.max(0, gameState.turnIndex - 1)
+    }
+    if (gameState.turnIndex >= gameState.players.length) {
+      gameState.turnIndex = 0
+    }
+
+    const leaveMsg = `🚪 ${leavingPlayer.name} saiu da sala.`
+    showToast(leaveMsg, 2800)
+    room.broadcastEvent({ type: 'TOAST', message: leaveMsg })
+
+    if (gameState.status === 'lobby') {
+      ensureBotIfAloneInLobby()
+      syncToClients()
+      return
+    }
+
+    if (gameState.status === 'playing') {
+      const alive = gameState.players.filter((p) => !p.eliminated)
+      if (alive.length <= 1) {
+        clearInterval(timerInterval)
+        clearTimeout(botThinkTimeout)
+        gameState.status = 'gameover'
+        gameState.winner = alive[0] || gameState.players[0]
+        ensureBotIfAloneInLobby()
+        syncToClients()
+        if (gameState.winner) {
+          room.broadcastEvent({ type: 'MATCH_OVER', winner: gameState.winner })
+          showWinnerModal(gameState.winner)
+        }
+        return
+      }
+
+      if (wasTheirTurn) {
+        if (gameState.players[gameState.turnIndex]?.eliminated) {
+          advanceTurnIndex()
+        }
+        startTurnOnHost(false)
+      } else {
+        syncToClients()
+      }
+    }
+  }
+
+  function handleHostLeftOnClient(leavingHostId) {
+    if (room.isHost) return
+    const hostIdx = leavingHostId
+      ? gameState.players.findIndex((p) => p.id === leavingHostId)
+      : 0
+
+    let hostName = 'O Host'
+    if (hostIdx !== -1) {
+      hostName = gameState.players[hostIdx].name
+      gameState.players.splice(hostIdx, 1)
+      if (hostIdx < gameState.turnIndex) {
+        gameState.turnIndex = Math.max(0, gameState.turnIndex - 1)
+      }
+      if (gameState.turnIndex >= gameState.players.length) {
+        gameState.turnIndex = 0
+      }
+    }
+
+    const nextHost = gameState.players.find((p) => !p.isBot)
+    if (!nextHost || nextHost.id === room.profile.id) {
+      clearInterval(timerInterval)
+      clearTimeout(botThinkTimeout)
+      room.promoteToHost(gameState.players)
+
+      const migMsg = `👑 ${hostName} saiu! ${room.profile.name} assumiu como Host da sala ${gameState.roomCode}.`
+      showToast(migMsg, 3500)
+      room.broadcastEvent({ type: 'TOAST', message: migMsg })
+
+      if (gameState.status === 'lobby') {
+        ensureBotIfAloneInLobby()
+        syncToClients()
+      } else if (gameState.status === 'playing') {
+        const alive = gameState.players.filter((p) => !p.eliminated)
+        if (alive.length <= 1) {
+          gameState.status = 'gameover'
+          gameState.winner = alive[0] || gameState.players[0]
+          syncToClients()
+          if (gameState.winner) {
+            room.broadcastEvent({ type: 'MATCH_OVER', winner: gameState.winner })
+            showWinnerModal(gameState.winner)
+          }
+        } else {
+          if (gameState.players[gameState.turnIndex]?.eliminated) {
+            advanceTurnIndex()
+          }
+          startTurnOnHost(false)
+        }
+      } else {
+        syncToClients()
+      }
+    } else {
+      showToast(`🚪 ${hostName} saiu. Aguardando novo Host (${nextHost.name})...`, 3000)
+      renderUI()
+    }
+  }
+
   function setupRoomAsHost(code) {
     room.hostRoom(code)
     const normalized = room.roomCode || code
@@ -803,7 +926,10 @@
         if (room.isHost) {
           if (action.type === 'PEER_CONNECTED') {
             syncToClients()
-          } else if (action.type === 'JOIN_REQUEST' && action.profile) {
+          } else if (
+            (action.type === 'JOIN_REQUEST' || action.type === 'HEARTBEAT') &&
+            action.profile
+          ) {
             const exists = gameState.players.find((p) => p.id === action.profile.id)
             if (!exists) {
               // Remove automatic placeholder bot when a real friend joins in lobby
@@ -823,10 +949,13 @@
               const joinMsg = `👋 ${action.profile.name} entrou na sala!`
               showToast(joinMsg)
               room.broadcastEvent({ type: 'TOAST', message: joinMsg })
-            } else {
+              syncToClients()
+            } else if (action.type === 'JOIN_REQUEST') {
               exists.name = action.profile.name
+              syncToClients()
             }
-            syncToClients()
+          } else if (action.type === 'PLAYER_LEFT') {
+            handlePlayerLeftOnHost(action.playerId || senderProfile?.id)
           } else if (action.type === 'LIVE_TYPING') {
             const currentPlayer = gameState.players[gameState.turnIndex]
             if (currentPlayer && senderProfile && currentPlayer.id === senderProfile.id) {
@@ -841,7 +970,9 @@
           }
         } else {
           // Client events
-          if (action.type === 'REJECT' && action.playerId === room.profile.id) {
+          if (action.type === 'HOST_LEFT') {
+            handleHostLeftOnClient(action.hostId || senderProfile?.id)
+          } else if (action.type === 'REJECT' && action.playerId === room.profile.id) {
             shakeInput(action.reason)
           } else if (action.type === 'EXPLOSION') {
             playTone(130, 0.35, 'sawtooth', 0.14)
