@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="55%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.7" cy="0.45" r="0.55">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.28"/>
+      <stop offset="60%" stop-color="#eab308" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)"/>
+  <circle cx="670" cy="250" r="380" fill="url(#glow)"/>
+  <!-- Decorative Tiles Grid on Right -->
+  <g transform="translate(500, 95)">
+    <!-- Row 1: T E R M O -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="72" height="72" rx="14" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+      <text x="36" y="49" font-family="sans-serif" font-size="38" font-weight="900" fill="#fff" text-anchor="middle">T</text>
+      <rect x="82" y="0" width="72" height="72" rx="14" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+      <text x="118" y="49" font-family="sans-serif" font-size="38" font-weight="900" fill="#fff" text-anchor="middle">E</text>
+      <rect x="164" y="0" width="72" height="72" rx="14" fill="#eab308" stroke="#facc15" stroke-width="2"/>
+      <text x="200" y="49" font-family="sans-serif" font-size="38" font-weight="900" fill="#fff" text-anchor="middle">R</text>
+      <rect x="246" y="0" width="72" height="72" rx="14" fill="#334155" stroke="#475569" stroke-width="2"/>
+      <text x="282" y="49" font-family="sans-serif" font-size="38" font-weight="900" fill="#cbd5e1" text-anchor="middle">M</text>
+      <rect x="328" y="0" width="72" height="72" rx="14" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+      <text x="364" y="49" font-family="sans-serif" font-size="38" font-weight="900" fill="#fff" text-anchor="middle">O</text>
+    </g>
+    <!-- Row 2: D U E T O -->
+    <g transform="translate(0, 86)">
+      <rect x="0" y="0" width="72" height="72" rx="14" fill="#334155" stroke="#475569" stroke-width="2"/>
+      <text x="36" y="49" font-family="sans-serif" font-size="38" font-weight="900" fill="#cbd5e1" text-anchor="middle">D</text>
+      <rect x="82" y="0" width="72" height="72" rx="14" fill="#eab308" stroke="#facc15" stroke-width="2"/>
+      <text x="118" y="49" font-family="sans-serif" font-size="38" font-weight="900" fill="#fff" text-anchor="middle">U</text>
+      <rect x="164" y="0" width="72" height="72" rx="14" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+      <text x="200" y="49" font-family="sans-serif" font-size="38" font-weight="900" fill="#fff" text-anchor="middle">E</text>
+      <rect x="246" y="0" width="72" height="72" rx="14" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+      <text x="282" y="49" font-family="sans-serif" font-size="38" font-weight="900" fill="#fff" text-anchor="middle">T</text>
+      <rect x="328" y="0" width="72" height="72" rx="14" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+      <text x="364" y="49" font-family="sans-serif" font-size="38" font-weight="900" fill="#fff" text-anchor="middle">O</text>
+    </g>
+    <!-- Mini Quarteto Preview -->
+    <g transform="translate(0, 185)">
+      <rect x="0" y="0" width="190" height="150" rx="14" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+      <rect x="16" y="18" width="28" height="28" rx="6" fill="#10b981"/><rect x="48" y="18" width="28" height="28" rx="6" fill="#eab308"/><rect x="80" y="18" width="28" height="28" rx="6" fill="#334155"/><rect x="112" y="18" width="28" height="28" rx="6" fill="#10b981"/><rect x="144" y="18" width="28" height="28" rx="6" fill="#10b981"/>
+      <rect x="16" y="54" width="28" height="28" rx="6" fill="#10b981"/><rect x="48" y="54" width="28" height="28" rx="6" fill="#10b981"/><rect x="80" y="54" width="28" height="28" rx="6" fill="#10b981"/><rect x="112" y="54" width="28" height="28" rx="6" fill="#10b981"/><rect x="144" y="54" width="28" height="28" rx="6" fill="#10b981"/>
+      <text x="95" y="122" font-family="sans-serif" font-size="14" font-weight="700" letter-spacing="2" fill="#94a3b8" text-anchor="middle">MODO DUETO</text>
+
+      <rect x="210" y="0" width="190" height="150" rx="14" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+      <rect x="226" y="18" width="28" height="28" rx="6" fill="#eab308"/><rect x="258" y="18" width="28" height="28" rx="6" fill="#334155"/><rect x="290" y="18" width="28" height="28" rx="6" fill="#10b981"/><rect x="322" y="18" width="28" height="28" rx="6" fill="#334155"/><rect x="354" y="18" width="28" height="28" rx="6" fill="#eab308"/>
+      <rect x="226" y="54" width="28" height="28" rx="6" fill="#10b981"/><rect x="258" y="54" width="28" height="28" rx="6" fill="#10b981"/><rect x="290" y="54" width="28" height="28" rx="6" fill="#10b981"/><rect x="322" y="54" width="28" height="28" rx="6" fill="#10b981"/><rect x="354" y="54" width="28" height="28" rx="6" fill="#10b981"/>
+      <text x="305" y="122" font-family="sans-serif" font-size="14" font-weight="700" letter-spacing="2" fill="#94a3b8" text-anchor="middle">QUARTETO</text>
+    </g>
+  </g>
+  <!-- Title Left -->
+  <text x="58" y="135" font-family="sans-serif" font-size="15" font-weight="800" letter-spacing="4" fill="#34d399">DESAFIO DE PALAVRAS PT-BR</text>
+  <text x="55" y="215" font-family="sans-serif" font-size="72" font-weight="900" letter-spacing="-2" fill="#f8fafc">TERMO<tspan x="55" dy="0.95em" fill="#facc15">&amp; QUARTETO</tspan></text>
+  <text x="58" y="345" font-family="sans-serif" font-size="18" fill="#cbd5e1">1, 2 ou 4 palavras simultâneas · 3 níveis de dificuldade</text>
+  <text x="58" y="375" font-family="sans-serif" font-size="16" fill="#94a3b8">+6.000 palavras-alvo e sala com código para amigos</text>
+  <text x="58" y="490" font-family="sans-serif" font-size="12" font-weight="700" letter-spacing="4" fill="#64748b">NBP GAMES · LÉXICO PORTUGUÊS</text>
+</svg>

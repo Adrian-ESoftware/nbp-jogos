@@ -2,21 +2,55 @@
   "version": 1,
   "games": [
     {
-      "id": "nebula-wings",
-      "title": "Nebula Wings",
-      "description": "Abra suas asas e atravesse os portais da nebulosa! Toque, clique ou use Espaço para voar, desvie dos obstáculos e supere seu recorde. Um arcade original da NBP Games.",
+      "id": "corrente-nbp",
+      "title": "Última Letra · Corrente",
+      "description": "Multiplayer P2P em tempo real! Escolha 1 entre 4 letras iniciais, forme palavras da língua portuguesa (+626.000 aceitas) sem repetir e passe a vez: a última letra vira o início da palavra do próximo amigo — evoluindo para as 2 últimas letras conforme a corrente cresce!",
       "developer": "NBP Games",
-      "genres": ["Arcade"],
-      "modes": ["singleplayer"],
+      "genres": ["Palavras", "Party", "Multiplayer"],
+      "modes": ["singleplayer", "multiplayer"],
       "status": "published",
       "featured": true,
       "engine": "html5",
       "assets": {
-        "cover": "/games/nebula-wings/cover.svg",
-        "banner": "/games/nebula-wings/banner.svg",
-        "icon": "/games/nebula-wings/icon.svg"
+        "cover": "/games/corrente-nbp/cover.svg",
+        "banner": "/games/corrente-nbp/banner.svg",
+        "icon": "/games/corrente-nbp/icon.svg"
       },
-      "entry": "/games/nebula-wings/index.html"
+      "entry": "/games/corrente-nbp/index.html"
+    },
+    {
+      "id": "termo-nbp",
+      "title": "Termo, Dueto & Quarteto",
+      "description": "Desafie seu vocabulário em português descobrindo 1, 2 ou 4 palavras simultâneas! Conta com +6.600 palavras-alvo divididas em 3 níveis de dificuldade (Fácil, Médio e Difícil), +16.200 palpites aceitos, acentuação automática e código de sala para competir com amigos.",
+      "developer": "NBP Games",
+      "genres": ["Palavras", "Puzzle"],
+      "modes": ["singleplayer", "multiplayer"],
+      "status": "published",
+      "featured": true,
+      "engine": "html5",
+      "assets": {
+        "cover": "/games/termo-nbp/cover.svg",
+        "banner": "/games/termo-nbp/banner.svg",
+        "icon": "/games/termo-nbp/icon.svg"
+      },
+      "entry": "/games/termo-nbp/index.html"
+    },
+    {
+      "id": "bandeiras-nbp",
+      "title": "Atlas & Bandeiras",
+      "description": "3 jogos geográficos em 1: Quiz de Bandeiras, Flagle & Bússola (adivinhe o país recebendo distância em km e direção) e Mais ou Menos de População! Inclui 250 países separados em 4 níveis de dificuldade + modo especial com os 27 Estados do Brasil.",
+      "developer": "NBP Games",
+      "genres": ["Geografia", "Quiz", "Puzzle"],
+      "modes": ["singleplayer", "multiplayer"],
+      "status": "published",
+      "featured": true,
+      "engine": "html5",
+      "assets": {
+        "cover": "/games/bandeiras-nbp/cover.svg",
+        "banner": "/games/bandeiras-nbp/banner.svg",
+        "icon": "/games/bandeiras-nbp/icon.svg"
+      },
+      "entry": "/games/bandeiras-nbp/index.html"
     }
   ]
 }

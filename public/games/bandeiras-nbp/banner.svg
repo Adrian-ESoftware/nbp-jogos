@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#091526"/>
+      <stop offset="50%" stop-color="#0f2942"/>
+      <stop offset="100%" stop-color="#064e3b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.65" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#091526" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)"/>
+  <circle cx="640" cy="270" r="410" fill="url(#glow)"/>
+  <g transform="translate(650, 270)" stroke="#38bdf8" stroke-opacity="0.25" fill="none" stroke-width="2.5">
+    <circle cx="0" cy="0" r="190"/>
+    <ellipse cx="0" cy="0" rx="110" ry="190"/>
+    <ellipse cx="0" cy="0" rx="190" ry="95"/>
+  </g>
+  <g transform="translate(520, 145) rotate(-5)">
+    <rect x="-10" y="-10" width="240" height="164" rx="18" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
+    <rect x="0" y="0" width="220" height="144" rx="10" fill="#009b3a"/>
+    <polygon points="110,16 200,72 110,128 20,72" fill="#fedf00"/>
+    <circle cx="110" cy="72" r="32" fill="#002776"/>
+  </g>
+</svg>

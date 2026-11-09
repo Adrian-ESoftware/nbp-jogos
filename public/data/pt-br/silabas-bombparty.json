@@ -1,0 +1,5084 @@
+{
+  "version": 1,
+  "description": "Sílabas e encontros de letras em português classificados por facilidade para jogos estilo BombParty / Batata Quente de Palavras.",
+  "stats": {
+    "facil": 99,
+    "medio": 214,
+    "dificil": 250
+  },
+  "niveis": {
+    "facil": [
+      {
+        "silaba": "AR",
+        "ocorrencias": 8390,
+        "exemplos": [
+          "abafar",
+          "abaixar",
+          "abalar"
+        ]
+      },
+      {
+        "silaba": "RA",
+        "ocorrencias": 6977,
+        "exemplos": [
+          "aberração",
+          "abertura",
+          "abóbora"
+        ]
+      },
+      {
+        "silaba": "CA",
+        "ocorrencias": 6909,
+        "exemplos": [
+          "abacate",
+          "abacaxi",
+          "abarca"
+        ]
+      },
+      {
+        "silaba": "AD",
+        "ocorrencias": 6020,
+        "exemplos": [
+          "abade",
+          "abadia",
+          "abafado"
+        ]
+      },
+      {
+        "silaba": "EN",
+        "ocorrencias": 5577,
+        "exemplos": [
+          "abatimento",
+          "abdômen",
+          "abençoado"
+        ]
+      },
+      {
+        "silaba": "DO",
+        "ocorrencias": 5550,
+        "exemplos": [
+          "abafado",
+          "abalado",
+          "abandonado"
+        ]
+      },
+      {
+        "silaba": "TA",
+        "ocorrencias": 5317,
+        "exemplos": [
+          "aberta",
+          "abertamente",
+          "abortar"
+        ]
+      },
+      {
+        "silaba": "IN",
+        "ocorrencias": 5148,
+        "exemplos": [
+          "abdominal",
+          "abobrinha",
+          "abominação"
+        ]
+      },
+      {
+        "silaba": "AN",
+        "ocorrencias": 4983,
+        "exemplos": [
+          "abandonado",
+          "abandonar",
+          "abandono"
+        ]
+      },
+      {
+        "silaba": "CO",
+        "ocorrencias": 4815,
+        "exemplos": [
+          "abençoado",
+          "abençoar",
+          "abraço"
+        ]
+      },
+      {
+        "silaba": "RI",
+        "ocorrencias": 4675,
+        "exemplos": [
+          "abobrinha",
+          "abridor",
+          "abriga"
+        ]
+      },
+      {
+        "silaba": "RE",
+        "ocorrencias": 4605,
+        "exemplos": [
+          "aborrecido",
+          "abre",
+          "abreu"
+        ]
+      },
+      {
+        "silaba": "TE",
+        "ocorrencias": 4582,
+        "exemplos": [
+          "abacate",
+          "abastecer",
+          "abastecido"
+        ]
+      },
+      {
+        "silaba": "NT",
+        "ocorrencias": 4498,
+        "exemplos": [
+          "abatimento",
+          "abertamente",
+          "abrangente"
+        ]
+      },
+      {
+        "silaba": "AL",
+        "ocorrencias": 4468,
+        "exemplos": [
+          "abalada",
+          "abalado",
+          "abalar"
+        ]
+      },
+      {
+        "silaba": "OR",
+        "ocorrencias": 4408,
+        "exemplos": [
+          "abóbora",
+          "abordada",
+          "abordado"
+        ]
+      },
+      {
+        "silaba": "IA",
+        "ocorrencias": 4256,
+        "exemplos": [
+          "abadia",
+          "abrangência",
+          "abreviação"
+        ]
+      },
+      {
+        "silaba": "ER",
+        "ocorrencias": 4227,
+        "exemplos": [
+          "abastecer",
+          "abater",
+          "aberração"
+        ]
+      },
+      {
+        "silaba": "ES",
+        "ocorrencias": 4213,
+        "exemplos": [
+          "aceso",
+          "acessar",
+          "acessível"
+        ]
+      },
+      {
+        "silaba": "ADO",
+        "ocorrencias": 3794,
+        "exemplos": [
+          "abafado",
+          "abalado",
+          "abandonado"
+        ]
+      },
+      {
+        "silaba": "IC",
+        "ocorrencias": 3763,
+        "exemplos": [
+          "abdicar",
+          "abolição",
+          "absolvição"
+        ]
+      },
+      {
+        "silaba": "RO",
+        "ocorrencias": 3731,
+        "exemplos": [
+          "abro",
+          "acerola",
+          "açougueiro"
+        ]
+      },
+      {
+        "silaba": "TO",
+        "ocorrencias": 3705,
+        "exemplos": [
+          "abatimento",
+          "aberto",
+          "absoluto"
+        ]
+      },
+      {
+        "silaba": "DE",
+        "ocorrencias": 3665,
+        "exemplos": [
+          "abade",
+          "academia",
+          "acadêmico"
+        ]
+      },
+      {
+        "silaba": "TI",
+        "ocorrencias": 3585,
+        "exemplos": [
+          "abatido",
+          "abatimento",
+          "absolutismo"
+        ]
+      },
+      {
+        "silaba": "AC",
+        "ocorrencias": 3466,
+        "exemplos": [
+          "abacate",
+          "abacaxi",
+          "aberração"
+        ]
+      },
+      {
+        "silaba": "LA",
+        "ocorrencias": 3398,
+        "exemplos": [
+          "abalada",
+          "abalado",
+          "abalar"
+        ]
+      },
+      {
+        "silaba": "NA",
+        "ocorrencias": 3178,
+        "exemplos": [
+          "abandonado",
+          "abandonar",
+          "abdominal"
+        ]
+      },
+      {
+        "silaba": "MA",
+        "ocorrencias": 3162,
+        "exemplos": [
+          "acalmar",
+          "acima",
+          "aclamação"
+        ]
+      },
+      {
+        "silaba": "ST",
+        "ocorrencias": 3154,
+        "exemplos": [
+          "abastecer",
+          "abastecido",
+          "abstenção"
+        ]
+      },
+      {
+        "silaba": "ON",
+        "ocorrencias": 3052,
+        "exemplos": [
+          "abandonado",
+          "abandonar",
+          "abandono"
+        ]
+      },
+      {
+        "silaba": "IS",
+        "ocorrencias": 3047,
+        "exemplos": [
+          "abismo",
+          "absolutismo",
+          "acionista"
+        ]
+      },
+      {
+        "silaba": "LI",
+        "ocorrencias": 2968,
+        "exemplos": [
+          "abolição",
+          "abolir",
+          "aclimação"
+        ]
+      },
+      {
+        "silaba": "AO",
+        "ocorrencias": 2870,
+        "exemplos": [
+          "aberração",
+          "abnegação",
+          "abolição"
+        ]
+      },
+      {
+        "silaba": "IR",
+        "ocorrencias": 2834,
+        "exemplos": [
+          "abolir",
+          "abrir",
+          "açougueiro"
+        ]
+      },
+      {
+        "silaba": "ME",
+        "ocorrencias": 2774,
+        "exemplos": [
+          "abatimento",
+          "abdome",
+          "abdômen"
+        ]
+      },
+      {
+        "silaba": "AT",
+        "ocorrencias": 2724,
+        "exemplos": [
+          "abacate",
+          "abate",
+          "abater"
+        ]
+      },
+      {
+        "silaba": "DA",
+        "ocorrencias": 2714,
+        "exemplos": [
+          "abalada",
+          "abordada",
+          "abordado"
+        ]
+      },
+      {
+        "silaba": "CI",
+        "ocorrencias": 2454,
+        "exemplos": [
+          "abastecido",
+          "aborrecido",
+          "abrangência"
+        ]
+      },
+      {
+        "silaba": "EL",
+        "ocorrencias": 2444,
+        "exemplos": [
+          "abelha",
+          "abominável",
+          "aceitável"
+        ]
+      },
+      {
+        "silaba": "TR",
+        "ocorrencias": 2440,
+        "exemplos": [
+          "abstração",
+          "abstracto",
+          "abstrato"
+        ]
+      },
+      {
+        "silaba": "ENT",
+        "ocorrencias": 2410,
+        "exemplos": [
+          "abatimento",
+          "abertamente",
+          "abrangente"
+        ]
+      },
+      {
+        "silaba": "AM",
+        "ocorrencias": 2372,
+        "exemplos": [
+          "abertamente",
+          "abruptamente",
+          "absurdamente"
+        ]
+      },
+      {
+        "silaba": "OL",
+        "ocorrencias": 2358,
+        "exemplos": [
+          "abolição",
+          "abolir",
+          "absoluta"
+        ]
+      },
+      {
+        "silaba": "IT",
+        "ocorrencias": 2299,
+        "exemplos": [
+          "aceitação",
+          "aceitado",
+          "aceitar"
+        ]
+      },
+      {
+        "silaba": "AS",
+        "ocorrencias": 2250,
+        "exemplos": [
+          "abastecer",
+          "abastecido",
+          "abrasão"
+        ]
+      },
+      {
+        "silaba": "DI",
+        "ocorrencias": 2219,
+        "exemplos": [
+          "abadia",
+          "abdicar",
+          "acendimento"
+        ]
+      },
+      {
+        "silaba": "IO",
+        "ocorrencias": 2205,
+        "exemplos": [
+          "acácio",
+          "acessório",
+          "acionado"
+        ]
+      },
+      {
+        "silaba": "OS",
+        "ocorrencias": 2183,
+        "exemplos": [
+          "acostamento",
+          "acostumado",
+          "acostumar"
+        ]
+      },
+      {
+        "silaba": "MO",
+        "ocorrencias": 2163,
+        "exemplos": [
+          "abismo",
+          "absolutismo",
+          "acomodação"
+        ]
+      },
+      {
+        "silaba": "ID",
+        "ocorrencias": 2161,
+        "exemplos": [
+          "abastecido",
+          "abatido",
+          "aborrecido"
+        ]
+      },
+      {
+        "silaba": "EI",
+        "ocorrencias": 2155,
+        "exemplos": [
+          "aceitação",
+          "aceitado",
+          "aceitar"
+        ]
+      },
+      {
+        "silaba": "PA",
+        "ocorrencias": 2154,
+        "exemplos": [
+          "acampamento",
+          "acampar",
+          "acompanhado"
+        ]
+      },
+      {
+        "silaba": "SA",
+        "ocorrencias": 2127,
+        "exemplos": [
+          "abrasão",
+          "abusado",
+          "abusar"
+        ]
+      },
+      {
+        "silaba": "ET",
+        "ocorrencias": 2017,
+        "exemplos": [
+          "acarretar",
+          "acetato",
+          "acetinado"
+        ]
+      },
+      {
+        "silaba": "SE",
+        "ocorrencias": 2003,
+        "exemplos": [
+          "aconselhado",
+          "aconselhar",
+          "aconselhável"
+        ]
+      },
+      {
+        "silaba": "NTE",
+        "ocorrencias": 1988,
+        "exemplos": [
+          "abertamente",
+          "abrangente",
+          "abruptamente"
+        ]
+      },
+      {
+        "silaba": "PE",
+        "ocorrencias": 1948,
+        "exemplos": [
+          "ágape",
+          "agropecuária",
+          "agropecuário"
+        ]
+      },
+      {
+        "silaba": "NI",
+        "ocorrencias": 1945,
+        "exemplos": [
+          "acionista",
+          "administrado",
+          "administrar"
+        ]
+      },
+      {
+        "silaba": "ACA",
+        "ocorrencias": 1921,
+        "exemplos": [
+          "abacate",
+          "abacaxi",
+          "aberração"
+        ]
+      },
+      {
+        "silaba": "GA",
+        "ocorrencias": 1910,
+        "exemplos": [
+          "abnegação",
+          "abriga",
+          "abrigar"
+        ]
+      },
+      {
+        "silaba": "HA",
+        "ocorrencias": 1857,
+        "exemplos": [
+          "abelha",
+          "abobrinha",
+          "acha"
+        ]
+      },
+      {
+        "silaba": "NO",
+        "ocorrencias": 1850,
+        "exemplos": [
+          "abandono",
+          "abono",
+          "aceno"
+        ]
+      },
+      {
+        "silaba": "UR",
+        "ocorrencias": 1809,
+        "exemplos": [
+          "abajur",
+          "abertura",
+          "absurdamente"
+        ]
+      },
+      {
+        "silaba": "LE",
+        "ocorrencias": 1806,
+        "exemplos": [
+          "aceleração",
+          "acelerado",
+          "acelerador"
+        ]
+      },
+      {
+        "silaba": "CAO",
+        "ocorrencias": 1795,
+        "exemplos": [
+          "aberração",
+          "abnegação",
+          "abolição"
+        ]
+      },
+      {
+        "silaba": "BA",
+        "ocorrencias": 1791,
+        "exemplos": [
+          "abacate",
+          "abacaxi",
+          "abade"
+        ]
+      },
+      {
+        "silaba": "MI",
+        "ocorrencias": 1768,
+        "exemplos": [
+          "abdominal",
+          "abominação",
+          "abominável"
+        ]
+      },
+      {
+        "silaba": "LO",
+        "ocorrencias": 1754,
+        "exemplos": [
+          "abalo",
+          "acúmulo",
+          "aflorar"
+        ]
+      },
+      {
+        "silaba": "NC",
+        "ocorrencias": 1705,
+        "exemplos": [
+          "abençoado",
+          "abençoar",
+          "abrangência"
+        ]
+      },
+      {
+        "silaba": "VE",
+        "ocorrencias": 1677,
+        "exemplos": [
+          "abominável",
+          "absorvente",
+          "absorver"
+        ]
+      },
+      {
+        "silaba": "SO",
+        "ocorrencias": 1660,
+        "exemplos": [
+          "absoluta",
+          "absolutismo",
+          "absoluto"
+        ]
+      },
+      {
+        "silaba": "IL",
+        "ocorrencias": 1645,
+        "exemplos": [
+          "abril",
+          "acrílico",
+          "afilhado"
+        ]
+      },
+      {
+        "silaba": "EM",
+        "ocorrencias": 1644,
+        "exemplos": [
+          "abordagem",
+          "academia",
+          "acadêmico"
+        ]
+      },
+      {
+        "silaba": "ND",
+        "ocorrencias": 1643,
+        "exemplos": [
+          "abandonado",
+          "abandonar",
+          "abandono"
+        ]
+      },
+      {
+        "silaba": "IM",
+        "ocorrencias": 1615,
+        "exemplos": [
+          "abatimento",
+          "acendimento",
+          "acima"
+        ]
+      },
+      {
+        "silaba": "PO",
+        "ocorrencias": 1585,
+        "exemplos": [
+          "adiposo",
+          "aeroporto",
+          "aipo"
+        ]
+      },
+      {
+        "silaba": "SI",
+        "ocorrencias": 1572,
+        "exemplos": [
+          "abusivo",
+          "acessível",
+          "adesivo"
+        ]
+      },
+      {
+        "silaba": "QU",
+        "ocorrencias": 1558,
+        "exemplos": [
+          "adequação",
+          "adequado",
+          "adequar"
+        ]
+      },
+      {
+        "silaba": "EC",
+        "ocorrencias": 1550,
+        "exemplos": [
+          "abastecer",
+          "abastecido",
+          "aborrecido"
+        ]
+      },
+      {
+        "silaba": "CE",
+        "ocorrencias": 1532,
+        "exemplos": [
+          "abastecer",
+          "aceder",
+          "aceitação"
+        ]
+      },
+      {
+        "silaba": "NE",
+        "ocorrencias": 1489,
+        "exemplos": [
+          "abnegação",
+          "abstinência",
+          "acne"
+        ]
+      },
+      {
+        "silaba": "ICO",
+        "ocorrencias": 1454,
+        "exemplos": [
+          "acadêmico",
+          "acrílico",
+          "acústico"
+        ]
+      },
+      {
+        "silaba": "OM",
+        "ocorrencias": 1428,
+        "exemplos": [
+          "abdome",
+          "abdômen",
+          "abdominal"
+        ]
+      },
+      {
+        "silaba": "MEN",
+        "ocorrencias": 1427,
+        "exemplos": [
+          "abatimento",
+          "abdômen",
+          "abertamente"
+        ]
+      },
+      {
+        "silaba": "EIR",
+        "ocorrencias": 1421,
+        "exemplos": [
+          "açougueiro",
+          "aduaneiro",
+          "albufeira"
+        ]
+      },
+      {
+        "silaba": "PR",
+        "ocorrencias": 1402,
+        "exemplos": [
+          "anteprojeto",
+          "aprazível",
+          "apreciação"
+        ]
+      },
+      {
+        "silaba": "PI",
+        "ocorrencias": 1386,
+        "exemplos": [
+          "agripino",
+          "aipim",
+          "alpino"
+        ]
+      },
+      {
+        "silaba": "NH",
+        "ocorrencias": 1365,
+        "exemplos": [
+          "abobrinha",
+          "acompanhado",
+          "acompanhante"
+        ]
+      },
+      {
+        "silaba": "RR",
+        "ocorrencias": 1349,
+        "exemplos": [
+          "aberração",
+          "aborrecido",
+          "acarretar"
+        ]
+      },
+      {
+        "silaba": "UL",
+        "ocorrencias": 1322,
+        "exemplos": [
+          "acapulco",
+          "acumulação",
+          "acumulada"
+        ]
+      },
+      {
+        "silaba": "VA",
+        "ocorrencias": 1315,
+        "exemplos": [
+          "afirmativa",
+          "agravado",
+          "agravamento"
+        ]
+      },
+      {
+        "silaba": "AG",
+        "ocorrencias": 1291,
+        "exemplos": [
+          "abordagem",
+          "adaga",
+          "afago"
+        ]
+      },
+      {
+        "silaba": "STA",
+        "ocorrencias": 1279,
+        "exemplos": [
+          "acionista",
+          "acostamento",
+          "adventista"
+        ]
+      },
+      {
+        "silaba": "AP",
+        "ocorrencias": 1274,
+        "exemplos": [
+          "acapulco",
+          "adaptação",
+          "adaptado"
+        ]
+      },
+      {
+        "silaba": "ICA",
+        "ocorrencias": 1273,
+        "exemplos": [
+          "abdicar",
+          "abolição",
+          "absolvição"
+        ]
+      },
+      {
+        "silaba": "VI",
+        "ocorrencias": 1257,
+        "exemplos": [
+          "abreviação",
+          "absolvição",
+          "absolvido"
+        ]
+      },
+      {
+        "silaba": "NS",
+        "ocorrencias": 1242,
+        "exemplos": [
+          "aconselhado",
+          "aconselhar",
+          "aconselhável"
+        ]
+      },
+      {
+        "silaba": "INA",
+        "ocorrencias": 1217,
+        "exemplos": [
+          "abdominal",
+          "abominação",
+          "abominável"
+        ]
+      }
+    ],
+    "medio": [
+      {
+        "silaba": "FI",
+        "ocorrencias": 1192,
+        "exemplos": [
+          "afiado",
+          "afilhado",
+          "afiliação"
+        ]
+      },
+      {
+        "silaba": "ANT",
+        "ocorrencias": 1191,
+        "exemplos": [
+          "abundante",
+          "acompanhante",
+          "aconchegante"
+        ]
+      },
+      {
+        "silaba": "ARI",
+        "ocorrencias": 1184,
+        "exemplos": [
+          "acari",
+          "acariciar",
+          "acionário"
+        ]
+      },
+      {
+        "silaba": "IV",
+        "ocorrencias": 1182,
+        "exemplos": [
+          "abusivo",
+          "acessível",
+          "adesivo"
+        ]
+      },
+      {
+        "silaba": "SC",
+        "ocorrencias": 1182,
+        "exemplos": [
+          "acrescentado",
+          "acrescentar",
+          "acrescente"
+        ]
+      },
+      {
+        "silaba": "TU",
+        "ocorrencias": 1158,
+        "exemplos": [
+          "abertura",
+          "acentuação",
+          "acentuado"
+        ]
+      },
+      {
+        "silaba": "UI",
+        "ocorrencias": 1150,
+        "exemplos": [
+          "acuidade",
+          "adquirente",
+          "adquirido"
+        ]
+      },
+      {
+        "silaba": "CH",
+        "ocorrencias": 1142,
+        "exemplos": [
+          "acha",
+          "achada",
+          "achado"
+        ]
+      },
+      {
+        "silaba": "AB",
+        "ocorrencias": 1137,
+        "exemplos": [
+          "abacate",
+          "abacaxi",
+          "abade"
+        ]
+      },
+      {
+        "silaba": "SS",
+        "ocorrencias": 1133,
+        "exemplos": [
+          "acessar",
+          "acessível",
+          "acesso"
+        ]
+      },
+      {
+        "silaba": "DOR",
+        "ocorrencias": 1123,
+        "exemplos": [
+          "abridor",
+          "acelerador",
+          "acolhedor"
+        ]
+      },
+      {
+        "silaba": "CAR",
+        "ocorrencias": 1120,
+        "exemplos": [
+          "abarcar",
+          "abdicar",
+          "abraçar"
+        ]
+      },
+      {
+        "silaba": "CU",
+        "ocorrencias": 1120,
+        "exemplos": [
+          "açúcar",
+          "açude",
+          "acuidade"
+        ]
+      },
+      {
+        "silaba": "HO",
+        "ocorrencias": 1109,
+        "exemplos": [
+          "achocolatado",
+          "acolchoado",
+          "agasalho"
+        ]
+      },
+      {
+        "silaba": "OT",
+        "ocorrencias": 1105,
+        "exemplos": [
+          "adotando",
+          "adotar",
+          "adotivo"
+        ]
+      },
+      {
+        "silaba": "IST",
+        "ocorrencias": 1088,
+        "exemplos": [
+          "acionista",
+          "administrado",
+          "administrar"
+        ]
+      },
+      {
+        "silaba": "GE",
+        "ocorrencias": 1085,
+        "exemplos": [
+          "abordagem",
+          "abrangência",
+          "abrangente"
+        ]
+      },
+      {
+        "silaba": "OC",
+        "ocorrencias": 1082,
+        "exemplos": [
+          "achocolatado",
+          "adoçante",
+          "adoção"
+        ]
+      },
+      {
+        "silaba": "BI",
+        "ocorrencias": 1071,
+        "exemplos": [
+          "abismo",
+          "advérbio",
+          "aeróbica"
+        ]
+      },
+      {
+        "silaba": "ZA",
+        "ocorrencias": 1066,
+        "exemplos": [
+          "agilizar",
+          "ajuizamento",
+          "ajuizar"
+        ]
+      },
+      {
+        "silaba": "UE",
+        "ocorrencias": 1060,
+        "exemplos": [
+          "açougue",
+          "açougueiro",
+          "afluente"
+        ]
+      },
+      {
+        "silaba": "DES",
+        "ocorrencias": 1055,
+        "exemplos": [
+          "adesão",
+          "adesivo",
+          "adestramento"
+        ]
+      },
+      {
+        "silaba": "IRA",
+        "ocorrencias": 1052,
+        "exemplos": [
+          "admiração",
+          "admirado",
+          "admirador"
+        ]
+      },
+      {
+        "silaba": "AV",
+        "ocorrencias": 1047,
+        "exemplos": [
+          "abominável",
+          "aceitável",
+          "aconselhável"
+        ]
+      },
+      {
+        "silaba": "NG",
+        "ocorrencias": 1022,
+        "exemplos": [
+          "abrangência",
+          "abrangente",
+          "abranger"
+        ]
+      },
+      {
+        "silaba": "GU",
+        "ocorrencias": 1017,
+        "exemplos": [
+          "açougue",
+          "açougueiro",
+          "água"
+        ]
+      },
+      {
+        "silaba": "CON",
+        "ocorrencias": 998,
+        "exemplos": [
+          "aconchegante",
+          "aconchego",
+          "aconselhado"
+        ]
+      },
+      {
+        "silaba": "EST",
+        "ocorrencias": 991,
+        "exemplos": [
+          "adestramento",
+          "agreste",
+          "ancestral"
+        ]
+      },
+      {
+        "silaba": "UA",
+        "ocorrencias": 966,
+        "exemplos": [
+          "acentuação",
+          "acentuado",
+          "acentuar"
+        ]
+      },
+      {
+        "silaba": "BO",
+        "ocorrencias": 959,
+        "exemplos": [
+          "abóbora",
+          "abobrinha",
+          "abolição"
+        ]
+      },
+      {
+        "silaba": "INH",
+        "ocorrencias": 951,
+        "exemplos": [
+          "abobrinha",
+          "adivinha",
+          "adivinhação"
+        ]
+      },
+      {
+        "silaba": "GI",
+        "ocorrencias": 949,
+        "exemplos": [
+          "ágil",
+          "agilidade",
+          "agilizar"
+        ]
+      },
+      {
+        "silaba": "LH",
+        "ocorrencias": 940,
+        "exemplos": [
+          "abelha",
+          "acolhedor",
+          "acolher"
+        ]
+      },
+      {
+        "silaba": "TRA",
+        "ocorrencias": 936,
+        "exemplos": [
+          "abstração",
+          "abstracto",
+          "abstrato"
+        ]
+      },
+      {
+        "silaba": "RT",
+        "ocorrencias": 934,
+        "exemplos": [
+          "aberta",
+          "abertamente",
+          "aberto"
+        ]
+      },
+      {
+        "silaba": "AME",
+        "ocorrencias": 928,
+        "exemplos": [
+          "abertamente",
+          "abruptamente",
+          "absurdamente"
+        ]
+      },
+      {
+        "silaba": "ARA",
+        "ocorrencias": 928,
+        "exemplos": [
+          "acarajé",
+          "alaranjado",
+          "alcântara"
+        ]
+      },
+      {
+        "silaba": "ED",
+        "ocorrencias": 926,
+        "exemplos": [
+          "aceder",
+          "acolhedor",
+          "acreditado"
+        ]
+      },
+      {
+        "silaba": "NTO",
+        "ocorrencias": 924,
+        "exemplos": [
+          "abatimento",
+          "acabamento",
+          "acampamento"
+        ]
+      },
+      {
+        "silaba": "FA",
+        "ocorrencias": 913,
+        "exemplos": [
+          "abafado",
+          "abafar",
+          "afago"
+        ]
+      },
+      {
+        "silaba": "SU",
+        "ocorrencias": 902,
+        "exemplos": [
+          "absurdamente",
+          "absurdo",
+          "assumido"
+        ]
+      },
+      {
+        "silaba": "OG",
+        "ocorrencias": 896,
+        "exemplos": [
+          "advogada",
+          "advogado",
+          "afogado"
+        ]
+      },
+      {
+        "silaba": "ITA",
+        "ocorrencias": 891,
+        "exemplos": [
+          "aceitação",
+          "aceitado",
+          "aceitar"
+        ]
+      },
+      {
+        "silaba": "BR",
+        "ocorrencias": 888,
+        "exemplos": [
+          "abobrinha",
+          "abra",
+          "abraçada"
+        ]
+      },
+      {
+        "silaba": "GR",
+        "ocorrencias": 882,
+        "exemplos": [
+          "agra",
+          "agraciado",
+          "agradar"
+        ]
+      },
+      {
+        "silaba": "IZ",
+        "ocorrencias": 876,
+        "exemplos": [
+          "agilizar",
+          "ajuizamento",
+          "ajuizar"
+        ]
+      },
+      {
+        "silaba": "TAR",
+        "ocorrencias": 868,
+        "exemplos": [
+          "abortar",
+          "acarretar",
+          "acatar"
+        ]
+      },
+      {
+        "silaba": "GO",
+        "ocorrencias": 868,
+        "exemplos": [
+          "abrigo",
+          "aconchego",
+          "afago"
+        ]
+      },
+      {
+        "silaba": "ADA",
+        "ocorrencias": 863,
+        "exemplos": [
+          "abalada",
+          "abordada",
+          "abraçada"
+        ]
+      },
+      {
+        "silaba": "SM",
+        "ocorrencias": 861,
+        "exemplos": [
+          "abismo",
+          "absolutismo",
+          "alcoolismo"
+        ]
+      },
+      {
+        "silaba": "MP",
+        "ocorrencias": 857,
+        "exemplos": [
+          "acampamento",
+          "acampar",
+          "acompanhado"
+        ]
+      },
+      {
+        "silaba": "AI",
+        "ocorrencias": 854,
+        "exemplos": [
+          "abaixa",
+          "abaixar",
+          "abaixo"
+        ]
+      },
+      {
+        "silaba": "IDA",
+        "ocorrencias": 854,
+        "exemplos": [
+          "acolhida",
+          "acuidade",
+          "adversidade"
+        ]
+      },
+      {
+        "silaba": "UT",
+        "ocorrencias": 850,
+        "exemplos": [
+          "absoluta",
+          "absolutismo",
+          "absoluto"
+        ]
+      },
+      {
+        "silaba": "BE",
+        "ocorrencias": 848,
+        "exemplos": [
+          "abelha",
+          "abençoado",
+          "abençoar"
+        ]
+      },
+      {
+        "silaba": "ADE",
+        "ocorrencias": 847,
+        "exemplos": [
+          "abade",
+          "academia",
+          "acadêmico"
+        ]
+      },
+      {
+        "silaba": "RU",
+        "ocorrencias": 847,
+        "exemplos": [
+          "abruptamente",
+          "agrupamento",
+          "agrupar"
+        ]
+      },
+      {
+        "silaba": "EA",
+        "ocorrencias": 840,
+        "exemplos": [
+          "aleatório",
+          "alínea",
+          "ameaça"
+        ]
+      },
+      {
+        "silaba": "VO",
+        "ocorrencias": 837,
+        "exemplos": [
+          "abusivo",
+          "acervo",
+          "adesivo"
+        ]
+      },
+      {
+        "silaba": "MB",
+        "ocorrencias": 831,
+        "exemplos": [
+          "âmbar",
+          "ambição",
+          "ambicioso"
+        ]
+      },
+      {
+        "silaba": "ATI",
+        "ocorrencias": 825,
+        "exemplos": [
+          "abatido",
+          "abatimento",
+          "afirmativa"
+        ]
+      },
+      {
+        "silaba": "RIA",
+        "ocorrencias": 820,
+        "exemplos": [
+          "açoriano",
+          "agrião",
+          "agropecuária"
+        ]
+      },
+      {
+        "silaba": "RAD",
+        "ocorrencias": 814,
+        "exemplos": [
+          "acelerado",
+          "acelerador",
+          "administrado"
+        ]
+      },
+      {
+        "silaba": "CR",
+        "ocorrencias": 814,
+        "exemplos": [
+          "acre",
+          "acreditado",
+          "acreditar"
+        ]
+      },
+      {
+        "silaba": "EG",
+        "ocorrencias": 813,
+        "exemplos": [
+          "abnegação",
+          "aconchegante",
+          "aconchego"
+        ]
+      },
+      {
+        "silaba": "ALI",
+        "ocorrencias": 808,
+        "exemplos": [
+          "adrenalina",
+          "aliado",
+          "aliança"
+        ]
+      },
+      {
+        "silaba": "OP",
+        "ocorrencias": 793,
+        "exemplos": [
+          "acoplado",
+          "acoplamento",
+          "adopção"
+        ]
+      },
+      {
+        "silaba": "UN",
+        "ocorrencias": 789,
+        "exemplos": [
+          "abundância",
+          "abundante",
+          "acupuntura"
+        ]
+      },
+      {
+        "silaba": "FE",
+        "ocorrencias": 784,
+        "exemplos": [
+          "afectado",
+          "afeição",
+          "aferição"
+        ]
+      },
+      {
+        "silaba": "TER",
+        "ocorrencias": 773,
+        "exemplos": [
+          "abater",
+          "abster",
+          "adulteração"
+        ]
+      },
+      {
+        "silaba": "IG",
+        "ocorrencias": 768,
+        "exemplos": [
+          "abriga",
+          "abrigar",
+          "abrigo"
+        ]
+      },
+      {
+        "silaba": "CIA",
+        "ocorrencias": 766,
+        "exemplos": [
+          "abrangência",
+          "abstinência",
+          "abundância"
+        ]
+      },
+      {
+        "silaba": "IZA",
+        "ocorrencias": 761,
+        "exemplos": [
+          "agilizar",
+          "ajuizamento",
+          "ajuizar"
+        ]
+      },
+      {
+        "silaba": "IRO",
+        "ocorrencias": 759,
+        "exemplos": [
+          "açougueiro",
+          "aduaneiro",
+          "arqueiro"
+        ]
+      },
+      {
+        "silaba": "FO",
+        "ocorrencias": 757,
+        "exemplos": [
+          "afogado",
+          "afogamento",
+          "afogar"
+        ]
+      },
+      {
+        "silaba": "TIC",
+        "ocorrencias": 755,
+        "exemplos": [
+          "acústica",
+          "acústico",
+          "aeronáutica"
+        ]
+      },
+      {
+        "silaba": "SP",
+        "ocorrencias": 750,
+        "exemplos": [
+          "aeroespacial",
+          "arcebispo",
+          "aspecto"
+        ]
+      },
+      {
+        "silaba": "NTA",
+        "ocorrencias": 747,
+        "exemplos": [
+          "acidentado",
+          "acidental",
+          "acinzentado"
+        ]
+      },
+      {
+        "silaba": "RAN",
+        "ocorrencias": 743,
+        "exemplos": [
+          "abrandar",
+          "abrangência",
+          "abrangente"
+        ]
+      },
+      {
+        "silaba": "NHA",
+        "ocorrencias": 716,
+        "exemplos": [
+          "abobrinha",
+          "acompanhado",
+          "acompanhante"
+        ]
+      },
+      {
+        "silaba": "URA",
+        "ocorrencias": 710,
+        "exemplos": [
+          "abertura",
+          "acupuntura",
+          "agricultura"
+        ]
+      },
+      {
+        "silaba": "US",
+        "ocorrencias": 709,
+        "exemplos": [
+          "abusado",
+          "abusar",
+          "abusivo"
+        ]
+      },
+      {
+        "silaba": "RIO",
+        "ocorrencias": 707,
+        "exemplos": [
+          "acessório",
+          "acionário",
+          "adultério"
+        ]
+      },
+      {
+        "silaba": "DAD",
+        "ocorrencias": 707,
+        "exemplos": [
+          "abordada",
+          "abordado",
+          "acomodado"
+        ]
+      },
+      {
+        "silaba": "QUE",
+        "ocorrencias": 707,
+        "exemplos": [
+          "almanaque",
+          "aplique",
+          "aquecedor"
+        ]
+      },
+      {
+        "silaba": "PER",
+        "ocorrencias": 705,
+        "exemplos": [
+          "aperceber",
+          "aperfeiçoado",
+          "aperfeiçoar"
+        ]
+      },
+      {
+        "silaba": "IDO",
+        "ocorrencias": 699,
+        "exemplos": [
+          "abastecido",
+          "abatido",
+          "aborrecido"
+        ]
+      },
+      {
+        "silaba": "TOR",
+        "ocorrencias": 694,
+        "exemplos": [
+          "adutora",
+          "agricultor",
+          "aleatório"
+        ]
+      },
+      {
+        "silaba": "AU",
+        "ocorrencias": 684,
+        "exemplos": [
+          "aeronáutica",
+          "aeronáutico",
+          "aplaudido"
+        ]
+      },
+      {
+        "silaba": "SMO",
+        "ocorrencias": 678,
+        "exemplos": [
+          "abismo",
+          "absolutismo",
+          "alcoolismo"
+        ]
+      },
+      {
+        "silaba": "VEL",
+        "ocorrencias": 673,
+        "exemplos": [
+          "abominável",
+          "aceitável",
+          "acessível"
+        ]
+      },
+      {
+        "silaba": "ENS",
+        "ocorrencias": 665,
+        "exemplos": [
+          "amazonense",
+          "apreensão",
+          "apreensivo"
+        ]
+      },
+      {
+        "silaba": "LU",
+        "ocorrencias": 656,
+        "exemplos": [
+          "absoluta",
+          "absolutismo",
+          "absoluto"
+        ]
+      },
+      {
+        "silaba": "HE",
+        "ocorrencias": 654,
+        "exemplos": [
+          "ache",
+          "acolhedor",
+          "acolher"
+        ]
+      },
+      {
+        "silaba": "UM",
+        "ocorrencias": 654,
+        "exemplos": [
+          "acostumado",
+          "acostumar",
+          "acumulação"
+        ]
+      },
+      {
+        "silaba": "EX",
+        "ocorrencias": 653,
+        "exemplos": [
+          "alexandre",
+          "alexandrino",
+          "alexia"
+        ]
+      },
+      {
+        "silaba": "RES",
+        "ocorrencias": 650,
+        "exemplos": [
+          "acrescentado",
+          "acrescentar",
+          "acrescente"
+        ]
+      },
+      {
+        "silaba": "ISM",
+        "ocorrencias": 648,
+        "exemplos": [
+          "abismo",
+          "absolutismo",
+          "alcoolismo"
+        ]
+      },
+      {
+        "silaba": "QUI",
+        "ocorrencias": 648,
+        "exemplos": [
+          "adquirente",
+          "adquirido",
+          "adquirir"
+        ]
+      },
+      {
+        "silaba": "ENC",
+        "ocorrencias": 640,
+        "exemplos": [
+          "abençoado",
+          "abençoar",
+          "abrangência"
+        ]
+      },
+      {
+        "silaba": "MAR",
+        "ocorrencias": 627,
+        "exemplos": [
+          "acalmar",
+          "acostumar",
+          "afirmar"
+        ]
+      },
+      {
+        "silaba": "OB",
+        "ocorrencias": 620,
+        "exemplos": [
+          "abóbora",
+          "abobrinha",
+          "adobe"
+        ]
+      },
+      {
+        "silaba": "ORI",
+        "ocorrencias": 619,
+        "exemplos": [
+          "acessório",
+          "açoriano",
+          "aleatório"
+        ]
+      },
+      {
+        "silaba": "AND",
+        "ocorrencias": 617,
+        "exemplos": [
+          "abandonado",
+          "abandonar",
+          "abandono"
+        ]
+      },
+      {
+        "silaba": "PAR",
+        "ocorrencias": 617,
+        "exemplos": [
+          "acampar",
+          "agrupar",
+          "amparado"
+        ]
+      },
+      {
+        "silaba": "ESC",
+        "ocorrencias": 613,
+        "exemplos": [
+          "acrescentado",
+          "acrescentar",
+          "acrescente"
+        ]
+      },
+      {
+        "silaba": "TAD",
+        "ocorrencias": 609,
+        "exemplos": [
+          "aceitado",
+          "acertada",
+          "acertado"
+        ]
+      },
+      {
+        "silaba": "ERA",
+        "ocorrencias": 608,
+        "exemplos": [
+          "aceleração",
+          "acelerado",
+          "acelerador"
+        ]
+      },
+      {
+        "silaba": "IP",
+        "ocorrencias": 606,
+        "exemplos": [
+          "adiposo",
+          "agripino",
+          "aipim"
+        ]
+      },
+      {
+        "silaba": "AF",
+        "ocorrencias": 599,
+        "exemplos": [
+          "abafado",
+          "abafar",
+          "açafrão"
+        ]
+      },
+      {
+        "silaba": "RM",
+        "ocorrencias": 588,
+        "exemplos": [
+          "adormecer",
+          "adormecido",
+          "afirmação"
+        ]
+      },
+      {
+        "silaba": "NCI",
+        "ocorrencias": 585,
+        "exemplos": [
+          "abrangência",
+          "abstinência",
+          "abundância"
+        ]
+      },
+      {
+        "silaba": "ERI",
+        "ocorrencias": 580,
+        "exemplos": [
+          "aderir",
+          "adultério",
+          "aferição"
+        ]
+      },
+      {
+        "silaba": "LAR",
+        "ocorrencias": 574,
+        "exemplos": [
+          "abalar",
+          "acumular",
+          "alaranjado"
+        ]
+      },
+      {
+        "silaba": "CAD",
+        "ocorrencias": 574,
+        "exemplos": [
+          "abraçada",
+          "academia",
+          "acadêmico"
+        ]
+      },
+      {
+        "silaba": "ONA",
+        "ocorrencias": 572,
+        "exemplos": [
+          "abandonado",
+          "abandonar",
+          "acetona"
+        ]
+      },
+      {
+        "silaba": "TRI",
+        "ocorrencias": 570,
+        "exemplos": [
+          "adstringente",
+          "anfitrião",
+          "arbítrio"
+        ]
+      },
+      {
+        "silaba": "ARR",
+        "ocorrencias": 569,
+        "exemplos": [
+          "acarretar",
+          "agarra",
+          "agarrado"
+        ]
+      },
+      {
+        "silaba": "PRE",
+        "ocorrencias": 568,
+        "exemplos": [
+          "apreciação",
+          "apreciado",
+          "apreciador"
+        ]
+      },
+      {
+        "silaba": "RD",
+        "ocorrencias": 565,
+        "exemplos": [
+          "abordada",
+          "abordado",
+          "abordagem"
+        ]
+      },
+      {
+        "silaba": "ELA",
+        "ocorrencias": 563,
+        "exemplos": [
+          "adelaide",
+          "amarela",
+          "amarelado"
+        ]
+      },
+      {
+        "silaba": "RC",
+        "ocorrencias": 560,
+        "exemplos": [
+          "abarca",
+          "abarcar",
+          "absorção"
+        ]
+      },
+      {
+        "silaba": "JA",
+        "ocorrencias": 560,
+        "exemplos": [
+          "adjacente",
+          "alaranjado",
+          "alentejano"
+        ]
+      },
+      {
+        "silaba": "GRA",
+        "ocorrencias": 558,
+        "exemplos": [
+          "agra",
+          "agraciado",
+          "agradar"
+        ]
+      },
+      {
+        "silaba": "ORA",
+        "ocorrencias": 556,
+        "exemplos": [
+          "abóbora",
+          "adoração",
+          "adorado"
+        ]
+      },
+      {
+        "silaba": "OLI",
+        "ocorrencias": 554,
+        "exemplos": [
+          "abolição",
+          "abolir",
+          "alcoólico"
+        ]
+      },
+      {
+        "silaba": "EP",
+        "ocorrencias": 554,
+        "exemplos": [
+          "acepção",
+          "adepto",
+          "anteprojeto"
+        ]
+      },
+      {
+        "silaba": "UC",
+        "ocorrencias": 552,
+        "exemplos": [
+          "açúcar",
+          "alucinação",
+          "alucinado"
+        ]
+      },
+      {
+        "silaba": "BU",
+        "ocorrencias": 550,
+        "exemplos": [
+          "abundância",
+          "abundante",
+          "abusado"
+        ]
+      },
+      {
+        "silaba": "STI",
+        "ocorrencias": 549,
+        "exemplos": [
+          "abstinência",
+          "acústica",
+          "acústico"
+        ]
+      },
+      {
+        "silaba": "PRO",
+        "ocorrencias": 546,
+        "exemplos": [
+          "anteprojeto",
+          "aprofundar",
+          "aprontar"
+        ]
+      },
+      {
+        "silaba": "UB",
+        "ocorrencias": 544,
+        "exemplos": [
+          "adubação",
+          "adubo",
+          "aruba"
+        ]
+      },
+      {
+        "silaba": "IF",
+        "ocorrencias": 543,
+        "exemplos": [
+          "almoxarifado",
+          "amplificação",
+          "amplificador"
+        ]
+      },
+      {
+        "silaba": "ANA",
+        "ocorrencias": 540,
+        "exemplos": [
+          "africana",
+          "africanas",
+          "alana"
+        ]
+      },
+      {
+        "silaba": "LHA",
+        "ocorrencias": 540,
+        "exemplos": [
+          "abelha",
+          "aconselhado",
+          "aconselhar"
+        ]
+      },
+      {
+        "silaba": "AVE",
+        "ocorrencias": 536,
+        "exemplos": [
+          "abominável",
+          "aceitável",
+          "aconselhável"
+        ]
+      },
+      {
+        "silaba": "RAC",
+        "ocorrencias": 534,
+        "exemplos": [
+          "aberração",
+          "abraçada",
+          "abraçar"
+        ]
+      },
+      {
+        "silaba": "AMA",
+        "ocorrencias": 532,
+        "exemplos": [
+          "aclamação",
+          "aclamado",
+          "alabama"
+        ]
+      },
+      {
+        "silaba": "NHO",
+        "ocorrencias": 532,
+        "exemplos": [
+          "agostinho",
+          "amarelinho",
+          "amorzinho"
+        ]
+      },
+      {
+        "silaba": "TIV",
+        "ocorrencias": 531,
+        "exemplos": [
+          "aditivo",
+          "adjetivo",
+          "adotivo"
+        ]
+      },
+      {
+        "silaba": "ETA",
+        "ocorrencias": 529,
+        "exemplos": [
+          "acarretar",
+          "acetato",
+          "afetado"
+        ]
+      },
+      {
+        "silaba": "TRO",
+        "ocorrencias": 529,
+        "exemplos": [
+          "adentro",
+          "anfiteatro",
+          "antropologia"
+        ]
+      },
+      {
+        "silaba": "ANO",
+        "ocorrencias": 528,
+        "exemplos": [
+          "açoriano",
+          "africano",
+          "alagoano"
+        ]
+      },
+      {
+        "silaba": "ATO",
+        "ocorrencias": 528,
+        "exemplos": [
+          "abstrato",
+          "acetato",
+          "aleatório"
+        ]
+      },
+      {
+        "silaba": "HI",
+        "ocorrencias": 527,
+        "exemplos": [
+          "acolhida",
+          "acolhimento",
+          "anchieta"
+        ]
+      },
+      {
+        "silaba": "ULA",
+        "ocorrencias": 516,
+        "exemplos": [
+          "acumulação",
+          "acumulada",
+          "acumulado"
+        ]
+      },
+      {
+        "silaba": "ATA",
+        "ocorrencias": 509,
+        "exemplos": [
+          "acatar",
+          "achocolatado",
+          "ágata"
+        ]
+      },
+      {
+        "silaba": "OD",
+        "ocorrencias": 508,
+        "exemplos": [
+          "acomodação",
+          "acomodado",
+          "acomodar"
+        ]
+      },
+      {
+        "silaba": "PU",
+        "ocorrencias": 506,
+        "exemplos": [
+          "acapulco",
+          "acupuntura",
+          "amputação"
+        ]
+      },
+      {
+        "silaba": "IB",
+        "ocorrencias": 505,
+        "exemplos": [
+          "antibiótico",
+          "arquibancada",
+          "atribuição"
+        ]
+      },
+      {
+        "silaba": "CAN",
+        "ocorrencias": 505,
+        "exemplos": [
+          "adoçante",
+          "africana",
+          "africanas"
+        ]
+      },
+      {
+        "silaba": "OLO",
+        "ocorrencias": 499,
+        "exemplos": [
+          "agroecologia",
+          "antologia",
+          "antropologia"
+        ]
+      },
+      {
+        "silaba": "RAR",
+        "ocorrencias": 498,
+        "exemplos": [
+          "acelerar",
+          "adentrar",
+          "administrar"
+        ]
+      },
+      {
+        "silaba": "REC",
+        "ocorrencias": 496,
+        "exemplos": [
+          "aborrecido",
+          "adereços",
+          "alvorecer"
+        ]
+      },
+      {
+        "silaba": "PL",
+        "ocorrencias": 492,
+        "exemplos": [
+          "acoplado",
+          "acoplamento",
+          "amplamente"
+        ]
+      },
+      {
+        "silaba": "FR",
+        "ocorrencias": 491,
+        "exemplos": [
+          "açafrão",
+          "áfrica",
+          "africana"
+        ]
+      },
+      {
+        "silaba": "LIS",
+        "ocorrencias": 491,
+        "exemplos": [
+          "alcoolismo",
+          "alisamento",
+          "alisar"
+        ]
+      },
+      {
+        "silaba": "ANC",
+        "ocorrencias": 489,
+        "exemplos": [
+          "abundância",
+          "alavanca",
+          "alavancagem"
+        ]
+      },
+      {
+        "silaba": "STR",
+        "ocorrencias": 489,
+        "exemplos": [
+          "abstração",
+          "abstracto",
+          "abstrato"
+        ]
+      },
+      {
+        "silaba": "ITO",
+        "ocorrencias": 488,
+        "exemplos": [
+          "aceito",
+          "aflito",
+          "agito"
+        ]
+      },
+      {
+        "silaba": "DU",
+        "ocorrencias": 487,
+        "exemplos": [
+          "aduaneiro",
+          "adubação",
+          "adubo"
+        ]
+      },
+      {
+        "silaba": "MU",
+        "ocorrencias": 486,
+        "exemplos": [
+          "acumulação",
+          "acumulada",
+          "acumulado"
+        ]
+      },
+      {
+        "silaba": "ONI",
+        "ocorrencias": 485,
+        "exemplos": [
+          "acionista",
+          "agonia",
+          "amazônico"
+        ]
+      },
+      {
+        "silaba": "COR",
+        "ocorrencias": 478,
+        "exemplos": [
+          "acordado",
+          "acórdão",
+          "acordar"
+        ]
+      },
+      {
+        "silaba": "ESP",
+        "ocorrencias": 478,
+        "exemplos": [
+          "aeroespacial",
+          "ciberespaço",
+          "corresponder"
+        ]
+      },
+      {
+        "silaba": "CHA",
+        "ocorrencias": 477,
+        "exemplos": [
+          "acha",
+          "achada",
+          "achado"
+        ]
+      },
+      {
+        "silaba": "ONT",
+        "ocorrencias": 472,
+        "exemplos": [
+          "acontecer",
+          "acontecido",
+          "afronta"
+        ]
+      },
+      {
+        "silaba": "RIN",
+        "ocorrencias": 471,
+        "exemplos": [
+          "abobrinha",
+          "adstringente",
+          "alexandrino"
+        ]
+      },
+      {
+        "silaba": "ICI",
+        "ocorrencias": 470,
+        "exemplos": [
+          "acariciar",
+          "adicionado",
+          "adicional"
+        ]
+      },
+      {
+        "silaba": "MAN",
+        "ocorrencias": 469,
+        "exemplos": [
+          "alarmante",
+          "almanaque",
+          "amanhã"
+        ]
+      },
+      {
+        "silaba": "TIN",
+        "ocorrencias": 467,
+        "exemplos": [
+          "abstinência",
+          "acetinado",
+          "agostinho"
+        ]
+      },
+      {
+        "silaba": "RRA",
+        "ocorrencias": 466,
+        "exemplos": [
+          "aberração",
+          "agarra",
+          "agarrado"
+        ]
+      },
+      {
+        "silaba": "ANI",
+        "ocorrencias": 464,
+        "exemplos": [
+          "anil",
+          "anima",
+          "animação"
+        ]
+      },
+      {
+        "silaba": "OLA",
+        "ocorrencias": 462,
+        "exemplos": [
+          "acerola",
+          "achocolatado",
+          "acolá"
+        ]
+      },
+      {
+        "silaba": "NSE",
+        "ocorrencias": 462,
+        "exemplos": [
+          "aconselhado",
+          "aconselhar",
+          "aconselhável"
+        ]
+      },
+      {
+        "silaba": "MIN",
+        "ocorrencias": 460,
+        "exemplos": [
+          "abdominal",
+          "abominação",
+          "abominável"
+        ]
+      },
+      {
+        "silaba": "ALA",
+        "ocorrencias": 459,
+        "exemplos": [
+          "abalada",
+          "abalado",
+          "abalar"
+        ]
+      },
+      {
+        "silaba": "IE",
+        "ocorrencias": 455,
+        "exemplos": [
+          "alienação",
+          "alienado",
+          "alienar"
+        ]
+      },
+      {
+        "silaba": "RIC",
+        "ocorrencias": 454,
+        "exemplos": [
+          "acariciar",
+          "aferição",
+          "áfrica"
+        ]
+      },
+      {
+        "silaba": "DR",
+        "ocorrencias": 451,
+        "exemplos": [
+          "adrenalina",
+          "alexandre",
+          "alexandrino"
+        ]
+      },
+      {
+        "silaba": "NAR",
+        "ocorrencias": 448,
+        "exemplos": [
+          "abandonar",
+          "acionar",
+          "acionário"
+        ]
+      },
+      {
+        "silaba": "UD",
+        "ocorrencias": 446,
+        "exemplos": [
+          "açude",
+          "adjudicação",
+          "agudo"
+        ]
+      },
+      {
+        "silaba": "EV",
+        "ocorrencias": 444,
+        "exemplos": [
+          "abreviação",
+          "antever",
+          "antevisão"
+        ]
+      },
+      {
+        "silaba": "CL",
+        "ocorrencias": 443,
+        "exemplos": [
+          "aclamação",
+          "aclamado",
+          "aclimação"
+        ]
+      },
+      {
+        "silaba": "CAL",
+        "ocorrencias": 441,
+        "exemplos": [
+          "acalmar",
+          "angelical",
+          "apocalipse"
+        ]
+      },
+      {
+        "silaba": "OV",
+        "ocorrencias": 441,
+        "exemplos": [
+          "aprovação",
+          "aprovado",
+          "aprovar"
+        ]
+      },
+      {
+        "silaba": "INT",
+        "ocorrencias": 440,
+        "exemplos": [
+          "badminton",
+          "carpintaria",
+          "carpinteiro"
+        ]
+      },
+      {
+        "silaba": "NCA",
+        "ocorrencias": 438,
+        "exemplos": [
+          "abstenção",
+          "alavanca",
+          "alavancagem"
+        ]
+      },
+      {
+        "silaba": "IVO",
+        "ocorrencias": 438,
+        "exemplos": [
+          "abusivo",
+          "adesivo",
+          "aditivo"
+        ]
+      },
+      {
+        "silaba": "RN",
+        "ocorrencias": 438,
+        "exemplos": [
+          "adorno",
+          "alternador",
+          "alternância"
+        ]
+      },
+      {
+        "silaba": "RG",
+        "ocorrencias": 437,
+        "exemplos": [
+          "alargado",
+          "alargamento",
+          "alargar"
+        ]
+      },
+      {
+        "silaba": "NTI",
+        "ocorrencias": 436,
+        "exemplos": [
+          "adventista",
+          "alimentício",
+          "antiaderente"
+        ]
+      },
+      {
+        "silaba": "LT",
+        "ocorrencias": 433,
+        "exemplos": [
+          "adulteração",
+          "adultério",
+          "adulto"
+        ]
+      },
+      {
+        "silaba": "NDI",
+        "ocorrencias": 432,
+        "exemplos": [
+          "acendimento",
+          "apêndice",
+          "apreendido"
+        ]
+      },
+      {
+        "silaba": "INO",
+        "ocorrencias": 431,
+        "exemplos": [
+          "agripino",
+          "albino",
+          "alexandrino"
+        ]
+      },
+      {
+        "silaba": "ILI",
+        "ocorrencias": 429,
+        "exemplos": [
+          "acrílico",
+          "afiliação",
+          "afiliada"
+        ]
+      },
+      {
+        "silaba": "REN",
+        "ocorrencias": 426,
+        "exemplos": [
+          "aderência",
+          "aderente",
+          "adquirente"
+        ]
+      },
+      {
+        "silaba": "OSO",
+        "ocorrencias": 425,
+        "exemplos": [
+          "adiposo",
+          "ambicioso",
+          "amistoso"
+        ]
+      },
+      {
+        "silaba": "TUR",
+        "ocorrencias": 423,
+        "exemplos": [
+          "abertura",
+          "acupuntura",
+          "agricultura"
+        ]
+      },
+      {
+        "silaba": "LIN",
+        "ocorrencias": 423,
+        "exemplos": [
+          "adrenalina",
+          "alínea",
+          "alinhado"
+        ]
+      },
+      {
+        "silaba": "LAD",
+        "ocorrencias": 420,
+        "exemplos": [
+          "abalada",
+          "abalado",
+          "acoplado"
+        ]
+      },
+      {
+        "silaba": "VER",
+        "ocorrencias": 419,
+        "exemplos": [
+          "absorver",
+          "advérbio",
+          "adversário"
+        ]
+      },
+      {
+        "silaba": "LAN",
+        "ocorrencias": 418,
+        "exemplos": [
+          "alana",
+          "ambulância",
+          "ambulante"
+        ]
+      },
+      {
+        "silaba": "COM",
+        "ocorrencias": 418,
+        "exemplos": [
+          "acometido",
+          "acomodação",
+          "acomodado"
+        ]
+      },
+      {
+        "silaba": "FIC",
+        "ocorrencias": 417,
+        "exemplos": [
+          "amplificação",
+          "amplificador",
+          "artificial"
+        ]
+      },
+      {
+        "silaba": "DIA",
+        "ocorrencias": 413,
+        "exemplos": [
+          "abadia",
+          "adiado",
+          "adiamento"
+        ]
+      },
+      {
+        "silaba": "LOG",
+        "ocorrencias": 409,
+        "exemplos": [
+          "agroecologia",
+          "analogia",
+          "analógico"
+        ]
+      },
+      {
+        "silaba": "EO",
+        "ocorrencias": 408,
+        "exemplos": [
+          "aéreo",
+          "anteontem",
+          "arqueologia"
+        ]
+      },
+      {
+        "silaba": "OU",
+        "ocorrencias": 404,
+        "exemplos": [
+          "açougue",
+          "açougueiro",
+          "arcabouço"
+        ]
+      },
+      {
+        "silaba": "EF",
+        "ocorrencias": 402,
+        "exemplos": [
+          "arrefecer",
+          "artefato",
+          "beneficência"
+        ]
+      },
+      {
+        "silaba": "ETI",
+        "ocorrencias": 402,
+        "exemplos": [
+          "acetinado",
+          "acometido",
+          "adjetivo"
+        ]
+      },
+      {
+        "silaba": "STE",
+        "ocorrencias": 401,
+        "exemplos": [
+          "abastecer",
+          "abastecido",
+          "abstenção"
+        ]
+      },
+      {
+        "silaba": "AST",
+        "ocorrencias": 400,
+        "exemplos": [
+          "abastecer",
+          "abastecido",
+          "afastado"
+        ]
+      },
+      {
+        "silaba": "ETE",
+        "ocorrencias": 400,
+        "exemplos": [
+          "alegrete",
+          "alfinete",
+          "apetecer"
+        ]
+      }
+    ],
+    "dificil": [
+      {
+        "silaba": "TAN",
+        "ocorrencias": 396,
+        "exemplos": [
+          "adotando",
+          "alimentando",
+          "assaltante"
+        ]
+      },
+      {
+        "silaba": "IAN",
+        "ocorrencias": 396,
+        "exemplos": [
+          "açoriano",
+          "adiantado",
+          "adiantamento"
+        ]
+      },
+      {
+        "silaba": "RET",
+        "ocorrencias": 396,
+        "exemplos": [
+          "acarretar",
+          "alegrete",
+          "barreto"
+        ]
+      },
+      {
+        "silaba": "COL",
+        "ocorrencias": 396,
+        "exemplos": [
+          "achocolatado",
+          "acolá",
+          "acolchoado"
+        ]
+      },
+      {
+        "silaba": "ASS",
+        "ocorrencias": 395,
+        "exemplos": [
+          "amassado",
+          "amassar",
+          "argamassa"
+        ]
+      },
+      {
+        "silaba": "AGE",
+        "ocorrencias": 395,
+        "exemplos": [
+          "abordagem",
+          "agência",
+          "agenciamento"
+        ]
+      },
+      {
+        "silaba": "OA",
+        "ocorrencias": 394,
+        "exemplos": [
+          "abençoado",
+          "abençoar",
+          "acolchoado"
+        ]
+      },
+      {
+        "silaba": "NF",
+        "ocorrencias": 392,
+        "exemplos": [
+          "anfiteatro",
+          "anfitrião",
+          "benfiquista"
+        ]
+      },
+      {
+        "silaba": "TAL",
+        "ocorrencias": 391,
+        "exemplos": [
+          "acidental",
+          "ambiental",
+          "atalaia"
+        ]
+      },
+      {
+        "silaba": "RRE",
+        "ocorrencias": 391,
+        "exemplos": [
+          "aborrecido",
+          "acarretar",
+          "arrebentar"
+        ]
+      },
+      {
+        "silaba": "OF",
+        "ocorrencias": 389,
+        "exemplos": [
+          "almofada",
+          "aprofundar",
+          "atrofia"
+        ]
+      },
+      {
+        "silaba": "RAL",
+        "ocorrencias": 384,
+        "exemplos": [
+          "amaral",
+          "ancestral",
+          "arbitral"
+        ]
+      },
+      {
+        "silaba": "OI",
+        "ocorrencias": 383,
+        "exemplos": [
+          "amendoim",
+          "anoitecer",
+          "apoiado"
+        ]
+      },
+      {
+        "silaba": "UP",
+        "ocorrencias": 383,
+        "exemplos": [
+          "abruptamente",
+          "acupuntura",
+          "agrupamento"
+        ]
+      },
+      {
+        "silaba": "RAT",
+        "ocorrencias": 383,
+        "exemplos": [
+          "abstrato",
+          "aparato",
+          "atratividade"
+        ]
+      },
+      {
+        "silaba": "ELE",
+        "ocorrencias": 381,
+        "exemplos": [
+          "aceleração",
+          "acelerado",
+          "acelerador"
+        ]
+      },
+      {
+        "silaba": "END",
+        "ocorrencias": 381,
+        "exemplos": [
+          "acender",
+          "acendimento",
+          "adendo"
+        ]
+      },
+      {
+        "silaba": "NDA",
+        "ocorrencias": 377,
+        "exemplos": [
+          "abrandar",
+          "abundância",
+          "abundante"
+        ]
+      },
+      {
+        "silaba": "ROS",
+        "ocorrencias": 377,
+        "exemplos": [
+          "ambrósio",
+          "amorosa",
+          "amoroso"
+        ]
+      },
+      {
+        "silaba": "SCA",
+        "ocorrencias": 375,
+        "exemplos": [
+          "arriscado",
+          "arriscar",
+          "brusca"
+        ]
+      },
+      {
+        "silaba": "SSA",
+        "ocorrencias": 374,
+        "exemplos": [
+          "acessar",
+          "admissão",
+          "agressão"
+        ]
+      },
+      {
+        "silaba": "EB",
+        "ocorrencias": 374,
+        "exemplos": [
+          "álgebra",
+          "andebol",
+          "antebraço"
+        ]
+      },
+      {
+        "silaba": "LIC",
+        "ocorrencias": 373,
+        "exemplos": [
+          "abolição",
+          "acrílico",
+          "aflição"
+        ]
+      },
+      {
+        "silaba": "TEN",
+        "ocorrencias": 372,
+        "exemplos": [
+          "abstenção",
+          "advertência",
+          "antena"
+        ]
+      },
+      {
+        "silaba": "RIS",
+        "ocorrencias": 370,
+        "exemplos": [
+          "amadorismo",
+          "aneurisma",
+          "anticristo"
+        ]
+      },
+      {
+        "silaba": "FU",
+        "ocorrencias": 370,
+        "exemplos": [
+          "afundar",
+          "aprofundar",
+          "centrífuga"
+        ]
+      },
+      {
+        "silaba": "OCA",
+        "ocorrencias": 368,
+        "exemplos": [
+          "adoçante",
+          "adoção",
+          "adoçar"
+        ]
+      },
+      {
+        "silaba": "POL",
+        "ocorrencias": 368,
+        "exemplos": [
+          "ampola",
+          "antropologia",
+          "antropólogo"
+        ]
+      },
+      {
+        "silaba": "ACI",
+        "ocorrencias": 367,
+        "exemplos": [
+          "acácia",
+          "acácio",
+          "acidentado"
+        ]
+      },
+      {
+        "silaba": "NIC",
+        "ocorrencias": 362,
+        "exemplos": [
+          "amazônico",
+          "biomecânica",
+          "botânica"
+        ]
+      },
+      {
+        "silaba": "ATE",
+        "ocorrencias": 362,
+        "exemplos": [
+          "abacate",
+          "abate",
+          "abater"
+        ]
+      },
+      {
+        "silaba": "GAR",
+        "ocorrencias": 361,
+        "exemplos": [
+          "abrigar",
+          "afogar",
+          "agarra"
+        ]
+      },
+      {
+        "silaba": "CUL",
+        "ocorrencias": 361,
+        "exemplos": [
+          "agricultor",
+          "agricultura",
+          "apicultura"
+        ]
+      },
+      {
+        "silaba": "ZAR",
+        "ocorrencias": 360,
+        "exemplos": [
+          "agilizar",
+          "ajuizar",
+          "amenizar"
+        ]
+      },
+      {
+        "silaba": "RAM",
+        "ocorrencias": 359,
+        "exemplos": [
+          "adestramento",
+          "apuramento",
+          "aramaico"
+        ]
+      },
+      {
+        "silaba": "NTR",
+        "ocorrencias": 359,
+        "exemplos": [
+          "adentrar",
+          "adentro",
+          "antropologia"
+        ]
+      },
+      {
+        "silaba": "CIO",
+        "ocorrencias": 353,
+        "exemplos": [
+          "acácio",
+          "acionado",
+          "acionamento"
+        ]
+      },
+      {
+        "silaba": "NAD",
+        "ocorrencias": 352,
+        "exemplos": [
+          "abandonado",
+          "acetinado",
+          "acionado"
+        ]
+      },
+      {
+        "silaba": "NAL",
+        "ocorrencias": 352,
+        "exemplos": [
+          "abdominal",
+          "adicional",
+          "adrenalina"
+        ]
+      },
+      {
+        "silaba": "JU",
+        "ocorrencias": 350,
+        "exemplos": [
+          "abajur",
+          "adjudicação",
+          "adjunto"
+        ]
+      },
+      {
+        "silaba": "ETR",
+        "ocorrencias": 350,
+        "exemplos": [
+          "assimetria",
+          "bafômetro",
+          "biometria"
+        ]
+      },
+      {
+        "silaba": "ELI",
+        "ocorrencias": 348,
+        "exemplos": [
+          "adélia",
+          "amarelinha",
+          "amarelinho"
+        ]
+      },
+      {
+        "silaba": "XA",
+        "ocorrencias": 346,
+        "exemplos": [
+          "abaixa",
+          "abaixar",
+          "afixado"
+        ]
+      },
+      {
+        "silaba": "ARE",
+        "ocorrencias": 346,
+        "exemplos": [
+          "alvarenga",
+          "amarela",
+          "amarelado"
+        ]
+      },
+      {
+        "silaba": "ING",
+        "ocorrencias": 346,
+        "exemplos": [
+          "adstringente",
+          "atingido",
+          "atingir"
+        ]
+      },
+      {
+        "silaba": "SCO",
+        "ocorrencias": 346,
+        "exemplos": [
+          "basco",
+          "biscoito",
+          "carnavalesco"
+        ]
+      },
+      {
+        "silaba": "GEM",
+        "ocorrencias": 345,
+        "exemplos": [
+          "abordagem",
+          "alavancagem",
+          "amostragem"
+        ]
+      },
+      {
+        "silaba": "ILA",
+        "ocorrencias": 342,
+        "exemplos": [
+          "aniquilar",
+          "apostila",
+          "argila"
+        ]
+      },
+      {
+        "silaba": "ALE",
+        "ocorrencias": 342,
+        "exemplos": [
+          "aleatório",
+          "alecrim",
+          "alegação"
+        ]
+      },
+      {
+        "silaba": "STO",
+        "ocorrencias": 341,
+        "exemplos": [
+          "agosto",
+          "amistoso",
+          "anticristo"
+        ]
+      },
+      {
+        "silaba": "ALH",
+        "ocorrencias": 341,
+        "exemplos": [
+          "agasalho",
+          "alheio",
+          "alho"
+        ]
+      },
+      {
+        "silaba": "NGA",
+        "ocorrencias": 340,
+        "exemplos": [
+          "alongado",
+          "alongamento",
+          "alongar"
+        ]
+      },
+      {
+        "silaba": "BAR",
+        "ocorrencias": 339,
+        "exemplos": [
+          "abarca",
+          "abarcar",
+          "acabar"
+        ]
+      },
+      {
+        "silaba": "ORT",
+        "ocorrencias": 338,
+        "exemplos": [
+          "abortar",
+          "aeroporto",
+          "amortecedor"
+        ]
+      },
+      {
+        "silaba": "ANG",
+        "ocorrencias": 338,
+        "exemplos": [
+          "abrangência",
+          "abrangente",
+          "abranger"
+        ]
+      },
+      {
+        "silaba": "XI",
+        "ocorrencias": 337,
+        "exemplos": [
+          "abacaxi",
+          "alexia",
+          "anorexia"
+        ]
+      },
+      {
+        "silaba": "ESS",
+        "ocorrencias": 335,
+        "exemplos": [
+          "acessar",
+          "acessível",
+          "acesso"
+        ]
+      },
+      {
+        "silaba": "CAM",
+        "ocorrencias": 335,
+        "exemplos": [
+          "acampamento",
+          "acampar",
+          "basicamente"
+        ]
+      },
+      {
+        "silaba": "ION",
+        "ocorrencias": 332,
+        "exemplos": [
+          "acionado",
+          "acionamento",
+          "acionar"
+        ]
+      },
+      {
+        "silaba": "INE",
+        "ocorrencias": 331,
+        "exemplos": [
+          "abstinência",
+          "alfinete",
+          "alínea"
+        ]
+      },
+      {
+        "silaba": "CER",
+        "ocorrencias": 330,
+        "exemplos": [
+          "abastecer",
+          "acerca",
+          "acerola"
+        ]
+      },
+      {
+        "silaba": "CT",
+        "ocorrencias": 328,
+        "exemplos": [
+          "abstracto",
+          "acta",
+          "actuação"
+        ]
+      },
+      {
+        "silaba": "NDE",
+        "ocorrencias": 328,
+        "exemplos": [
+          "acender",
+          "alfândega",
+          "andebol"
+        ]
+      },
+      {
+        "silaba": "INC",
+        "ocorrencias": 325,
+        "exemplos": [
+          "afinco",
+          "brincadeira",
+          "brincalhão"
+        ]
+      },
+      {
+        "silaba": "ITI",
+        "ocorrencias": 324,
+        "exemplos": [
+          "aditivo",
+          "admitido",
+          "admitir"
+        ]
+      },
+      {
+        "silaba": "IME",
+        "ocorrencias": 323,
+        "exemplos": [
+          "abatimento",
+          "acendimento",
+          "acolhimento"
+        ]
+      },
+      {
+        "silaba": "IAR",
+        "ocorrencias": 320,
+        "exemplos": [
+          "acariciar",
+          "adiar",
+          "aguiar"
+        ]
+      },
+      {
+        "silaba": "NU",
+        "ocorrencias": 320,
+        "exemplos": [
+          "anual",
+          "anualmente",
+          "anuário"
+        ]
+      },
+      {
+        "silaba": "RAS",
+        "ocorrencias": 319,
+        "exemplos": [
+          "abrasão",
+          "arrasa",
+          "arrasado"
+        ]
+      },
+      {
+        "silaba": "INI",
+        "ocorrencias": 317,
+        "exemplos": [
+          "administrado",
+          "administrar",
+          "afinidade"
+        ]
+      },
+      {
+        "silaba": "IAL",
+        "ocorrencias": 316,
+        "exemplos": [
+          "aeroespacial",
+          "ambulatorial",
+          "arraial"
+        ]
+      },
+      {
+        "silaba": "AZ",
+        "ocorrencias": 316,
+        "exemplos": [
+          "afazeres",
+          "alfazema",
+          "amazonense"
+        ]
+      },
+      {
+        "silaba": "MAT",
+        "ocorrencias": 315,
+        "exemplos": [
+          "afirmativa",
+          "afirmativo",
+          "anonimato"
+        ]
+      },
+      {
+        "silaba": "IDE",
+        "ocorrencias": 314,
+        "exemplos": [
+          "acidentado",
+          "acidental",
+          "acidente"
+        ]
+      },
+      {
+        "silaba": "ORR",
+        "ocorrencias": 312,
+        "exemplos": [
+          "aborrecido",
+          "borra",
+          "borracha"
+        ]
+      },
+      {
+        "silaba": "OGI",
+        "ocorrencias": 312,
+        "exemplos": [
+          "agroecologia",
+          "analogia",
+          "analógico"
+        ]
+      },
+      {
+        "silaba": "GEN",
+        "ocorrencias": 311,
+        "exemplos": [
+          "abrangência",
+          "abrangente",
+          "adstringente"
+        ]
+      },
+      {
+        "silaba": "APA",
+        "ocorrencias": 311,
+        "exemplos": [
+          "amapá",
+          "apache",
+          "apaga"
+        ]
+      },
+      {
+        "silaba": "CEN",
+        "ocorrencias": 309,
+        "exemplos": [
+          "acender",
+          "acendimento",
+          "aceno"
+        ]
+      },
+      {
+        "silaba": "BRA",
+        "ocorrencias": 308,
+        "exemplos": [
+          "abra",
+          "abraçada",
+          "abraçar"
+        ]
+      },
+      {
+        "silaba": "GUA",
+        "ocorrencias": 308,
+        "exemplos": [
+          "água",
+          "aguarda",
+          "aguardar"
+        ]
+      },
+      {
+        "silaba": "OTE",
+        "ocorrencias": 307,
+        "exemplos": [
+          "biblioteca",
+          "boicote",
+          "bote"
+        ]
+      },
+      {
+        "silaba": "TAC",
+        "ocorrencias": 307,
+        "exemplos": [
+          "aceitação",
+          "adaptação",
+          "agitação"
+        ]
+      },
+      {
+        "silaba": "ACO",
+        "ocorrencias": 306,
+        "exemplos": [
+          "abraço",
+          "acolá",
+          "acolchoado"
+        ]
+      },
+      {
+        "silaba": "MET",
+        "ocorrencias": 305,
+        "exemplos": [
+          "acometido",
+          "ametista",
+          "aritmética"
+        ]
+      },
+      {
+        "silaba": "EGA",
+        "ocorrencias": 304,
+        "exemplos": [
+          "abnegação",
+          "aconchegante",
+          "adega"
+        ]
+      },
+      {
+        "silaba": "RIT",
+        "ocorrencias": 304,
+        "exemplos": [
+          "algoritmo",
+          "aperitivo",
+          "aritmética"
+        ]
+      },
+      {
+        "silaba": "ABA",
+        "ocorrencias": 303,
+        "exemplos": [
+          "abacate",
+          "abacaxi",
+          "abade"
+        ]
+      },
+      {
+        "silaba": "NDO",
+        "ocorrencias": 303,
+        "exemplos": [
+          "abandonado",
+          "abandonar",
+          "abandono"
+        ]
+      },
+      {
+        "silaba": "DEN",
+        "ocorrencias": 303,
+        "exemplos": [
+          "acidentado",
+          "acidental",
+          "acidente"
+        ]
+      },
+      {
+        "silaba": "FL",
+        "ocorrencias": 301,
+        "exemplos": [
+          "aflição",
+          "aflito",
+          "aflorar"
+        ]
+      },
+      {
+        "silaba": "MOR",
+        "ocorrencias": 301,
+        "exemplos": [
+          "amor",
+          "amora",
+          "amoreira"
+        ]
+      },
+      {
+        "silaba": "ZI",
+        "ocorrencias": 300,
+        "exemplos": [
+          "amorzinho",
+          "aprazível",
+          "azia"
+        ]
+      },
+      {
+        "silaba": "ART",
+        "ocorrencias": 300,
+        "exemplos": [
+          "apart",
+          "apartado",
+          "apartamento"
+        ]
+      },
+      {
+        "silaba": "MON",
+        "ocorrencias": 300,
+        "exemplos": [
+          "amônia",
+          "amontoado",
+          "carmona"
+        ]
+      },
+      {
+        "silaba": "POR",
+        "ocorrencias": 298,
+        "exemplos": [
+          "aeroporto",
+          "aporte",
+          "atemporal"
+        ]
+      },
+      {
+        "silaba": "HAR",
+        "ocorrencias": 297,
+        "exemplos": [
+          "achar",
+          "acompanhar",
+          "aconselhar"
+        ]
+      },
+      {
+        "silaba": "EDI",
+        "ocorrencias": 297,
+        "exemplos": [
+          "acreditado",
+          "acreditar",
+          "agredido"
+        ]
+      },
+      {
+        "silaba": "ITE",
+        "ocorrencias": 297,
+        "exemplos": [
+          "aceite",
+          "anfiteatro",
+          "anoitecer"
+        ]
+      },
+      {
+        "silaba": "IFI",
+        "ocorrencias": 297,
+        "exemplos": [
+          "amplificação",
+          "amplificador",
+          "artificial"
+        ]
+      },
+      {
+        "silaba": "OST",
+        "ocorrencias": 297,
+        "exemplos": [
+          "acostamento",
+          "acostumado",
+          "acostumar"
+        ]
+      },
+      {
+        "silaba": "ERE",
+        "ocorrencias": 295,
+        "exemplos": [
+          "adereços",
+          "aderência",
+          "aderente"
+        ]
+      },
+      {
+        "silaba": "URI",
+        "ocorrencias": 295,
+        "exemplos": [
+          "aneurisma",
+          "auricular",
+          "burburinho"
+        ]
+      },
+      {
+        "silaba": "SAR",
+        "ocorrencias": 294,
+        "exemplos": [
+          "abusar",
+          "acessar",
+          "acusar"
+        ]
+      },
+      {
+        "silaba": "DIS",
+        "ocorrencias": 294,
+        "exemplos": [
+          "atacadista",
+          "budismo",
+          "budista"
+        ]
+      },
+      {
+        "silaba": "ECA",
+        "ocorrencias": 292,
+        "exemplos": [
+          "arrecada",
+          "arrecadação",
+          "arrecadado"
+        ]
+      },
+      {
+        "silaba": "IND",
+        "ocorrencias": 292,
+        "exemplos": [
+          "ainda",
+          "blindado",
+          "blindagem"
+        ]
+      },
+      {
+        "silaba": "OLE",
+        "ocorrencias": 291,
+        "exemplos": [
+          "adolescência",
+          "adolescente",
+          "amolecer"
+        ]
+      },
+      {
+        "silaba": "CID",
+        "ocorrencias": 290,
+        "exemplos": [
+          "abastecido",
+          "aborrecido",
+          "acidentado"
+        ]
+      },
+      {
+        "silaba": "TRE",
+        "ocorrencias": 289,
+        "exemplos": [
+          "atrelado",
+          "atrevido",
+          "bimestre"
+        ]
+      },
+      {
+        "silaba": "ERO",
+        "ocorrencias": 288,
+        "exemplos": [
+          "acerola",
+          "aeróbica",
+          "aeróbico"
+        ]
+      },
+      {
+        "silaba": "ADI",
+        "ocorrencias": 287,
+        "exemplos": [
+          "abadia",
+          "adiado",
+          "adiamento"
+        ]
+      },
+      {
+        "silaba": "ERR",
+        "ocorrencias": 287,
+        "exemplos": [
+          "aberração",
+          "aterramento",
+          "aterro"
+        ]
+      },
+      {
+        "silaba": "LAC",
+        "ocorrencias": 287,
+        "exemplos": [
+          "acumulação",
+          "anulação",
+          "apelação"
+        ]
+      },
+      {
+        "silaba": "OTA",
+        "ocorrencias": 286,
+        "exemplos": [
+          "adotando",
+          "adotar",
+          "alíquota"
+        ]
+      },
+      {
+        "silaba": "ILH",
+        "ocorrencias": 284,
+        "exemplos": [
+          "afilhado",
+          "andarilho",
+          "armadilha"
+        ]
+      },
+      {
+        "silaba": "LIZ",
+        "ocorrencias": 283,
+        "exemplos": [
+          "agilizar",
+          "atualização",
+          "atualizado"
+        ]
+      },
+      {
+        "silaba": "FOR",
+        "ocorrencias": 283,
+        "exemplos": [
+          "afora",
+          "califórnia",
+          "conformação"
+        ]
+      },
+      {
+        "silaba": "RON",
+        "ocorrencias": 282,
+        "exemplos": [
+          "aeronáutica",
+          "aeronáutico",
+          "aeronave"
+        ]
+      },
+      {
+        "silaba": "EU",
+        "ocorrencias": 282,
+        "exemplos": [
+          "abreu",
+          "adeus",
+          "aneurisma"
+        ]
+      },
+      {
+        "silaba": "NIA",
+        "ocorrencias": 282,
+        "exemplos": [
+          "agonia",
+          "amônia",
+          "babilônia"
+        ]
+      },
+      {
+        "silaba": "OME",
+        "ocorrencias": 281,
+        "exemplos": [
+          "abdome",
+          "abdômen",
+          "acometido"
+        ]
+      },
+      {
+        "silaba": "AMB",
+        "ocorrencias": 281,
+        "exemplos": [
+          "âmbar",
+          "ambição",
+          "ambicioso"
+        ]
+      },
+      {
+        "silaba": "IMA",
+        "ocorrencias": 280,
+        "exemplos": [
+          "acima",
+          "aclimação",
+          "anima"
+        ]
+      },
+      {
+        "silaba": "IVA",
+        "ocorrencias": 278,
+        "exemplos": [
+          "afirmativa",
+          "alternativa",
+          "arquivamento"
+        ]
+      },
+      {
+        "silaba": "ENA",
+        "ocorrencias": 278,
+        "exemplos": [
+          "adrenalina",
+          "alienação",
+          "alienado"
+        ]
+      },
+      {
+        "silaba": "AQ",
+        "ocorrencias": 276,
+        "exemplos": [
+          "almanaque",
+          "aquando",
+          "aquarela"
+        ]
+      },
+      {
+        "silaba": "AQU",
+        "ocorrencias": 276,
+        "exemplos": [
+          "almanaque",
+          "aquando",
+          "aquarela"
+        ]
+      },
+      {
+        "silaba": "GIA",
+        "ocorrencias": 275,
+        "exemplos": [
+          "agroecologia",
+          "alergia",
+          "analogia"
+        ]
+      },
+      {
+        "silaba": "CAT",
+        "ocorrencias": 274,
+        "exemplos": [
+          "abacate",
+          "acatar",
+          "alcatrão"
+        ]
+      },
+      {
+        "silaba": "OMI",
+        "ocorrencias": 274,
+        "exemplos": [
+          "abdominal",
+          "abominação",
+          "abominável"
+        ]
+      },
+      {
+        "silaba": "ESA",
+        "ocorrencias": 272,
+        "exemplos": [
+          "adesão",
+          "apesar",
+          "artesanal"
+        ]
+      },
+      {
+        "silaba": "FER",
+        "ocorrencias": 272,
+        "exemplos": [
+          "aferição",
+          "aferir",
+          "alferes"
+        ]
+      },
+      {
+        "silaba": "REI",
+        "ocorrencias": 271,
+        "exemplos": [
+          "amoreira",
+          "andreia",
+          "areia"
+        ]
+      },
+      {
+        "silaba": "ENI",
+        "ocorrencias": 271,
+        "exemplos": [
+          "alienígena",
+          "amenizar",
+          "avenida"
+        ]
+      },
+      {
+        "silaba": "CAC",
+        "ocorrencias": 269,
+        "exemplos": [
+          "acácia",
+          "acácio",
+          "adjudicação"
+        ]
+      },
+      {
+        "silaba": "LM",
+        "ocorrencias": 269,
+        "exemplos": [
+          "acalmar",
+          "actualmente",
+          "alma"
+        ]
+      },
+      {
+        "silaba": "IAD",
+        "ocorrencias": 268,
+        "exemplos": [
+          "adiado",
+          "afiado",
+          "afiliada"
+        ]
+      },
+      {
+        "silaba": "OE",
+        "ocorrencias": 268,
+        "exemplos": [
+          "adoecer",
+          "aeroespacial",
+          "agroecologia"
+        ]
+      },
+      {
+        "silaba": "REG",
+        "ocorrencias": 266,
+        "exemplos": [
+          "agregação",
+          "agregado",
+          "agregador"
+        ]
+      },
+      {
+        "silaba": "HAD",
+        "ocorrencias": 262,
+        "exemplos": [
+          "achada",
+          "achado",
+          "acompanhado"
+        ]
+      },
+      {
+        "silaba": "ENO",
+        "ocorrencias": 262,
+        "exemplos": [
+          "aceno",
+          "ameno",
+          "cenografia"
+        ]
+      },
+      {
+        "silaba": "RS",
+        "ocorrencias": 261,
+        "exemplos": [
+          "adversário",
+          "adversidade",
+          "adverso"
+        ]
+      },
+      {
+        "silaba": "AMI",
+        "ocorrencias": 260,
+        "exemplos": [
+          "aerodinâmica",
+          "amianto",
+          "amido"
+        ]
+      },
+      {
+        "silaba": "IVE",
+        "ocorrencias": 260,
+        "exemplos": [
+          "acessível",
+          "admissível",
+          "alviverde"
+        ]
+      },
+      {
+        "silaba": "CAS",
+        "ocorrencias": 260,
+        "exemplos": [
+          "acasalamento",
+          "acaso",
+          "bocas"
+        ]
+      },
+      {
+        "silaba": "UAR",
+        "ocorrencias": 260,
+        "exemplos": [
+          "acentuar",
+          "actuar",
+          "adequar"
+        ]
+      },
+      {
+        "silaba": "MBA",
+        "ocorrencias": 258,
+        "exemplos": [
+          "âmbar",
+          "arrombar",
+          "bamba"
+        ]
+      },
+      {
+        "silaba": "DER",
+        "ocorrencias": 258,
+        "exemplos": [
+          "aceder",
+          "acender",
+          "adereços"
+        ]
+      },
+      {
+        "silaba": "LEN",
+        "ocorrencias": 257,
+        "exemplos": [
+          "alentejano",
+          "alento",
+          "benevolência"
+        ]
+      },
+      {
+        "silaba": "IMP",
+        "ocorrencias": 257,
+        "exemplos": [
+          "garimpo",
+          "impaciência",
+          "impaciente"
+        ]
+      },
+      {
+        "silaba": "OMA",
+        "ocorrencias": 256,
+        "exemplos": [
+          "anomalia",
+          "aroma",
+          "aromaterapia"
+        ]
+      },
+      {
+        "silaba": "JO",
+        "ocorrencias": 255,
+        "exemplos": [
+          "ajoelhar",
+          "anjo",
+          "arcanjo"
+        ]
+      },
+      {
+        "silaba": "SIN",
+        "ocorrencias": 255,
+        "exemplos": [
+          "assassinado",
+          "assassinar",
+          "assassinato"
+        ]
+      },
+      {
+        "silaba": "ANE",
+        "ocorrencias": 255,
+        "exemplos": [
+          "aduaneiro",
+          "anedota",
+          "anel"
+        ]
+      },
+      {
+        "silaba": "PEN",
+        "ocorrencias": 255,
+        "exemplos": [
+          "alpendre",
+          "apenas",
+          "apêndice"
+        ]
+      },
+      {
+        "silaba": "ECO",
+        "ocorrencias": 254,
+        "exemplos": [
+          "adereços",
+          "agroecologia",
+          "apreço"
+        ]
+      },
+      {
+        "silaba": "AVA",
+        "ocorrencias": 254,
+        "exemplos": [
+          "agravado",
+          "agravamento",
+          "agravante"
+        ]
+      },
+      {
+        "silaba": "ESE",
+        "ocorrencias": 253,
+        "exemplos": [
+          "anamnese",
+          "antítese",
+          "apresentação"
+        ]
+      },
+      {
+        "silaba": "NIS",
+        "ocorrencias": 253,
+        "exemplos": [
+          "acionista",
+          "administrado",
+          "administrar"
+        ]
+      },
+      {
+        "silaba": "ETO",
+        "ocorrencias": 252,
+        "exemplos": [
+          "acetona",
+          "afeto",
+          "alfabeto"
+        ]
+      },
+      {
+        "silaba": "RV",
+        "ocorrencias": 252,
+        "exemplos": [
+          "absorvente",
+          "absorver",
+          "absorvido"
+        ]
+      },
+      {
+        "silaba": "RAV",
+        "ocorrencias": 252,
+        "exemplos": [
+          "admirável",
+          "adorável",
+          "agravado"
+        ]
+      },
+      {
+        "silaba": "ECI",
+        "ocorrencias": 250,
+        "exemplos": [
+          "abastecido",
+          "aborrecido",
+          "acontecido"
+        ]
+      },
+      {
+        "silaba": "POS",
+        "ocorrencias": 250,
+        "exemplos": [
+          "adiposo",
+          "após",
+          "aposentado"
+        ]
+      },
+      {
+        "silaba": "TEI",
+        "ocorrencias": 249,
+        "exemplos": [
+          "ateísmo",
+          "besteira",
+          "bilheteira"
+        ]
+      },
+      {
+        "silaba": "GAD",
+        "ocorrencias": 249,
+        "exemplos": [
+          "advogada",
+          "advogado",
+          "afogado"
+        ]
+      },
+      {
+        "silaba": "EJ",
+        "ocorrencias": 248,
+        "exemplos": [
+          "alentejano",
+          "almejado",
+          "alvejado"
+        ]
+      },
+      {
+        "silaba": "SSI",
+        "ocorrencias": 248,
+        "exemplos": [
+          "acessível",
+          "admissível",
+          "agressivo"
+        ]
+      },
+      {
+        "silaba": "DEI",
+        "ocorrencias": 248,
+        "exemplos": [
+          "aldeia",
+          "assadeira",
+          "bandeira"
+        ]
+      },
+      {
+        "silaba": "TEL",
+        "ocorrencias": 248,
+        "exemplos": [
+          "ateliê",
+          "atelier",
+          "bagatela"
+        ]
+      },
+      {
+        "silaba": "EZ",
+        "ocorrencias": 248,
+        "exemplos": [
+          "acidez",
+          "alteza",
+          "avareza"
+        ]
+      },
+      {
+        "silaba": "SPE",
+        "ocorrencias": 248,
+        "exemplos": [
+          "aspecto",
+          "áspero",
+          "aspeto"
+        ]
+      },
+      {
+        "silaba": "RB",
+        "ocorrencias": 247,
+        "exemplos": [
+          "advérbio",
+          "arbitragem",
+          "arbitral"
+        ]
+      },
+      {
+        "silaba": "IRI",
+        "ocorrencias": 247,
+        "exemplos": [
+          "adquirido",
+          "adquirir",
+          "aspirina"
+        ]
+      },
+      {
+        "silaba": "SSO",
+        "ocorrencias": 246,
+        "exemplos": [
+          "acesso",
+          "acessório",
+          "agressor"
+        ]
+      },
+      {
+        "silaba": "ENE",
+        "ocorrencias": 245,
+        "exemplos": [
+          "benedita",
+          "benedito",
+          "beneficência"
+        ]
+      },
+      {
+        "silaba": "SEN",
+        "ocorrencias": 245,
+        "exemplos": [
+          "aposentado",
+          "aposentar",
+          "aposento"
+        ]
+      },
+      {
+        "silaba": "RTA",
+        "ocorrencias": 244,
+        "exemplos": [
+          "aberta",
+          "abertamente",
+          "abortar"
+        ]
+      },
+      {
+        "silaba": "ATU",
+        "ocorrencias": 244,
+        "exemplos": [
+          "assinatura",
+          "atuação",
+          "atuado"
+        ]
+      },
+      {
+        "silaba": "DIC",
+        "ocorrencias": 243,
+        "exemplos": [
+          "abdicar",
+          "adição",
+          "adicionado"
+        ]
+      },
+      {
+        "silaba": "MAC",
+        "ocorrencias": 243,
+        "exemplos": [
+          "aclamação",
+          "aclimação",
+          "afirmação"
+        ]
+      },
+      {
+        "silaba": "REM",
+        "ocorrencias": 243,
+        "exemplos": [
+          "agremiação",
+          "alegremente",
+          "arrematar"
+        ]
+      },
+      {
+        "silaba": "UTO",
+        "ocorrencias": 242,
+        "exemplos": [
+          "absoluto",
+          "adutora",
+          "arauto"
+        ]
+      },
+      {
+        "silaba": "MAD",
+        "ocorrencias": 241,
+        "exemplos": [
+          "aclamado",
+          "acostumado",
+          "afirmado"
+        ]
+      },
+      {
+        "silaba": "LIT",
+        "ocorrencias": 241,
+        "exemplos": [
+          "aflito",
+          "amplitude",
+          "analítica"
+        ]
+      },
+      {
+        "silaba": "ERT",
+        "ocorrencias": 240,
+        "exemplos": [
+          "aberta",
+          "abertamente",
+          "aberto"
+        ]
+      },
+      {
+        "silaba": "REP",
+        "ocorrencias": 240,
+        "exemplos": [
+          "arrepender",
+          "arrependido",
+          "arrepia"
+        ]
+      },
+      {
+        "silaba": "LID",
+        "ocorrencias": 238,
+        "exemplos": [
+          "agilidade",
+          "amabilidade",
+          "anormalidade"
+        ]
+      },
+      {
+        "silaba": "RAF",
+        "ocorrencias": 238,
+        "exemplos": [
+          "autografado",
+          "autógrafo",
+          "bibliografia"
+        ]
+      },
+      {
+        "silaba": "MAL",
+        "ocorrencias": 237,
+        "exemplos": [
+          "amaldiçoado",
+          "amálgama",
+          "animal"
+        ]
+      },
+      {
+        "silaba": "RTI",
+        "ocorrencias": 237,
+        "exemplos": [
+          "advertido",
+          "advertir",
+          "amortização"
+        ]
+      },
+      {
+        "silaba": "TIS",
+        "ocorrencias": 237,
+        "exemplos": [
+          "absolutismo",
+          "adventista",
+          "altíssimo"
+        ]
+      },
+      {
+        "silaba": "VEN",
+        "ocorrencias": 237,
+        "exemplos": [
+          "absorvente",
+          "adventista",
+          "advento"
+        ]
+      },
+      {
+        "silaba": "SER",
+        "ocorrencias": 236,
+        "exemplos": [
+          "assertiva",
+          "browser",
+          "consertar"
+        ]
+      },
+      {
+        "silaba": "ZE",
+        "ocorrencias": 235,
+        "exemplos": [
+          "acinzentado",
+          "afazeres",
+          "alfazema"
+        ]
+      },
+      {
+        "silaba": "RMA",
+        "ocorrencias": 235,
+        "exemplos": [
+          "afirmação",
+          "afirmado",
+          "afirmar"
+        ]
+      },
+      {
+        "silaba": "ROM",
+        "ocorrencias": 235,
+        "exemplos": [
+          "aroma",
+          "aromaterapia",
+          "aromático"
+        ]
+      },
+      {
+        "silaba": "EMA",
+        "ocorrencias": 235,
+        "exemplos": [
+          "ademais",
+          "alemã",
+          "alemão"
+        ]
+      },
+      {
+        "silaba": "LET",
+        "ocorrencias": 235,
+        "exemplos": [
+          "amuleto",
+          "atleta",
+          "atlética"
+        ]
+      },
+      {
+        "silaba": "IX",
+        "ocorrencias": 234,
+        "exemplos": [
+          "abaixa",
+          "abaixar",
+          "abaixo"
+        ]
+      },
+      {
+        "silaba": "REA",
+        "ocorrencias": 234,
+        "exemplos": [
+          "área",
+          "areal",
+          "áurea"
+        ]
+      },
+      {
+        "silaba": "TIL",
+        "ocorrencias": 234,
+        "exemplos": [
+          "apostila",
+          "artilharia",
+          "artilheiro"
+        ]
+      },
+      {
+        "silaba": "ONE",
+        "ocorrencias": 233,
+        "exemplos": [
+          "agronegócio",
+          "amazonense",
+          "baronesa"
+        ]
+      },
+      {
+        "silaba": "MIC",
+        "ocorrencias": 233,
+        "exemplos": [
+          "acadêmico",
+          "aerodinâmica",
+          "anatômico"
+        ]
+      },
+      {
+        "silaba": "ACE",
+        "ocorrencias": 233,
+        "exemplos": [
+          "aceder",
+          "aceitação",
+          "aceitado"
+        ]
+      },
+      {
+        "silaba": "DIN",
+        "ocorrencias": 233,
+        "exemplos": [
+          "aerodinâmica",
+          "arrumadinho",
+          "bocadinho"
+        ]
+      },
+      {
+        "silaba": "TOS",
+        "ocorrencias": 232,
+        "exemplos": [
+          "aftosa",
+          "alimentos",
+          "altos"
+        ]
+      },
+      {
+        "silaba": "SAL",
+        "ocorrencias": 231,
+        "exemplos": [
+          "acasalamento",
+          "agasalho",
+          "assalariado"
+        ]
+      },
+      {
+        "silaba": "LIA",
+        "ocorrencias": 231,
+        "exemplos": [
+          "adélia",
+          "afiliação",
+          "afiliada"
+        ]
+      },
+      {
+        "silaba": "GUE",
+        "ocorrencias": 231,
+        "exemplos": [
+          "açougue",
+          "açougueiro",
+          "aguentar"
+        ]
+      },
+      {
+        "silaba": "CRI",
+        "ocorrencias": 230,
+        "exemplos": [
+          "acrílico",
+          "alecrim",
+          "anticristo"
+        ]
+      },
+      {
+        "silaba": "DAR",
+        "ocorrencias": 229,
+        "exemplos": [
+          "abordar",
+          "abrandar",
+          "acomodar"
+        ]
+      },
+      {
+        "silaba": "IGA",
+        "ocorrencias": 229,
+        "exemplos": [
+          "abriga",
+          "abrigar",
+          "amiga"
+        ]
+      },
+      {
+        "silaba": "ZAD",
+        "ocorrencias": 228,
+        "exemplos": [
+          "alfabetizado",
+          "amizade",
+          "aprendizado"
+        ]
+      },
+      {
+        "silaba": "RCA",
+        "ocorrencias": 228,
+        "exemplos": [
+          "abarca",
+          "abarcar",
+          "absorção"
+        ]
+      },
+      {
+        "silaba": "BAL",
+        "ocorrencias": 227,
+        "exemplos": [
+          "abalada",
+          "abalado",
+          "abalar"
+        ]
+      },
+      {
+        "silaba": "TAM",
+        "ocorrencias": 227,
+        "exemplos": [
+          "abertamente",
+          "abruptamente",
+          "acostamento"
+        ]
+      },
+      {
+        "silaba": "ECE",
+        "ocorrencias": 226,
+        "exemplos": [
+          "abastecer",
+          "acontecer",
+          "adoecer"
+        ]
+      },
+      {
+        "silaba": "EIT",
+        "ocorrencias": 226,
+        "exemplos": [
+          "aceitação",
+          "aceitado",
+          "aceitar"
+        ]
+      },
+      {
+        "silaba": "ARD",
+        "ocorrencias": 225,
+        "exemplos": [
+          "aguarda",
+          "aguardar",
+          "aguardente"
+        ]
+      },
+      {
+        "silaba": "ATR",
+        "ocorrencias": 225,
+        "exemplos": [
+          "alcatrão",
+          "alcoólatra",
+          "anfiteatro"
+        ]
+      },
+      {
+        "silaba": "NV",
+        "ocorrencias": 225,
+        "exemplos": [
+          "convenção",
+          "convencer",
+          "convencido"
+        ]
+      },
+      {
+        "silaba": "API",
+        "ocorrencias": 225,
+        "exemplos": [
+          "ápice",
+          "apicultura",
+          "apitar"
+        ]
+      },
+      {
+        "silaba": "CIN",
+        "ocorrencias": 224,
+        "exemplos": [
+          "acinzentado",
+          "alucinação",
+          "alucinado"
+        ]
+      },
+      {
+        "silaba": "PIN",
+        "ocorrencias": 223,
+        "exemplos": [
+          "agripino",
+          "alpino",
+          "campina"
+        ]
+      },
+      {
+        "silaba": "APO",
+        "ocorrencias": 222,
+        "exemplos": [
+          "apocalipse",
+          "apocalíptico",
+          "apogeu"
+        ]
+      },
+      {
+        "silaba": "OTO",
+        "ocorrencias": 222,
+        "exemplos": [
+          "antídoto",
+          "automotor",
+          "boto"
+        ]
+      },
+      {
+        "silaba": "VAR",
+        "ocorrencias": 222,
+        "exemplos": [
+          "agravar",
+          "alvará",
+          "alvarenga"
+        ]
+      },
+      {
+        "silaba": "IMI",
+        "ocorrencias": 222,
+        "exemplos": [
+          "alquimia",
+          "alquimista",
+          "assimilação"
+        ]
+      },
+      {
+        "silaba": "ERM",
+        "ocorrencias": 222,
+        "exemplos": [
+          "avermelhado",
+          "bermuda",
+          "bermudas"
+        ]
+      },
+      {
+        "silaba": "RRO",
+        "ocorrencias": 221,
+        "exemplos": [
+          "arroba",
+          "arrogância",
+          "arrogante"
+        ]
+      },
+      {
+        "silaba": "LHO",
+        "ocorrencias": 221,
+        "exemplos": [
+          "agasalho",
+          "alho",
+          "andarilho"
+        ]
+      },
+      {
+        "silaba": "CHE",
+        "ocorrencias": 221,
+        "exemplos": [
+          "ache",
+          "aconchegante",
+          "aconchego"
+        ]
+      },
+      {
+        "silaba": "PAT",
+        "ocorrencias": 221,
+        "exemplos": [
+          "antipatia",
+          "apatia",
+          "capataz"
+        ]
+      },
+      {
+        "silaba": "ALO",
+        "ocorrencias": 220,
+        "exemplos": [
+          "abalo",
+          "alocação",
+          "alocar"
+        ]
+      },
+      {
+        "silaba": "ONO",
+        "ocorrencias": 220,
+        "exemplos": [
+          "abandono",
+          "abono",
+          "agronomia"
+        ]
+      },
+      {
+        "silaba": "RIM",
+        "ocorrencias": 220,
+        "exemplos": [
+          "alecrim",
+          "amorim",
+          "aprimorado"
+        ]
+      },
+      {
+        "silaba": "BER",
+        "ocorrencias": 219,
+        "exemplos": [
+          "aberração",
+          "aberta",
+          "abertamente"
+        ]
+      },
+      {
+        "silaba": "OTI",
+        "ocorrencias": 219,
+        "exemplos": [
+          "adotivo",
+          "antibiótico",
+          "automotivo"
+        ]
+      },
+      {
+        "silaba": "UCA",
+        "ocorrencias": 218,
+        "exemplos": [
+          "açúcar",
+          "araucária",
+          "bucal"
+        ]
+      },
+      {
+        "silaba": "ROL",
+        "ocorrencias": 218,
+        "exemplos": [
+          "acerola",
+          "astrologia",
+          "autocontrole"
+        ]
+      },
+      {
+        "silaba": "VAL",
+        "ocorrencias": 217,
+        "exemplos": [
+          "alvalade",
+          "aval",
+          "avalanche"
+        ]
+      },
+      {
+        "silaba": "PIR",
+        "ocorrencias": 217,
+        "exemplos": [
+          "arapiraca",
+          "aspiração",
+          "aspirado"
+        ]
+      },
+      {
+        "silaba": "ISS",
+        "ocorrencias": 216,
+        "exemplos": [
+          "admissão",
+          "admissível",
+          "altíssimo"
+        ]
+      },
+      {
+        "silaba": "BRI",
+        "ocorrencias": 216,
+        "exemplos": [
+          "abobrinha",
+          "abridor",
+          "abriga"
+        ]
+      },
+      {
+        "silaba": "ULT",
+        "ocorrencias": 216,
+        "exemplos": [
+          "adulteração",
+          "adultério",
+          "adulto"
+        ]
+      },
+      {
+        "silaba": "ESI",
+        "ocorrencias": 216,
+        "exemplos": [
+          "adesivo",
+          "amnésia",
+          "analgésico"
+        ]
+      },
+      {
+        "silaba": "PAL",
+        "ocorrencias": 216,
+        "exemplos": [
+          "atrapalhado",
+          "atrapalhar",
+          "episcopal"
+        ]
+      },
+      {
+        "silaba": "EMP",
+        "ocorrencias": 216,
+        "exemplos": [
+          "atemporal",
+          "contemplação",
+          "contemplado"
+        ]
+      }
+    ]
+  }
+}

@@ -8,9 +8,13 @@
   "scripts": {
     "dev": "vite dev --port 3000",
     "generate-routes": "vite build",
-    "build": "npm run validate:catalog && vite build",
+    "build": "npm run validate:catalog && npm run validate:datasets && vite build",
+    "build:pages": "VITE_BASE_PATH=/nbp-jogos/ npm run build && VITE_BASE_PATH=/nbp-jogos/ node scripts/export-static.mjs",
+    "build:datasets": "node scripts/build-datasets.mjs",
     "validate:catalog": "node scripts/validate-catalog.mjs",
+    "validate:datasets": "node scripts/validate-datasets.mjs",
     "test:catalog": "node --test tests/catalog.test.mjs",
+    "test:datasets": "node --test tests/datasets.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

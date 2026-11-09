@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, Bell, ChevronDown, Grid2X2, Heart, Home, Library, MoreHorizontal, Pause, Play, Search, Sparkles, Star, UserRound, UsersRound } from 'lucide-react'
 import AccountPanel from '../components/AccountPanel'
 import { useLocalAccounts } from '../lib/local-accounts'
-import { featuredGames, games, genres } from '../lib/catalog'
+import { featuredGames, games, genres, withBase } from '../lib/catalog'
 
 export const Route = createFileRoute('/')({ component: App })
 
@@ -68,7 +68,7 @@ function App() {
   return (
     <main className="hub-shell">
       <aside className="hub-sidebar">
-        <a className="hub-brand" href="#inicio" aria-label="NBP Games início"><img className="hub-logo" src="/images/nbp-games-logo-dark.svg" alt="NBP Games" /></a>
+        <a className="hub-brand" href="#inicio" aria-label="NBP Games início"><img className="hub-logo" src={withBase('/images/nbp-games-logo-dark.svg')} alt="NBP Games" /></a>
         <div className="side-label">MENU</div>
         <nav className="side-nav" aria-label="Menu principal">
           {([[Home, 'Explorar'], [Grid2X2, 'Categorias'], [Library, 'Minha biblioteca']] as const).map(([Icon, label]) => <button key={label} className={activeNav === label ? 'side-link active' : 'side-link'} onClick={() => navigate(label)}><span><Icon size={20} aria-hidden="true" /></span>{label}</button>)}
@@ -79,7 +79,7 @@ function App() {
       </aside>
 
       <section className="hub-main" id="inicio">
-        <header className="hub-topbar"><a className="mobile-brand" href="#inicio" aria-label="NBP Games início"><img src="/images/nbp-games-logo-dark.svg" alt="NBP Games" /></a><label className="search-box"><Search size={20} aria-hidden="true" /><input ref={searchRef} aria-label="Buscar jogos" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar jogos..." /><kbd>Ctrl / ⌘ K</kbd></label><div className="top-actions"><button aria-label="Notificações" className="icon-button"><Bell size={20} aria-hidden="true" /><i /></button><button aria-label="Favoritos" className="icon-button" onClick={() => navigate(category === 'Favoritos' ? 'Explorar' : 'Minha biblioteca')}><Heart size={20} aria-hidden="true" /></button><button className="top-profile account-trigger" aria-label={accounts.account ? 'Abrir minha conta' : 'Entrar ou criar conta'} onClick={() => setAccountOpen(true)} disabled={!accounts.ready}><span className="profile-avatar" style={avatarStyle}>{avatar}</span><span>{accounts.account ? accountName : 'Entrar'}<small>{accounts.account ? 'Minha conta' : 'Criar conta'}</small></span><span className="chevron"><ChevronDown size={15} aria-hidden="true" /></span></button></div></header>
+        <header className="hub-topbar"><a className="mobile-brand" href="#inicio" aria-label="NBP Games início"><img src={withBase('/images/nbp-games-logo-dark.svg')} alt="NBP Games" /></a><label className="search-box"><Search size={20} aria-hidden="true" /><input ref={searchRef} aria-label="Buscar jogos" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar jogos..." /><kbd>Ctrl / ⌘ K</kbd></label><div className="top-actions"><button aria-label="Notificações" className="icon-button"><Bell size={20} aria-hidden="true" /><i /></button><button aria-label="Favoritos" className="icon-button" onClick={() => navigate(category === 'Favoritos' ? 'Explorar' : 'Minha biblioteca')}><Heart size={20} aria-hidden="true" /></button><button className="top-profile account-trigger" aria-label={accounts.account ? 'Abrir minha conta' : 'Entrar ou criar conta'} onClick={() => setAccountOpen(true)} disabled={!accounts.ready}><span className="profile-avatar" style={avatarStyle}>{avatar}</span><span>{accounts.account ? accountName : 'Entrar'}<small>{accounts.account ? 'Minha conta' : 'Criar conta'}</small></span><span className="chevron"><ChevronDown size={15} aria-hidden="true" /></span></button></div></header>
 
         <div className="hub-content">
           <h1 className="sr-only">NBP Games — catálogo de jogos</h1>

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>Atlas &amp; Bandeiras · NBP Games</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+    <header class="topbar">
+      <div class="topbar-group">
+        <div class="mode-tabs" role="tablist" aria-label="Modo de jogo geográfico">
+          <button type="button" class="mode-tab active" data-mode="quiz" role="tab" aria-selected="true">
+            🏁 Quiz
+          </button>
+          <button type="button" class="mode-tab" data-mode="flagle" role="tab" aria-selected="false">
+            🧭 Flagle &amp; Bússola
+          </button>
+          <button type="button" class="mode-tab" data-mode="highlow" role="tab" aria-selected="false">
+            📊 Mais ou Menos
+          </button>
+        </div>
+
+        <div class="tier-selector">
+          <label for="tier-select">Banco/Nível:</label>
+          <select id="tier-select">
+            <option value="1">Nível 1 · Fácil (45 famosos)</option>
+            <option value="2" selected>Nível 2 · Médio (119 países)</option>
+            <option value="3">Nível 3 · Difícil (ONU completo)</option>
+            <option value="4">Nível 4 · Insano (250 países/ilhas)</option>
+            <option value="br">🇧🇷 Estados do Brasil (27 UFs)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="topbar-group right">
+        <div class="hud-pills">
+          <span class="hud-pill">Pontos: <strong id="hud-score">0</strong></span>
+          <span class="hud-pill streak">🔥 <strong id="hud-streak">0</strong></span>
+        </div>
+
+        <div class="seed-box" title="Use o mesmo código com seus amigos para jogar a mesma sequência!">
+          <span class="seed-label">Sala:</span>
+          <input id="seed-input" type="text" maxlength="18" placeholder="ATLAS" aria-label="Código da sala" />
+          <button type="button" id="btn-apply-seed" class="btn-subtle" title="Entrar na sala digitada">Ir</button>
+          <button type="button" id="btn-daily-seed" class="btn-subtle" title="Jogar o Desafio do Dia">📅 Dia</button>
+          <button type="button" id="btn-random-seed" class="btn-primary-sm" title="Sortear nova partida aleatória">🎲 Nova</button>
+        </div>
+
+        <button type="button" id="btn-sound" class="btn-icon" aria-pressed="true" title="Ativar/Desativar som">
+          🔊
+        </button>
+      </div>
+    </header>
+
+    <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+    <main class="main-stage">
+      <!-- MODO 1: QUIZ DE BANDEIRAS -->
+      <section id="view-quiz" class="game-view">
+        <div class="quiz-top-row">
+          <div class="round-bar">
+            <span id="quiz-progress-text">Rodada 1 de 10</span>
+            <div class="progress-track"><div id="quiz-progress-fill" class="progress-fill"></div></div>
+          </div>
+
+          <div class="quiz-toggles" role="group" aria-label="Opções do Quiz">
+            <button
+              type="button"
+              id="btn-toggle-continent"
+              class="toggle-chip"
+              aria-pressed="false"
+              title="Mostrar ou ocultar a qual continente/região a bandeira pertence"
+            >
+              🌍 Continente: <strong>OFF</strong>
+            </button>
+            <button
+              type="button"
+              id="btn-toggle-inputmode"
+              class="toggle-chip active"
+              aria-pressed="true"
+              title="Alternar entre escolher entre 4 opções ou digitar o nome da bandeira"
+            >
+              🎯 Múltipla Escolha: <strong>ON</strong>
+            </button>
+          </div>
+        </div>
+
+        <div id="quiz-flag-card" class="flag-showcase">
+          <span id="quiz-region-badge" class="region-badge" hidden>América do Sul</span>
+          <div class="flag-frame">
+            <img id="quiz-flag-img" src="" alt="Bandeira misteriosa" />
+          </div>
+          <p id="quiz-fact" class="flag-fact" hidden></p>
+        </div>
+
+        <div id="quiz-options" class="quiz-options" role="group" aria-label="Alternativas"></div>
+
+        <div id="quiz-write-box" class="quiz-write-box" hidden>
+          <div class="input-row">
+            <input
+              id="quiz-write-input"
+              type="text"
+              autocomplete="off"
+              placeholder="Escreva o nome do país ou estado..."
+              aria-label="Escreva o nome da bandeira"
+            />
+            <button type="button" id="btn-quiz-write-submit" class="btn-guess">Responder</button>
+            <button type="button" id="btn-quiz-write-skip" class="btn-subtle">Pular</button>
+          </div>
+          <ul id="quiz-write-suggestions" class="suggestions-list" hidden></ul>
+        </div>
+      </section>
+
+      <!-- MODO 2: FLAGLE & BÚSSOLA -->
+      <section id="view-flagle" class="game-view" hidden>
+        <div class="flagle-layout">
+          <div class="flagle-left">
+            <div class="flag-showcase compact">
+              <span id="flagle-status-badge" class="region-badge">Tentativa 1 de 6</span>
+              <div class="flag-frame masked">
+                <img id="flagle-img" src="" alt="Bandeira secreta" />
+                <div id="flagle-mask-grid" class="flagle-mask-grid"></div>
+              </div>
+              <p id="flagle-reveal-info" class="flag-fact" hidden></p>
+            </div>
+
+            <div class="autocomplete-box">
+              <div class="input-row">
+                <input
+                  id="flagle-input"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="Digite o país ou estado (ex: Brasil, Japão...)"
+                  aria-label="Digite o nome do país ou estado"
+                />
+                <button type="button" id="btn-flagle-guess" class="btn-guess">Chutar</button>
+              </div>
+              <ul id="flagle-suggestions" class="suggestions-list" hidden></ul>
+            </div>
+          </div>
+
+          <div class="flagle-right">
+            <h3 class="guesses-heading">Palpites &amp; Bússola (Distância e Direção)</h3>
+            <div id="flagle-guesses" class="flagle-guesses"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODO 3: MAIS OU MENOS (POPULAÇÃO) -->
+      <section id="view-highlow" class="game-view" hidden>
+        <p class="highlow-prompt">Quem possui <strong>MAIOR POPULAÇÃO</strong>?</p>
+        <div class="duel-grid">
+          <div id="hl-card-left" class="duel-card">
+            <img id="hl-img-left" src="" alt="" />
+            <h3 id="hl-name-left">Brasil</h3>
+            <span id="hl-capital-left" class="duel-sub">Capital: Brasília</span>
+            <div class="pop-box">
+              <small>População estimada</small>
+              <strong id="hl-pop-left">214.000.000</strong>
+            </div>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div id="hl-card-right" class="duel-card">
+            <img id="hl-img-right" src="" alt="" />
+            <h3 id="hl-name-right">Argentina</h3>
+            <span id="hl-capital-right" class="duel-sub">Capital: Buenos Aires</span>
+            <div id="hl-actions" class="hl-actions">
+              <button type="button" id="btn-hl-higher" class="btn-hl higher">🔼 MAIS habitantes</button>
+              <button type="button" id="btn-hl-lower" class="btn-hl lower">🔽 MENOS habitantes</button>
+            </div>
+            <div id="hl-pop-reveal" class="pop-box" hidden>
+              <small>População estimada</small>
+              <strong id="hl-pop-right">0</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal de Resultado / Compartilhar -->
+    <div id="modal-summary" class="modal-backdrop" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="summary-title">
+        <span id="summary-badge" class="modal-badge">FIM DA PARTIDA</span>
+        <h2 id="summary-title">Mandou bem!</h2>
+        <p id="summary-desc"></p>
+        <div id="summary-highlight" class="summary-highlight"></div>
+        <div class="modal-actions">
+          <button type="button" id="btn-share-geo" class="btn-share">📋 Copiar Resultado para Amigos</button>
+          <button type="button" id="btn-play-again" class="btn-next">🎲 Nova Partida</button>
+          <button type="button" id="btn-close-summary" class="btn-close-text">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>

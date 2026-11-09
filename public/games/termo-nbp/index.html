@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>Termo, Dueto &amp; Quarteto · NBP Games</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+    <header class="topbar">
+      <div class="topbar-group">
+        <div class="mode-tabs" role="tablist" aria-label="Modo de jogo">
+          <button type="button" class="mode-tab active" data-mode="termo" role="tab" aria-selected="true">
+            Termo <small>1</small>
+          </button>
+          <button type="button" class="mode-tab" data-mode="dueto" role="tab" aria-selected="false">
+            Dueto <small>2</small>
+          </button>
+          <button type="button" class="mode-tab" data-mode="quarteto" role="tab" aria-selected="false">
+            Quarteto <small>4</small>
+          </button>
+        </div>
+
+        <div class="tier-selector" aria-label="Nível de dificuldade">
+          <label for="tier-select">Nível:</label>
+          <select id="tier-select">
+            <option value="facil">Fácil (Comuns)</option>
+            <option value="medio" selected>Médio (Padrão)</option>
+            <option value="dificil">Difícil (Raras)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="topbar-group right">
+        <div class="seed-box" title="Use o mesmo código com seus amigos para jogar as mesmas palavras!">
+          <span class="seed-label">Sala/Seed:</span>
+          <input
+            id="seed-input"
+            type="text"
+            maxlength="20"
+            placeholder="DIARIO"
+            aria-label="Código da sala para jogar com amigos"
+          />
+          <button type="button" id="btn-apply-seed" class="btn-subtle" title="Entrar na sala digitada">
+            Ir
+          </button>
+          <button type="button" id="btn-daily-seed" class="btn-subtle" title="Jogar o Desafio do Dia">
+            📅 Dia
+          </button>
+          <button type="button" id="btn-random-seed" class="btn-primary-sm" title="Sortear nova partida aleatória">
+            🎲 Nova
+          </button>
+        </div>
+
+        <button type="button" id="btn-sound" class="btn-icon" aria-pressed="true" title="Ativar/Desativar sons">
+          🔊
+        </button>
+        <button type="button" id="btn-help" class="btn-icon" title="Como jogar">
+          ❓
+        </button>
+      </div>
+    </header>
+
+    <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+    <main class="arena">
+      <div id="boards-container" class="boards-container mode-termo" aria-label="Tabuleiros de palavras"></div>
+    </main>
+
+    <footer class="keyboard-area">
+      <div id="keyboard" class="keyboard" role="group" aria-label="Teclado virtual"></div>
+    </footer>
+
+    <!-- Modal de Fim de Jogo / Compartilhar -->
+    <div id="modal-result" class="modal-backdrop" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <span id="modal-badge" class="modal-badge">FIM DE JOGO</span>
+        <h2 id="modal-title">Parabéns!</h2>
+        <p id="modal-subtitle"></p>
+
+        <div id="modal-words" class="modal-words"></div>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <strong id="stat-played">0</strong>
+            <span>Jogos</span>
+          </div>
+          <div class="stat-box">
+            <strong id="stat-wins">0</strong>
+            <span>Vitórias</span>
+          </div>
+          <div class="stat-box">
+            <strong id="stat-streak">0</strong>
+            <span>Sequência</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="btn-share" class="btn-share">
+            📋 Copiar Resultado para Amigos
+          </button>
+          <button type="button" id="btn-next-game" class="btn-next">
+            🎲 Jogar Outra Palavra
+          </button>
+          <button type="button" id="btn-close-modal" class="btn-close-text">
+            Ver tabuleiro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Ajuda -->
+    <div id="modal-help" class="modal-backdrop" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="help-title">
+        <span class="modal-badge">COMO JOGAR</span>
+        <h2 id="help-title">Termo, Dueto &amp; Quarteto</h2>
+        <p class="help-text">
+          Descubra a(s) palavra(s) secreta(s) de 5 letras em português! Os acentos e cedilha são preenchidos automaticamente.
+        </p>
+        <div class="help-examples">
+          <div class="help-row">
+            <span class="mini-tile correct">T</span>
+            <span class="mini-tile">E</span>
+            <span class="mini-tile">R</span>
+            <span class="mini-tile">M</span>
+            <span class="mini-tile">O</span>
+            <p><strong>Verde:</strong> A letra está na palavra e na posição correta.</p>
+          </div>
+          <div class="help-row">
+            <span class="mini-tile">D</span>
+            <span class="mini-tile present">U</span>
+            <span class="mini-tile">E</span>
+            <span class="mini-tile">T</span>
+            <span class="mini-tile">O</span>
+            <p><strong>Amarelo:</strong> A letra existe na palavra, mas em outra posição.</p>
+          </div>
+          <div class="help-row">
+            <span class="mini-tile">L</span>
+            <span class="mini-tile">I</span>
+            <span class="mini-tile">V</span>
+            <span class="mini-tile absent">R</span>
+            <span class="mini-tile">O</span>
+            <p><strong>Escuro:</strong> A letra não faz parte da palavra.</p>
+          </div>
+        </div>
+        <p class="help-text">
+          💡 <strong>Dica para jogar com amigos:</strong> Digite qualquer código no campo <strong>Sala/Seed</strong> (ex: <code>SALA1</code>) e escolha o mesmo nível. Todos terão exatamente o mesmo desafio!
+        </p>
+        <div class="modal-actions">
+          <button type="button" id="btn-close-help" class="btn-next">Entendi, vamos jogar!</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>

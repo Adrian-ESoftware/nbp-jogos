@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowLeft, Maximize, RotateCcw } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { getGame } from '../lib/catalog'
+import { getGame, withBase } from '../lib/catalog'
 
 export const Route = createFileRoute('/jogos/$gameId')({ component: GamePage })
 
@@ -22,7 +22,7 @@ function GamePage() {
     } catch { setMessage('Não foi possível abrir em tela cheia neste navegador.') }
   }
   return <main className="player-page">
-    <header className="player-header"><Link className="player-back" to="/"><ArrowLeft size={18} aria-hidden="true" /> Voltar ao catálogo</Link><img src="/images/nbp-games-logo-dark.svg" alt="NBP Games" /></header>
+    <header className="player-header"><Link className="player-back" to="/"><ArrowLeft size={18} aria-hidden="true" /> Voltar ao catálogo</Link><img src={withBase('/images/nbp-games-logo-dark.svg')} alt="NBP Games" /></header>
     <section className="player-content" aria-labelledby="player-title">
       <div className="player-heading">
         <div className="player-identity">

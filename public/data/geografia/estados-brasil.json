@@ -1,0 +1,898 @@
+{
+  "version": 1,
+  "description": "As 27 Unidades Federativas do Brasil com bandeiras SVG, capitais, coordenadas, fronteiras e nível de dificuldade.",
+  "total": 27,
+  "estados": [
+    {
+      "uf": "SP",
+      "nome": "São Paulo",
+      "capital": "São Paulo",
+      "regiao": "Sudeste",
+      "nivel": 1,
+      "populacao": 44411238,
+      "areaKm2": 248219,
+      "coordenadas": {
+        "lat": -23.55,
+        "lng": -46.63
+      },
+      "fronteiras": [
+        "MG",
+        "RJ",
+        "PR",
+        "MS"
+      ],
+      "id": "sp",
+      "dificuldade": "facil",
+      "nomesAceitos": [
+        "sao paulo",
+        "sp"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/sp.svg",
+        "cores": [
+          "amarelo",
+          "vermelho",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "RJ",
+      "nome": "Rio de Janeiro",
+      "capital": "Rio de Janeiro",
+      "regiao": "Sudeste",
+      "nivel": 1,
+      "populacao": 16054524,
+      "areaKm2": 43750,
+      "coordenadas": {
+        "lat": -22.9,
+        "lng": -43.17
+      },
+      "fronteiras": [
+        "MG",
+        "ES",
+        "SP"
+      ],
+      "id": "rj",
+      "dificuldade": "facil",
+      "nomesAceitos": [
+        "rio de janeiro",
+        "rj"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/rj.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "MG",
+      "nome": "Minas Gerais",
+      "capital": "Belo Horizonte",
+      "regiao": "Sudeste",
+      "nivel": 1,
+      "populacao": 20538718,
+      "areaKm2": 586514,
+      "coordenadas": {
+        "lat": -19.92,
+        "lng": -43.94
+      },
+      "fronteiras": [
+        "BA",
+        "GO",
+        "DF",
+        "MS",
+        "SP",
+        "RJ",
+        "ES"
+      ],
+      "id": "mg",
+      "dificuldade": "facil",
+      "nomesAceitos": [
+        "minas gerais",
+        "mg"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/mg.svg",
+        "cores": [
+          "amarelo",
+          "branco",
+          "preto"
+        ]
+      }
+    },
+    {
+      "uf": "RS",
+      "nome": "Rio Grande do Sul",
+      "capital": "Porto Alegre",
+      "regiao": "Sul",
+      "nivel": 1,
+      "populacao": 10882965,
+      "areaKm2": 281707,
+      "coordenadas": {
+        "lat": -30.03,
+        "lng": -51.23
+      },
+      "fronteiras": [
+        "SC"
+      ],
+      "id": "rs",
+      "dificuldade": "facil",
+      "nomesAceitos": [
+        "rio grande do sul",
+        "rs"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/rs.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "vermelho",
+          "branco",
+          "preto"
+        ]
+      }
+    },
+    {
+      "uf": "PR",
+      "nome": "Paraná",
+      "capital": "Curitiba",
+      "regiao": "Sul",
+      "nivel": 1,
+      "populacao": 11444380,
+      "areaKm2": 199299,
+      "coordenadas": {
+        "lat": -25.42,
+        "lng": -49.27
+      },
+      "fronteiras": [
+        "SP",
+        "MS",
+        "SC"
+      ],
+      "id": "pr",
+      "dificuldade": "facil",
+      "nomesAceitos": [
+        "parana",
+        "pr"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/pr.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "SC",
+      "nome": "Santa Catarina",
+      "capital": "Florianópolis",
+      "regiao": "Sul",
+      "nivel": 1,
+      "populacao": 7610361,
+      "areaKm2": 95731,
+      "coordenadas": {
+        "lat": -27.59,
+        "lng": -48.55
+      },
+      "fronteiras": [
+        "PR",
+        "RS"
+      ],
+      "id": "sc",
+      "dificuldade": "facil",
+      "nomesAceitos": [
+        "santa catarina",
+        "sc"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/sc.svg",
+        "cores": [
+          "amarelo",
+          "vermelho",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "BA",
+      "nome": "Bahia",
+      "capital": "Salvador",
+      "regiao": "Nordeste",
+      "nivel": 1,
+      "populacao": 14141626,
+      "areaKm2": 564760,
+      "coordenadas": {
+        "lat": -12.97,
+        "lng": -38.51
+      },
+      "fronteiras": [
+        "SE",
+        "AL",
+        "PE",
+        "PI",
+        "TO",
+        "GO",
+        "MG",
+        "ES"
+      ],
+      "id": "ba",
+      "dificuldade": "facil",
+      "nomesAceitos": [
+        "bahia",
+        "ba"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/ba.svg",
+        "cores": [
+          "amarelo",
+          "vermelho",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "PE",
+      "nome": "Pernambuco",
+      "capital": "Recife",
+      "regiao": "Nordeste",
+      "nivel": 1,
+      "populacao": 9058931,
+      "areaKm2": 98068,
+      "coordenadas": {
+        "lat": -8.05,
+        "lng": -34.88
+      },
+      "fronteiras": [
+        "PB",
+        "CE",
+        "PI",
+        "BA",
+        "AL"
+      ],
+      "id": "pe",
+      "dificuldade": "facil",
+      "nomesAceitos": [
+        "pernambuco",
+        "pe"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/pe.svg",
+        "cores": [
+          "amarelo",
+          "vermelho",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "DF",
+      "nome": "Distrito Federal",
+      "capital": "Brasília",
+      "regiao": "Centro-Oeste",
+      "nivel": 1,
+      "populacao": 2817381,
+      "areaKm2": 5761,
+      "coordenadas": {
+        "lat": -15.78,
+        "lng": -47.93
+      },
+      "fronteiras": [
+        "GO",
+        "MG"
+      ],
+      "id": "df",
+      "dificuldade": "facil",
+      "nomesAceitos": [
+        "distrito federal",
+        "df"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/df.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "PA",
+      "nome": "Pará",
+      "capital": "Belém",
+      "regiao": "Norte",
+      "nivel": 1,
+      "populacao": 8121025,
+      "areaKm2": 1245871,
+      "coordenadas": {
+        "lat": -1.45,
+        "lng": -48.5
+      },
+      "fronteiras": [
+        "AP",
+        "MA",
+        "TO",
+        "MT",
+        "AM",
+        "RR"
+      ],
+      "id": "pa",
+      "dificuldade": "facil",
+      "nomesAceitos": [
+        "para",
+        "pa"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/pa.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "AM",
+      "nome": "Amazonas",
+      "capital": "Manaus",
+      "regiao": "Norte",
+      "nivel": 2,
+      "populacao": 3941613,
+      "areaKm2": 1559168,
+      "coordenadas": {
+        "lat": -3.11,
+        "lng": -60.02
+      },
+      "fronteiras": [
+        "RR",
+        "PA",
+        "MT",
+        "RO",
+        "AC"
+      ],
+      "id": "am",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "amazonas",
+        "am"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/am.svg",
+        "cores": [
+          "amarelo",
+          "vermelho",
+          "azul",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "CE",
+      "nome": "Ceará",
+      "capital": "Fortaleza",
+      "regiao": "Nordeste",
+      "nivel": 2,
+      "populacao": 8794957,
+      "areaKm2": 148894,
+      "coordenadas": {
+        "lat": -3.71,
+        "lng": -38.54
+      },
+      "fronteiras": [
+        "RN",
+        "PB",
+        "PE",
+        "PI"
+      ],
+      "id": "ce",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "ceara",
+        "ce"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/ce.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "GO",
+      "nome": "Goiás",
+      "capital": "Goiânia",
+      "regiao": "Centro-Oeste",
+      "nivel": 2,
+      "populacao": 7056495,
+      "areaKm2": 340243,
+      "coordenadas": {
+        "lat": -16.68,
+        "lng": -49.25
+      },
+      "fronteiras": [
+        "TO",
+        "BA",
+        "MG",
+        "DF",
+        "MS",
+        "MT"
+      ],
+      "id": "go",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "goias",
+        "go"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/go.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "azul",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "ES",
+      "nome": "Espírito Santo",
+      "capital": "Vitória",
+      "regiao": "Sudeste",
+      "nivel": 2,
+      "populacao": 3833712,
+      "areaKm2": 46074,
+      "coordenadas": {
+        "lat": -20.31,
+        "lng": -40.33
+      },
+      "fronteiras": [
+        "BA",
+        "MG",
+        "RJ"
+      ],
+      "id": "es",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "espirito santo",
+        "es"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/es.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "MT",
+      "nome": "Mato Grosso",
+      "capital": "Cuiabá",
+      "regiao": "Centro-Oeste",
+      "nivel": 2,
+      "populacao": 3658649,
+      "areaKm2": 903207,
+      "coordenadas": {
+        "lat": -15.6,
+        "lng": -56.09
+      },
+      "fronteiras": [
+        "RO",
+        "AM",
+        "PA",
+        "TO",
+        "GO",
+        "MS"
+      ],
+      "id": "mt",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "mato grosso",
+        "mt"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/mt.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "MS",
+      "nome": "Mato Grosso do Sul",
+      "capital": "Campo Grande",
+      "regiao": "Centro-Oeste",
+      "nivel": 2,
+      "populacao": 2757013,
+      "areaKm2": 357146,
+      "coordenadas": {
+        "lat": -20.44,
+        "lng": -54.64
+      },
+      "fronteiras": [
+        "MT",
+        "GO",
+        "MG",
+        "SP",
+        "PR"
+      ],
+      "id": "ms",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "mato grosso do sul",
+        "ms"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/ms.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "PB",
+      "nome": "Paraíba",
+      "capital": "João Pessoa",
+      "regiao": "Nordeste",
+      "nivel": 2,
+      "populacao": 3974687,
+      "areaKm2": 56467,
+      "coordenadas": {
+        "lat": -7.11,
+        "lng": -34.86
+      },
+      "fronteiras": [
+        "RN",
+        "CE",
+        "PE"
+      ],
+      "id": "pb",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "paraiba",
+        "pb"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/pb.svg",
+        "cores": [
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "MA",
+      "nome": "Maranhão",
+      "capital": "São Luís",
+      "regiao": "Nordeste",
+      "nivel": 2,
+      "populacao": 6776699,
+      "areaKm2": 329651,
+      "coordenadas": {
+        "lat": -2.53,
+        "lng": -44.3
+      },
+      "fronteiras": [
+        "PI",
+        "TO",
+        "PA"
+      ],
+      "id": "ma",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "maranhao",
+        "ma"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/ma.svg",
+        "cores": [
+          "amarelo",
+          "vermelho",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "RN",
+      "nome": "Rio Grande do Norte",
+      "capital": "Natal",
+      "regiao": "Nordeste",
+      "nivel": 2,
+      "populacao": 3302729,
+      "areaKm2": 52810,
+      "coordenadas": {
+        "lat": -5.79,
+        "lng": -35.2
+      },
+      "fronteiras": [
+        "CE",
+        "PB"
+      ],
+      "id": "rn",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "rio grande do norte",
+        "rn"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/rn.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "AC",
+      "nome": "Acre",
+      "capital": "Rio Branco",
+      "regiao": "Norte",
+      "nivel": 2,
+      "populacao": 830018,
+      "areaKm2": 164173,
+      "coordenadas": {
+        "lat": -9.97,
+        "lng": -67.81
+      },
+      "fronteiras": [
+        "AM",
+        "RO"
+      ],
+      "id": "ac",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "acre",
+        "ac"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/ac.svg",
+        "cores": [
+          "verde",
+          "vermelho"
+        ]
+      }
+    },
+    {
+      "uf": "TO",
+      "nome": "Tocantins",
+      "capital": "Palmas",
+      "regiao": "Norte",
+      "nivel": 2,
+      "populacao": 1511460,
+      "areaKm2": 277424,
+      "coordenadas": {
+        "lat": -10.18,
+        "lng": -48.33
+      },
+      "fronteiras": [
+        "MA",
+        "PI",
+        "BA",
+        "GO",
+        "MT",
+        "PA"
+      ],
+      "id": "to",
+      "dificuldade": "medio",
+      "nomesAceitos": [
+        "tocantins",
+        "to"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/to.svg",
+        "cores": [
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "AL",
+      "nome": "Alagoas",
+      "capital": "Maceió",
+      "regiao": "Nordeste",
+      "nivel": 3,
+      "populacao": 3127683,
+      "areaKm2": 27831,
+      "coordenadas": {
+        "lat": -9.66,
+        "lng": -35.73
+      },
+      "fronteiras": [
+        "PE",
+        "SE",
+        "BA"
+      ],
+      "id": "al",
+      "dificuldade": "dificil",
+      "nomesAceitos": [
+        "alagoas",
+        "al"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/al.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "vermelho",
+          "azul",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "SE",
+      "nome": "Sergipe",
+      "capital": "Aracaju",
+      "regiao": "Nordeste",
+      "nivel": 3,
+      "populacao": 2210004,
+      "areaKm2": 21938,
+      "coordenadas": {
+        "lat": -10.91,
+        "lng": -37.07
+      },
+      "fronteiras": [
+        "AL",
+        "BA"
+      ],
+      "id": "se",
+      "dificuldade": "dificil",
+      "nomesAceitos": [
+        "sergipe",
+        "se"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/se.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "PI",
+      "nome": "Piauí",
+      "capital": "Teresina",
+      "regiao": "Nordeste",
+      "nivel": 3,
+      "populacao": 3271199,
+      "areaKm2": 251755,
+      "coordenadas": {
+        "lat": -5.09,
+        "lng": -42.8
+      },
+      "fronteiras": [
+        "MA",
+        "CE",
+        "PE",
+        "BA",
+        "TO"
+      ],
+      "id": "pi",
+      "dificuldade": "dificil",
+      "nomesAceitos": [
+        "piaui",
+        "pi"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/pi.svg",
+        "cores": [
+          "amarelo",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "RO",
+      "nome": "Rondônia",
+      "capital": "Porto Velho",
+      "regiao": "Norte",
+      "nivel": 3,
+      "populacao": 1581196,
+      "areaKm2": 237765,
+      "coordenadas": {
+        "lat": -8.76,
+        "lng": -63.9
+      },
+      "fronteiras": [
+        "AC",
+        "AM",
+        "MT"
+      ],
+      "id": "ro",
+      "dificuldade": "dificil",
+      "nomesAceitos": [
+        "rondonia",
+        "ro"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/ro.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "azul",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "RR",
+      "nome": "Roraima",
+      "capital": "Boa Vista",
+      "regiao": "Norte",
+      "nivel": 3,
+      "populacao": 636707,
+      "areaKm2": 223645,
+      "coordenadas": {
+        "lat": 2.82,
+        "lng": -60.67
+      },
+      "fronteiras": [
+        "AM",
+        "PA"
+      ],
+      "id": "rr",
+      "dificuldade": "dificil",
+      "nomesAceitos": [
+        "roraima",
+        "rr"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/rr.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "vermelho",
+          "branco"
+        ]
+      }
+    },
+    {
+      "uf": "AP",
+      "nome": "Amapá",
+      "capital": "Macapá",
+      "regiao": "Norte",
+      "nivel": 3,
+      "populacao": 733759,
+      "areaKm2": 142471,
+      "coordenadas": {
+        "lat": 0.03,
+        "lng": -51.06
+      },
+      "fronteiras": [
+        "PA"
+      ],
+      "id": "ap",
+      "dificuldade": "dificil",
+      "nomesAceitos": [
+        "amapa",
+        "ap"
+      ],
+      "bandeira": {
+        "svg": "/data/geografia/flags/br/ap.svg",
+        "cores": [
+          "verde",
+          "amarelo",
+          "azul",
+          "branco",
+          "preto"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1033"/>
+      <stop offset="50%" stop-color="#2e1065"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.68" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.32"/>
+      <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#1a1033" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)"/>
+  <circle cx="660" cy="270" r="390" fill="url(#glow)"/>
+
+  <!-- Visual Chain of Words on Right -->
+  <g transform="translate(475, 85)">
+    <!-- 4 Initial Letters Picker -->
+    <text x="0" y="20" font-family="sans-serif" font-size="13" font-weight="800" fill="#fbbf24" letter-spacing="2">ESCOLHA 1 DE 4 LETRAS INICIAIS</text>
+    <g transform="translate(0, 34)">
+      <rect x="0" y="0" width="54" height="54" rx="12" fill="#f59e0b" stroke="#fde047" stroke-width="2.5"/>
+      <text x="27" y="36" font-family="sans-serif" font-size="28" font-weight="900" fill="#1a1033" text-anchor="middle">G</text>
+      <rect x="66" y="0" width="54" height="54" rx="12" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+      <text x="93" y="36" font-family="sans-serif" font-size="28" font-weight="900" fill="#94a3b8" text-anchor="middle">P</text>
+      <rect x="132" y="0" width="54" height="54" rx="12" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+      <text x="159" y="36" font-family="sans-serif" font-size="28" font-weight="900" fill="#94a3b8" text-anchor="middle">M</text>
+      <rect x="198" y="0" width="54" height="54" rx="12" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+      <text x="225" y="36" font-family="sans-serif" font-size="28" font-weight="900" fill="#94a3b8" text-anchor="middle">C</text>
+    </g>
+
+    <!-- Word Chain Pills -->
+    <g transform="translate(0, 118)">
+      <rect x="0" y="0" width="210" height="62" rx="16" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+      <text x="26" y="40" font-family="sans-serif" font-size="28" font-weight="900" fill="#f8fafc">GA<tspan fill="#f43f5e">TO</tspan></text>
+      <rect x="135" y="14" width="58" height="34" rx="8" fill="#f43f5e" fill-opacity="0.22" stroke="#f43f5e" stroke-width="1.5"/>
+      <text x="164" y="36" font-family="sans-serif" font-size="14" font-weight="900" fill="#fda4af" text-anchor="middle">2 LETRAS</text>
+    </g>
+
+    <g transform="translate(75, 198)">
+      <rect x="0" y="0" width="250" height="62" rx="16" fill="#1e293b" stroke="#f43f5e" stroke-width="2.5"/>
+      <text x="24" y="40" font-family="sans-serif" font-size="28" font-weight="900" fill="#f43f5e">TO<tspan fill="#f8fafc">MA</tspan><tspan fill="#10b981">TE</tspan></text>
+    </g>
+
+    <g transform="translate(150, 278)">
+      <rect x="0" y="0" width="275" height="62" rx="16" fill="#064e3b" stroke="#10b981" stroke-width="2.5"/>
+      <text x="24" y="40" font-family="sans-serif" font-size="28" font-weight="900" fill="#34d399">TE<tspan fill="#f8fafc">LEFO</tspan><tspan fill="#fbbf24">NE</tspan></text>
+    </g>
+  </g>
+
+  <!-- Title Left -->
+  <text x="58" y="135" font-family="sans-serif" font-size="15" font-weight="800" letter-spacing="4" fill="#f43f5e">MULTIPLAYER P2P AO VIVO · PT-BR</text>
+  <text x="55" y="215" font-family="sans-serif" font-size="70" font-weight="900" letter-spacing="-2" fill="#f8fafc">ÚLTIMA<tspan x="55" dy="0.95em" fill="#fbbf24">LETRA</tspan></text>
+  <text x="58" y="345" font-family="sans-serif" font-size="18" fill="#cbd5e1">4 letras iniciais · 1 última letra → 2 últimas letras!</text>
+  <text x="58" y="375" font-family="sans-serif" font-size="16" fill="#94a3b8">+626.000 palavras aceitas · Salas ao vivo com amigos + Bots</text>
+  <text x="58" y="490" font-family="sans-serif" font-size="12" font-weight="700" letter-spacing="4" fill="#64748b">NBP GAMES · CORRENTE DE PALAVRAS</text>
+</svg>
