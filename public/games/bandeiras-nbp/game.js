@@ -766,14 +766,24 @@
   document.getElementById('btn-hl-higher').addEventListener('click', () => handleHighLowChoice(true))
   document.getElementById('btn-hl-lower').addEventListener('click', () => handleHighLowChoice(false))
 
-  // ==================== MODO 4: VERSUS 1v1 (P2P & BOT) ====================
+  // ==================== MODO 4 & 5: VERSUS 1v1 & BATTLE ROYALE (ATÉ 6 PLAYERS) ====================
+  const ROYALE_BOTS = [
+    { id: 'bot_atlas', name: 'Bot Atlas 🤖', color: '#f59e0b' },
+    { id: 'bot_mercator', name: 'Bot Mercator 🤖', color: '#a855f7' },
+    { id: 'bot_vasco', name: 'Bot Vasco 🤖', color: '#10b981' },
+    { id: 'bot_colombo', name: 'Bot Colombo 🤖', color: '#ec4899' },
+    { id: 'bot_magalhaes', name: 'Bot Magalhães 🤖', color: '#f43f5e' },
+  ]
+
   let vsRoom = null
-  let vsBotTimer = null
+  let vsBotInterval = null
   let vsMyLocked = false
-  let vsDecks = [[], []] // [deckSlot0, deckSlot1] — different flag order for each player
+  let vsDecks = [[], [], [], [], [], []] // 6 independent de-collided flag decks
 
   const vsState = {
     roomCode: '',
+    arenaType: 'versus', // 'versus' (1v1, max 2) | 'royale' (Battle Royale, max 6)
+    maxPlayers: 2,
     status: 'lobby', // 'lobby' | 'playing' | 'gameover'
     tier: '2',
     seed: '',
@@ -786,15 +796,23 @@
 
   const vsPlayerNameInput = document.getElementById('vs-player-name')
   const vsRoomCodeInput = document.getElementById('vs-room-code')
+  const vsRoomLabel = document.getElementById('vs-room-label')
+  const vsPlayersCount = document.getElementById('vs-players-count')
   const btnVsJoin = document.getElementById('btn-vs-join')
   const btnVsHost = document.getElementById('btn-vs-host')
   const btnVsCopy = document.getElementById('btn-vs-copy')
   const vsP2pStatus = document.getElementById('vs-p2p-status')
   const btnVsContinent = document.getElementById('btn-vs-continent')
   const btnVsInputMode = document.getElementById('btn-vs-inputmode')
+  const vsBotControls = document.getElementById('vs-bot-controls')
+  const btnVsAddBot = document.getElementById('btn-vs-add-bot')
+  const btnVsRemBot = document.getElementById('btn-vs-rem-bot')
   const btnVsStart = document.getElementById('btn-vs-start')
   const vsMyWriteInput = document.getElementById('vs-my-write-input')
   const vsMySuggestions = document.getElementById('vs-my-suggestions')
+  const vsOpponentsGrid = document.getElementById('vs-opponents-grid')
+  const vsCenterCircle = document.getElementById('vs-center-circle')
+  const vsAliveBadge = document.getElementById('vs-alive-badge')
 
   function getPoolForTier(tierVal) {
     if (tierVal === 'br') {
@@ -826,18 +844,22 @@
 
   function buildVersusDecks() {
     const pool = getPoolForTier(vsState.tier)
-    const d0 = shuffleWithSeed(pool, `vs-p0:${vsState.tier}:${vsState.seed}`)
-    const d1 = shuffleWithSeed(pool, `vs-p1:${vsState.tier}:${vsState.seed}`)
-    // Ensure at every index i, Player 0 and Player 1 get DIFFERENT flags!
-    for (let i = 0; i < d1.length; i++) {
-      if (d0[i] && d1[i] && d0[i].code === d1[i].code && d1.length > 1) {
-        const swapIdx = (i + 1) % d1.length
-        const tmp = d1[i]
-        d1[i] = d1[swapIdx]
-        d1[swapIdx] = tmp
+    const decks = []
+    for (let s = 0; s < 6; s++) {
+      const d = shuffleWithSeed(pool, `vs-slot-${s}:${vsState.tier}:${vsState.seed}`)
+      if (s > 0 && d.length > 1) {
+        for (let i = 0; i < d.length; i++) {
+          if (decks[0][i] && d[i].code === decks[0][i].code) {
+            const swapIdx = (i + s) % d.length
+            const tmp = d[i]
+            d[i] = d[swapIdx]
+            d[swapIdx] = tmp
+          }
+        }
       }
+      decks.push(d)
     }
-    vsDecks = [d0, d1]
+    vsDecks = decks
   }
 
   function pickVersusOptions(pool, target, slotIdx, flagIdx) {
@@ -860,30 +882,59 @@
     return [target, ...picked.slice(0, 3)].sort(() => rng() - 0.5)
   }
 
-  function createDefaultBotOpponent() {
+  function createBotPlayer(botIndex = 0) {
+    const meta = ROYALE_BOTS[botIndex % ROYALE_BOTS.length]
     return {
-      id: 'bot_atlas',
-      name: 'Bot Atlas 🤖',
-      color: '#f59e0b',
+      id: `${meta.id}_${botIndex}`,
+      name: meta.name,
+      color: meta.color,
       isBot: true,
       errors: 0,
+      eliminated: false,
       score: 0,
       flagIndex: 0,
       lastResult: '',
-      lastMsg: 'Pronto para o duelo 1v1!',
+      lastMsg: 'Pronto para a partida!',
+    }
+  }
+
+  function configureArenaType(type) {
+    const isRoyale = type === 'royale'
+    vsState.arenaType = isRoyale ? 'royale' : 'versus'
+    vsState.maxPlayers = isRoyale ? 6 : 2
+
+    if (vsRoom && vsRoom.isHost && vsState.status !== 'playing') {
+      if (!isRoyale && vsState.players.length > 2) {
+        vsState.players = vsState.players.slice(0, 2)
+      } else if (isRoyale && vsState.players.length < 4) {
+        while (vsState.players.length < 4) {
+          const usedBots = vsState.players.filter((p) => p.isBot).length
+          vsState.players.push(createBotPlayer(usedBots))
+        }
+      }
+      if (vsState.players.length < 2) {
+        vsState.players.push(createBotPlayer(0))
+      }
+      syncVersusToClients()
+    } else {
+      renderVersusUI()
     }
   }
 
   function setupVersusAsHost(code) {
-    clearTimeout(vsBotTimer)
+    clearInterval(vsBotInterval)
     vsRoom.hostRoom(code)
     const normalized = vsRoom.roomCode || code
     vsState.roomCode = normalized
+    vsState.arenaType = state.mode === 'royale' ? 'royale' : 'versus'
+    vsState.maxPlayers = vsState.arenaType === 'royale' ? 6 : 2
     vsState.status = 'lobby'
     vsState.tier = state.tier
     vsState.seed = randomSeed()
     vsState.winner = null
     vsState.loser = null
+
+    const initialBotCount = vsState.arenaType === 'royale' ? 3 : 1
     vsState.players = [
       {
         id: vsRoom.profile.id,
@@ -891,13 +942,17 @@
         color: '#0ea5e9',
         isBot: false,
         errors: 0,
+        eliminated: false,
         score: 0,
         flagIndex: 0,
         lastResult: '',
-        lastMsg: 'Clique em Iniciar Duelo 1v1 para começar!',
+        lastMsg: 'Clique em Iniciar para começar!',
       },
-      createDefaultBotOpponent(),
     ]
+    for (let b = 0; b < initialBotCount; b++) {
+      vsState.players.push(createBotPlayer(b))
+    }
+
     vsRoomCodeInput.value = normalized
     buildVersusDecks()
     renderVersusUI()
@@ -911,16 +966,25 @@
   }
 
   function renderVersusUI() {
-    if (state.mode !== 'versus') return
+    if (state.mode !== 'versus' && state.mode !== 'royale') return
     if (!vsDecks[0].length) buildVersusDecks()
     const pool = getPoolForTier(vsState.tier)
+    const isRoyale = vsState.arenaType === 'royale' || state.mode === 'royale'
+    const maxP = isRoyale ? 6 : 2
+
+    vsRoomLabel.textContent = isRoyale ? 'Sala Royale (6P):' : 'Sala 1v1:'
+    vsPlayersCount.textContent = `👥 ${vsState.players.length}/${maxP}`
+    vsCenterCircle.textContent = isRoyale ? '👑 BR' : '1v1'
+
+    const aliveCount = vsState.players.filter((p) => !p.eliminated).length
+    vsAliveBadge.textContent =
+      vsState.status === 'playing' && isRoyale
+        ? `🔥 ${aliveCount}/${vsState.players.length} vivos!`
+        : 'Quem errar 3 perde!'
 
     const myIdx = vsState.players.findIndex((p) => p.id === vsRoom?.profile.id)
     const mySlot = myIdx !== -1 ? myIdx : 0
-    const oppSlot = mySlot === 0 ? 1 : 0
-
     const me = vsState.players[mySlot] || vsState.players[0]
-    const opp = vsState.players[oppSlot] || vsState.players[1] || createDefaultBotOpponent()
 
     // Toggles UI
     btnVsContinent.classList.toggle('active', vsState.showContinent)
@@ -936,19 +1000,29 @@
     const isHost = vsRoom ? vsRoom.isHost : true
     btnVsContinent.disabled = !isHost || vsState.status === 'playing'
     btnVsInputMode.disabled = !isHost || vsState.status === 'playing'
+    vsBotControls.hidden = !isRoyale || !isHost || vsState.status === 'playing'
     btnVsStart.hidden = !isHost || vsState.status === 'playing'
+    btnVsStart.textContent = isRoyale
+      ? `▶️ Iniciar Battle Royale (${vsState.players.length}P)`
+      : '▶️ Iniciar Duelo 1v1'
 
     // MY SIDE (Left)
     if (me) {
+      const myPanel = document.getElementById('vs-my-panel')
+      myPanel.classList.toggle('eliminated', Boolean(me.eliminated))
       document.getElementById('vs-my-dot').textContent = me.name.charAt(0).toUpperCase()
       document.getElementById('vs-my-name').textContent = `${me.name} (Você)`
+      document.getElementById('vs-my-sub').textContent = me.eliminated
+        ? '💀 Eliminado · Assistindo sobreviventes'
+        : 'Seu lado · Bandeira exclusiva'
       const myLivesLeft = Math.max(0, 3 - me.errors)
-      document.getElementById('vs-my-lives').textContent =
-        '❤️'.repeat(myLivesLeft) + '💀'.repeat(3 - myLivesLeft)
+      document.getElementById('vs-my-lives').textContent = me.eliminated
+        ? '💀💀💀'
+        : '❤️'.repeat(myLivesLeft) + '💀'.repeat(3 - myLivesLeft)
       document.getElementById('vs-my-errors').textContent = `${me.errors}/3 erros`
       document.getElementById('vs-my-score').textContent = `${me.score} pts`
 
-      const myDeck = vsDecks[mySlot] || vsDecks[0]
+      const myDeck = vsDecks[mySlot % vsDecks.length] || vsDecks[0]
       const myFlag = myDeck[me.flagIndex % myDeck.length]
       if (myFlag) {
         document.getElementById('vs-my-flag').src = myFlag.svg
@@ -958,11 +1032,12 @@
       }
 
       const myFb = document.getElementById('vs-my-feedback')
-      myFb.textContent =
-        me.lastMsg ||
-        (vsState.status === 'playing'
-          ? `Bandeira #${me.flagIndex + 1} · Não erre 3 vezes!`
-          : 'Sala pronta! Clique em Iniciar Duelo 1v1.')
+      myFb.textContent = me.eliminated
+        ? '💀 Você errou 3 bandeiras! Aguardando fim da partida...'
+        : me.lastMsg ||
+          (vsState.status === 'playing'
+            ? `Bandeira #${me.flagIndex + 1} · Não erre 3 vezes!`
+            : 'Sala pronta! Convide até 6 amigos ou inicie agora.')
       myFb.className = `vs-feedback ${me.lastResult === 'ok' ? 'ok' : me.lastResult === 'bad' ? 'bad' : ''}`
 
       const myOptsEl = document.getElementById('vs-my-options')
@@ -978,58 +1053,85 @@
           btn.type = 'button'
           btn.className = 'option-btn'
           btn.textContent = opt.nome
-          btn.disabled = vsState.status !== 'playing' || vsMyLocked
+          btn.disabled = vsState.status !== 'playing' || vsMyLocked || me.eliminated
           btn.addEventListener('click', () => submitMyVersusAnswer(opt.code, btn, myFlag.code))
           myOptsEl.appendChild(btn)
         }
       } else {
-        vsMyWriteInput.disabled = vsState.status !== 'playing' || vsMyLocked
+        vsMyWriteInput.disabled = vsState.status !== 'playing' || vsMyLocked || Boolean(me.eliminated)
       }
     }
 
-    // OPPONENT SIDE (Right — Different Flag!)
-    if (opp) {
-      document.getElementById('vs-opp-dot').textContent = opp.name.charAt(0).toUpperCase()
-      document.getElementById('vs-opp-name').textContent = opp.name
-      document.getElementById('vs-opp-sub').textContent = opp.isBot
-        ? 'Adversário Bot · Outra bandeira'
-        : 'Amigo Conectado · Outra bandeira'
-      const oppLivesLeft = Math.max(0, 3 - opp.errors)
-      document.getElementById('vs-opp-lives').textContent =
-        '❤️'.repeat(oppLivesLeft) + '💀'.repeat(3 - oppLivesLeft)
-      document.getElementById('vs-opp-errors').textContent = `${opp.errors}/3 erros`
-      document.getElementById('vs-opp-score').textContent = `${opp.score} pts`
+    // OPPONENTS SIDE (Right — 1 card in 1v1, up to 5 cards in Battle Royale!)
+    const opponents = vsState.players
+      .map((p, idx) => ({ player: p, slot: idx }))
+      .filter((item) => item.slot !== mySlot)
 
-      const oppDeck = vsDecks[oppSlot] || vsDecks[1]
+    vsOpponentsGrid.classList.toggle('multi-grid', opponents.length > 1)
+    vsOpponentsGrid.innerHTML = ''
+
+    for (const { player: opp, slot: oppSlot } of opponents) {
+      const oppDeck = vsDecks[oppSlot % vsDecks.length] || vsDecks[1]
       const oppFlag = oppDeck[opp.flagIndex % oppDeck.length]
-      if (oppFlag) {
-        document.getElementById('vs-opp-flag').src = oppFlag.svg
-        const oppReg = document.getElementById('vs-opp-region')
-        oppReg.textContent = oppFlag.regiao
-        oppReg.hidden = !vsState.showContinent
-      }
+      const oppLivesLeft = Math.max(0, 3 - opp.errors)
+      const hearts = opp.eliminated
+        ? '💀 ELIMINADO'
+        : '❤️'.repeat(oppLivesLeft) + '💀'.repeat(3 - oppLivesLeft)
 
-      const oppFb = document.getElementById('vs-opp-feedback')
-      oppFb.textContent =
-        opp.lastMsg ||
-        (vsState.status === 'playing'
-          ? `Adversário na bandeira #${opp.flagIndex + 1}...`
-          : 'Aguardando início do duelo...')
-      oppFb.className = `vs-feedback ${opp.lastResult === 'ok' ? 'ok' : opp.lastResult === 'bad' ? 'bad' : ''}`
+      const card = document.createElement('div')
+      card.id = `vs-opp-panel-${opp.id}`
+      card.className = `versus-panel opp-panel${opp.eliminated ? ' eliminated' : ''}`
 
-      const oppOptsEl = document.getElementById('vs-opp-options')
-      oppOptsEl.innerHTML = ''
-      if (oppFlag) {
+      const regionHtml =
+        vsState.showContinent && oppFlag
+          ? `<span class="region-badge">${oppFlag.regiao}</span>`
+          : ''
+
+      let optionsHtml = ''
+      if (opponents.length === 1 && oppFlag) {
         const oppOpts = pickVersusOptions(pool, oppFlag, oppSlot, opp.flagIndex)
-        for (const opt of oppOpts) {
-          const btn = document.createElement('button')
-          btn.type = 'button'
-          btn.className = 'option-btn'
-          btn.textContent = opt.nome
-          btn.disabled = true
-          oppOptsEl.appendChild(btn)
-        }
+        optionsHtml = `
+          <div class="quiz-options vs-options opp-options">
+            ${oppOpts.map((o) => `<button type="button" class="option-btn" disabled>${o.nome}</button>`).join('')}
+          </div>
+        `
       }
+
+      const fbClass = opp.lastResult === 'ok' ? 'ok' : opp.lastResult === 'bad' ? 'bad' : ''
+      const fbText = opp.eliminated
+        ? `💀 Eliminado com 3 erros (${opp.score} pts)`
+        : opp.lastMsg ||
+          (vsState.status === 'playing'
+            ? `Na bandeira #${opp.flagIndex + 1}...`
+            : opp.isBot
+              ? 'Bot pronto na sala'
+              : 'Amigo conectado')
+
+      card.innerHTML = `
+        <div class="vs-player-header">
+          <div class="vs-player-id">
+            <span class="vs-avatar-dot opp" style="background:${opp.color || '#f59e0b'}">${opp.name.charAt(0).toUpperCase()}</span>
+            <div>
+              <strong>${opp.name}</strong>
+              <small>${opp.isBot ? 'Bot · Outra bandeira' : 'Jogador · Outra bandeira'}</small>
+            </div>
+          </div>
+          <div class="vs-player-stats">
+            <span class="vs-lives">${hearts}</span>
+            <span class="vs-error-pill">${opp.errors}/3</span>
+            <span class="vs-score-pill">${opp.score} pts</span>
+          </div>
+        </div>
+        <div class="flag-showcase vs-flag-card">
+          ${regionHtml}
+          <div class="flag-frame vs-flag-frame">
+            <img src="${oppFlag ? oppFlag.svg : ''}" alt="Bandeira de ${opp.name}" />
+          </div>
+          <p class="vs-feedback ${fbClass}">${fbText}</p>
+        </div>
+        ${optionsHtml}
+      `
+      vsOpponentsGrid.appendChild(card)
     }
   }
 
@@ -1044,20 +1146,27 @@
 
   function startVersusMatchOnHost() {
     if (!vsRoom || !vsRoom.isHost) return
-    clearTimeout(vsBotTimer)
+    clearInterval(vsBotInterval)
     vsMyLocked = false
+    vsState.arenaType = state.mode === 'royale' ? 'royale' : 'versus'
+    vsState.maxPlayers = vsState.arenaType === 'royale' ? 6 : 2
     vsState.status = 'playing'
     vsState.tier = state.tier
     vsState.seed = randomSeed()
     vsState.winner = null
     vsState.loser = null
 
+    if (vsState.players.length < 2) {
+      vsState.players.push(createBotPlayer(0))
+    }
+
     for (const p of vsState.players) {
       p.errors = 0
+      p.eliminated = false
       p.score = 0
       p.flagIndex = 0
       p.lastResult = ''
-      p.lastMsg = 'Valendo! Quem errar 3 perde!'
+      p.lastMsg = 'Valendo! Quem errar 3 é eliminado!'
     }
 
     buildVersusDecks()
@@ -1065,27 +1174,31 @@
     playChord([440, 554.37, 659.25], 65)
     syncVersusToClients()
     vsRoom.broadcastEvent({ type: 'VS_START' })
-    scheduleVersusBotIfNeeded()
+    startVersusBotsLoop()
   }
 
-  function scheduleVersusBotIfNeeded() {
-    clearTimeout(vsBotTimer)
+  function startVersusBotsLoop() {
+    clearInterval(vsBotInterval)
     if (!vsRoom?.isHost || vsState.status !== 'playing') return
-    const bot = vsState.players.find((p) => p.isBot)
-    if (!bot) return
 
-    const delayMs = 3100 + Math.random() * 2100
-    vsBotTimer = setTimeout(() => {
-      if (vsState.status !== 'playing') return
+    vsBotInterval = setInterval(() => {
+      if (vsState.status !== 'playing') {
+        clearInterval(vsBotInterval)
+        return
+      }
+      const aliveBots = vsState.players.filter((p) => p.isBot && !p.eliminated)
+      if (!aliveBots.length) return
+
+      // Pick one random alive bot every tick to answer its flag
+      const bot = aliveBots[Math.floor(Math.random() * aliveBots.length)]
       const botSlot = vsState.players.findIndex((p) => p.id === bot.id)
       if (botSlot === -1) return
-      const deck = vsDecks[botSlot] || vsDecks[1]
+      const deck = vsDecks[botSlot % vsDecks.length] || vsDecks[1]
       const target = deck[bot.flagIndex % deck.length]
-      // Bot has ~72% accuracy so it can also make mistakes and lose 3 lives
-      const botCorrect = Math.random() < 0.72
+      if (!target) return
+      const botCorrect = Math.random() < 0.7
       processVersusAnswerOnHost(bot.id, botCorrect ? target.code : '__BOT_WRONG__')
-      scheduleVersusBotIfNeeded()
-    }, delayMs)
+    }, Math.max(1400, Math.round(3800 / Math.max(1, vsState.players.filter((p) => p.isBot).length))))
   }
 
   function processVersusAnswerOnHost(playerId, guessedCode) {
@@ -1094,8 +1207,9 @@
     if (slot === -1) return
 
     const player = vsState.players[slot]
-    const otherPlayer = vsState.players[1 - slot] || vsState.players[0]
-    const deck = vsDecks[slot] || vsDecks[0]
+    if (player.eliminated) return
+
+    const deck = vsDecks[slot % vsDecks.length] || vsDecks[0]
     const currentFlag = deck[player.flagIndex % deck.length]
     if (!currentFlag) return
 
@@ -1107,33 +1221,44 @@
     } else {
       player.errors++
       player.lastResult = 'bad'
-      player.lastMsg = `❌ Errou! Era ${currentFlag.nome} (${player.errors}/3 erros)`
+      player.lastMsg = `❌ Errou! Era ${currentFlag.nome} (${player.errors}/3)`
+      if (player.errors >= 3) {
+        player.eliminated = true
+        player.lastMsg = `💀 Eliminado! Errou ${currentFlag.nome} (3/3)`
+      }
     }
 
     player.flagIndex++
 
-    const mySlot = vsState.players.findIndex((p) => p.id === vsRoom.profile.id)
-    flashPanel(slot === mySlot ? 'vs-my-panel' : 'vs-opp-panel', isCorrect)
+    const isMe = player.id === vsRoom.profile.id
+    flashPanel(isMe ? 'vs-my-panel' : `vs-opp-panel-${player.id}`, isCorrect)
     vsRoom.broadcastEvent({
       type: 'VS_FLASH',
       playerId: player.id,
       isCorrect,
     })
 
-    // Check if this player reached 3 mistakes!
-    if (player.errors >= 3) {
-      clearTimeout(vsBotTimer)
-      vsState.status = 'gameover'
-      vsState.winner = otherPlayer
-      vsState.loser = player
-      syncVersusToClients()
-      vsRoom.broadcastEvent({
-        type: 'VS_OVER',
-        winner: otherPlayer,
-        loser: player,
-      })
-      showVersusGameOverModal(otherPlayer, player)
-      return
+    if (player.eliminated) {
+      const alive = vsState.players.filter((p) => !p.eliminated)
+      if (alive.length <= 1) {
+        clearInterval(vsBotInterval)
+        const champion = alive[0] || vsState.players.slice().sort((a, b) => b.score - a.score)[0]
+        vsState.status = 'gameover'
+        vsState.winner = champion
+        vsState.loser = player
+        syncVersusToClients()
+        vsRoom.broadcastEvent({
+          type: 'VS_OVER',
+          winner: champion,
+          loser: player,
+        })
+        showVersusGameOverModal(champion, player)
+        return
+      }
+
+      const elimMsg = `💥 ${player.name} errou 3 bandeiras e foi eliminado(a)! Restam ${alive.length} vivos!`
+      showToast(elimMsg, 2600)
+      vsRoom.broadcastEvent({ type: 'TOAST', message: elimMsg })
     }
 
     syncVersusToClients()
@@ -1141,6 +1266,7 @@
 
   function showVersusGameOverModal(winner, loser, customReason = '') {
     const didIWin = winner && winner.id === vsRoom?.profile.id
+    const isRoyale = vsState.arenaType === 'royale' || vsState.players.length > 2
     if (didIWin) {
       launchConfetti()
       playChord([523.25, 659.25, 783.99, 1046.5], 75)
@@ -1148,16 +1274,29 @@
       playTone(150, 0.3, 'sawtooth', 0.12)
     }
 
+    const ranking = [...vsState.players]
+      .sort((a, b) => Number(a.eliminated) - Number(b.eliminated) || b.score - a.score)
+      .map((p, idx) => `${idx + 1}º ${p.name} (${p.score} pts · ${p.errors}/3 erros)`)
+      .join(' · ')
+
     openSummaryModal(
-      didIWin ? `🏆 Você Venceu o Duelo 1v1!` : `💀 ${winner ? winner.name : 'Adversário'} Venceu!`,
+      didIWin
+        ? isRoyale
+          ? `👑 Campeão Battle Royale!`
+          : `🏆 Você Venceu o Duelo 1v1!`
+        : `🏆 ${winner ? winner.name : 'Adversário'} Venceu!`,
       customReason ||
-        `${loser ? loser.name : 'Jogador'} errou 3 bandeiras primeiro!`,
-      `${winner ? winner.name : 'Vencedor'}: ${winner ? winner.score : 0} pts (${winner ? winner.errors : 0}/3 erros) · ${loser ? loser.name : 'Perdedor'}: ${loser ? loser.score : 0} pts (${loser ? loser.errors : 3}/3 erros)`
+        (isRoyale
+          ? `${winner ? winner.name : 'Sobrevivente'} foi o último sobrevivente entre ${vsState.players.length} jogadores!`
+          : `${loser ? loser.name : 'Jogador'} errou 3 bandeiras primeiro!`),
+      ranking
     )
   }
 
   function submitMyVersusAnswer(guessedCode, clickedBtn, targetCode) {
     if (vsState.status !== 'playing' || vsMyLocked) return
+    const me = vsState.players.find((p) => p.id === vsRoom?.profile.id)
+    if (me?.eliminated) return
     vsMyLocked = true
     const isCorrect = guessedCode === targetCode
     if (clickedBtn) {
@@ -1178,7 +1317,7 @@
         playerId: vsRoom.profile.id,
         guessedCode,
       })
-    }, 380)
+    }, 360)
   }
 
   function submitMyVersusWrittenGuess(selectedItem) {
@@ -1186,8 +1325,8 @@
     const myIdx = vsState.players.findIndex((p) => p.id === vsRoom?.profile.id)
     const mySlot = myIdx !== -1 ? myIdx : 0
     const me = vsState.players[mySlot]
-    if (!me) return
-    const myDeck = vsDecks[mySlot] || vsDecks[0]
+    if (!me || me.eliminated) return
+    const myDeck = vsDecks[mySlot % vsDecks.length] || vsDecks[0]
     const currentFlag = myDeck[me.flagIndex % myDeck.length]
     if (!currentFlag) return
 
@@ -1217,51 +1356,73 @@
     const leavingName = vsState.players[idx].name
     const wasPlaying = vsState.status === 'playing'
 
-    clearTimeout(vsBotTimer)
-    vsState.players[idx] = createDefaultBotOpponent()
+    vsState.players.splice(idx, 1)
+    if (vsState.players.length < 2) {
+      vsState.players.push(createBotPlayer(0))
+    }
+
     const msg = `🚪 ${leavingName} saiu da sala.`
-    showToast(msg, 3000)
+    showToast(msg, 2800)
+    vsRoom.broadcastEvent({ type: 'TOAST', message: msg })
 
     if (wasPlaying) {
-      vsState.status = 'gameover'
-      vsState.winner = vsState.players[0]
-      vsState.loser = { name: leavingName, score: 0, errors: 3 }
-      syncVersusToClients()
-      showVersusGameOverModal(
-        vsState.players[0],
-        vsState.loser,
-        `${leavingName} desconectou durante o duelo 1v1!`
-      )
-    } else {
-      syncVersusToClients()
-    }
-  }
-
-  function handleVersusHostLeft() {
-    if (vsRoom.isHost) return
-    clearTimeout(vsBotTimer)
-    const hostName = vsState.players[0]?.name || 'O Host'
-    const me = vsState.players.find((p) => p.id === vsRoom.profile.id) || {
-      id: vsRoom.profile.id,
-      name: vsRoom.profile.name,
-      color: '#0ea5e9',
-      isBot: false,
-      errors: 0,
-      score: 0,
-      flagIndex: 0,
-      lastResult: '',
-      lastMsg: 'Você assumiu como Host da sala!',
-    }
-    const wasPlaying = vsState.status === 'playing'
-    vsState.players = [me, createDefaultBotOpponent()]
-    vsRoom.promoteToHost(vsState.players)
-
-    showToast(`👑 ${hostName} saiu! Você agora é o Host da sala ${vsState.roomCode}.`, 3500)
-    if (wasPlaying) {
-      vsState.status = 'gameover'
-      showVersusGameOverModal(me, { name: hostName, score: 0, errors: 3 }, `${hostName} saiu da partida!`)
+      const alive = vsState.players.filter((p) => !p.eliminated)
+      if (alive.length <= 1) {
+        clearInterval(vsBotInterval)
+        vsState.status = 'gameover'
+        vsState.winner = alive[0] || vsState.players[0]
+        vsState.loser = { name: leavingName, score: 0, errors: 3 }
+        syncVersusToClients()
+        vsRoom.broadcastEvent({
+          type: 'VS_OVER',
+          winner: vsState.winner,
+          loser: vsState.loser,
+        })
+        showVersusGameOverModal(
+          vsState.winner,
+          vsState.loser,
+          `${leavingName} saiu da partida!`
+        )
+        return
+      }
     }
     syncVersusToClients()
+  }
+
+  function handleVersusHostLeft(leavingHostId) {
+    if (vsRoom.isHost) return
+    clearInterval(vsBotInterval)
+    const hostIdx = leavingHostId
+      ? vsState.players.findIndex((p) => p.id === leavingHostId)
+      : 0
+    const hostName = vsState.players[hostIdx]?.name || 'O Host'
+    if (hostIdx !== -1) {
+      vsState.players.splice(hostIdx, 1)
+    }
+
+    const nextHost = vsState.players.find((p) => !p.isBot)
+    if (!nextHost || nextHost.id === vsRoom.profile.id) {
+      if (vsState.players.length < 2) {
+        vsState.players.push(createBotPlayer(0))
+      }
+      vsRoom.promoteToHost(vsState.players)
+      const migMsg = `👑 ${hostName} saiu! ${vsRoom.profile.name} assumiu como Host da sala ${vsState.roomCode}.`
+      showToast(migMsg, 3400)
+      vsRoom.broadcastEvent({ type: 'TOAST', message: migMsg })
+
+      if (vsState.status === 'playing') {
+        const alive = vsState.players.filter((p) => !p.eliminated)
+        if (alive.length <= 1) {
+          vsState.status = 'gameover'
+          vsState.winner = alive[0] || vsState.players[0]
+          syncVersusToClients()
+          showVersusGameOverModal(vsState.winner, { name: hostName, score: 0, errors: 3 }, `${hostName} saiu da partida!`)
+          return
+        }
+        startVersusBotsLoop()
+      }
+      syncVersusToClients()
+    }
   }
 
   function initVersusRoom() {
@@ -1308,18 +1469,40 @@
             if (p.id === vsRoom.profile.id) return
             const existingIdx = vsState.players.findIndex((pl) => pl.id === p.id)
             if (existingIdx === -1) {
-              vsState.players[1] = {
+              const maxAllowed = vsState.arenaType === 'royale' ? 6 : 2
+              const botIdx = vsState.players.findIndex((pl) => pl.isBot)
+              const newPlayerObj = {
                 id: p.id,
                 name: p.name,
-                color: '#f59e0b',
+                color: p.color || '#38bdf8',
                 isBot: false,
                 errors: 0,
+                eliminated: false,
                 score: 0,
                 flagIndex: 0,
                 lastResult: '',
-                lastMsg: 'Conectado e pronto para o 1v1!',
+                lastMsg: 'Conectado na sala!',
               }
-              const joinMsg = `⚔️ ${p.name} entrou para o Duelo 1v1!`
+
+              if (vsState.players.length < maxAllowed) {
+                if (maxAllowed === 2 && botIdx !== -1) {
+                  vsState.players[botIdx] = newPlayerObj
+                } else {
+                  vsState.players.push(newPlayerObj)
+                }
+              } else if (botIdx !== -1) {
+                // Replace a bot slot with the real human friend!
+                vsState.players[botIdx] = newPlayerObj
+              } else if (vsState.players.length < 6) {
+                // Auto-upgrade room to Battle Royale if a 3rd human joins!
+                vsState.arenaType = 'royale'
+                vsState.maxPlayers = 6
+                vsState.players.push(newPlayerObj)
+              } else {
+                return
+              }
+
+              const joinMsg = `⚔️ ${p.name} entrou na sala (${vsState.players.length}/${vsState.maxPlayers})!`
               showToast(joinMsg, 2800)
               vsRoom.broadcastEvent({ type: 'TOAST', message: joinMsg })
               syncVersusToClients()
@@ -1334,7 +1517,7 @@
           }
         } else {
           if (action.type === 'HOST_LEFT') {
-            handleVersusHostLeft()
+            handleVersusHostLeft(action.hostId || senderProfile?.id)
           } else if (action.type === 'TOAST' && action.message) {
             showToast(action.message, 2800)
           } else if (action.type === 'VS_START') {
@@ -1343,7 +1526,7 @@
             playChord([440, 554.37, 659.25], 65)
           } else if (action.type === 'VS_FLASH') {
             const isMe = action.playerId === vsRoom.profile.id
-            flashPanel(isMe ? 'vs-my-panel' : 'vs-opp-panel', action.isCorrect)
+            flashPanel(isMe ? 'vs-my-panel' : `vs-opp-panel-${action.playerId}`, action.isCorrect)
           } else if (action.type === 'VS_OVER') {
             showVersusGameOverModal(action.winner, action.loser)
           }
@@ -1354,6 +1537,29 @@
     vsPlayerNameInput.value = vsRoom.profile.name
     setupVersusAsHost(`VS-${Math.floor(1000 + Math.random() * 9000)}`)
   }
+
+  btnVsAddBot.addEventListener('click', () => {
+    if (!vsRoom?.isHost || vsState.status === 'playing') return
+    if (vsState.players.length >= 6) {
+      showToast('Limite máximo de 6 jogadores atingido!')
+      return
+    }
+    const botCount = vsState.players.filter((p) => p.isBot).length
+    vsState.players.push(createBotPlayer(botCount))
+    syncVersusToClients()
+  })
+
+  btnVsRemBot.addEventListener('click', () => {
+    if (!vsRoom?.isHost || vsState.status === 'playing') return
+    if (vsState.players.length <= 2) {
+      showToast('A partida precisa de pelo menos 2 jogadores!')
+      return
+    }
+    const lastBotIdx = vsState.players.map((p) => p.isBot).lastIndexOf(true)
+    if (lastBotIdx === -1) return
+    vsState.players.splice(lastBotIdx, 1)
+    syncVersusToClients()
+  })
 
   vsPlayerNameInput.addEventListener('change', () => {
     if (!vsRoom) return
@@ -1381,10 +1587,10 @@
     if (!vsRoom) initVersusRoom()
     const code = vsRoomCodeInput.value.trim().toUpperCase()
     if (!code) {
-      showToast('Digite o código da sala 1v1 do seu amigo!')
+      showToast('Digite o código da sala do seu amigo!')
       return
     }
-    clearTimeout(vsBotTimer)
+    clearInterval(vsBotInterval)
     vsRoom.joinRoom(code)
     vsRoomCodeInput.value = vsRoom.roomCode
     showToast(`Conectando à sala ${vsRoom.roomCode}...`)
@@ -1487,10 +1693,10 @@
         .join('\n')
       return `🧭 NBP Flagle & Bússola (${tierLabel})\n🔑 Sala: ${state.seed}\n${rows}`
     }
-    if (state.mode === 'versus') {
+    if (state.mode === 'versus' || state.mode === 'royale') {
       const w = vsState.winner?.name || 'Vencedor'
-      const l = vsState.loser?.name || 'Adversário'
-      return `⚔️ NBP Atlas & Bandeiras (Versus 1v1)\n📊 ${tierLabel}\n🏆 ${w} venceu ${l}!\n🔑 Sala 1v1: ${vsState.roomCode}`
+      const modeName = state.mode === 'royale' ? 'Battle Royale 6P' : 'Versus 1v1'
+      return `👑 NBP Atlas & Bandeiras (${modeName})\n📊 ${tierLabel}\n🏆 Campeão: ${w}!\n🔑 Sala: ${vsState.roomCode}`
     }
     return `📊 NBP Mais ou Menos Geográfico (${tierLabel})\n🔥 Sequência: ${state.bestStreak} · Pontos: ${state.score}\n🔑 Sala: ${state.seed}`
   }
@@ -1541,13 +1747,14 @@
     viewQuiz.hidden = state.mode !== 'quiz'
     viewFlagle.hidden = state.mode !== 'flagle'
     viewHighlow.hidden = state.mode !== 'highlow'
-    viewVersus.hidden = state.mode !== 'versus'
+    viewVersus.hidden = state.mode !== 'versus' && state.mode !== 'royale'
 
     if (state.mode === 'quiz') startQuizMode()
     else if (state.mode === 'flagle') startFlagleMode()
     else if (state.mode === 'highlow') startHighLowMode()
-    else if (state.mode === 'versus') {
+    else if (state.mode === 'versus' || state.mode === 'royale') {
       initVersusRoom()
+      configureArenaType(state.mode)
       if (vsRoom && vsRoom.isHost) {
         if (vsState.status === 'gameover') {
           startVersusMatchOnHost()

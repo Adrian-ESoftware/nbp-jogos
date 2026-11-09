@@ -38,7 +38,7 @@
     {
       "id": "bandeiras-nbp",
       "title": "Atlas & Bandeiras",
-      "description": "4 modos geográficos em 1: Quiz de Bandeiras, Flagle & Bússola, Mais ou Menos de População e Duelo Versus 1v1 Multiplayer P2P (você de um lado e seu adversário do outro com bandeiras diferentes — quem errar 3 primeiro perde)! Inclui 250 países + 27 Estados do Brasil.",
+      "description": "5 modos geográficos em 1: Quiz de Bandeiras, Flagle & Bússola, Mais ou Menos de População, Duelo Versus 1v1 e Battle Royale para até 6 Players (cada jogador recebe bandeiras diferentes e quem errar 3 é eliminado até sobrar 1 campeão)! Inclui 250 países + 27 Estados do Brasil.",
       "developer": "NBP Games",
       "genres": ["Geografia", "Quiz", "Puzzle"],
       "modes": ["singleplayer", "multiplayer"],

@@ -941,6 +941,29 @@ body {
   text-transform: uppercase;
 }
 
+.vs-status-group,
+.vs-toggles-left,
+.vs-bot-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.vs-bot-controls[hidden] {
+  display: none !important;
+}
+
+.vs-count-badge {
+  background: rgba(56, 189, 248, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #7dd3fc;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
 .vs-status-badge {
   background: rgba(16, 185, 129, 0.14);
   border: 1px solid rgba(16, 185, 129, 0.35);
@@ -1016,6 +1039,52 @@ body {
   border-color: var(--wrong);
   box-shadow: 0 0 28px rgba(239, 68, 68, 0.4);
   animation: shake-wrong 0.38s ease;
+}
+
+.versus-panel.eliminated {
+  opacity: 0.55;
+  filter: grayscale(0.65);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.vs-opponents-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-content: start;
+}
+
+.vs-opponents-grid.multi-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.vs-opponents-grid.multi-grid .versus-panel {
+  padding: 10px;
+  gap: 7px;
+  border-radius: 14px;
+}
+
+.vs-opponents-grid.multi-grid .vs-flag-frame {
+  width: min(100%, 150px);
+}
+
+.vs-opponents-grid.multi-grid .vs-flag-card {
+  padding: 8px;
+  gap: 6px;
+}
+
+.vs-opponents-grid.multi-grid .vs-player-id strong {
+  font-size: 0.82rem;
+}
+
+.vs-opponents-grid.multi-grid .vs-avatar-dot {
+  width: 28px;
+  height: 28px;
+  font-size: 0.78rem;
+}
+
+.vs-opponents-grid.multi-grid .vs-feedback {
+  font-size: 0.74rem;
 }
 
 .vs-player-header {
