@@ -492,17 +492,27 @@
     startTurnOnHost(true)
   }
 
-  function validateAndAcceptWordOnHost(rawInput, playerProfile) {
+  function validateAndAcceptWordOnHost(rawInput, playerProfile, chosenStarter) {
     if (gameState.status !== 'playing') return
     const currentPlayer = gameState.players[gameState.turnIndex]
     if (!currentPlayer || currentPlayer.id !== playerProfile.id) return
 
-    const activePref = getActivePrefixForTyping()
-    let fullCandidate = normalizePt(rawInput)
+    if (!gameState.requiredPrefix && chosenStarter && gameState.starterLetters.includes(chosenStarter)) {
+      gameState.selectedStarter = chosenStarter
+    }
 
-    // If the user typed only the suffix after the locked prefix, prepend it
-    if (activePref && !fullCandidate.startsWith(activePref)) {
-      fullCandidate = activePref + fullCandidate
+    const activePref = getActivePrefixForTyping()
+    const rawNorm = normalizePt(rawInput)
+    let fullCandidate = activePref ? activePref + rawNorm : rawNorm
+
+    // If user also typed the prefix itself (e.g. typed "casa" when "C" was already selected)
+    if (
+      activePref &&
+      rawNorm.startsWith(activePref) &&
+      (!allValidSet.has(fullCandidate) || gameState.usedWords.includes(fullCandidate)) &&
+      allValidSet.has(rawNorm)
+    ) {
+      fullCandidate = rawNorm
     }
 
     // If choosing from 4 starter letters and user typed a full word starting with one of the 4
@@ -966,7 +976,7 @@
               syncToClients()
             }
           } else if (action.type === 'SUBMIT_WORD') {
-            validateAndAcceptWordOnHost(action.word, senderProfile)
+            validateAndAcceptWordOnHost(action.word, senderProfile, action.selectedStarter)
           }
         } else {
           // Client events
@@ -1077,24 +1087,18 @@
 
   wordInput.addEventListener('input', () => {
     const clean = normalizePt(wordInput.value)
-    // Auto-select starter letter if user starts typing in 4-letter starter phase
-    if (!gameState.requiredPrefix && clean.length > 0) {
-      const first = clean.charAt(0)
-      if (gameState.starterLetters.includes(first) && gameState.selectedStarter !== first) {
-        gameState.selectedStarter = first
-        renderUI()
-      }
-    }
     room.sendToHost({ type: 'LIVE_TYPING', text: clean, selectedStarter: gameState.selectedStarter })
   })
 
   wordForm.addEventListener('submit', (e) => {
     e.preventDefault()
     const typed = normalizePt(wordInput.value)
-    const activePref = getActivePrefixForTyping()
-    const fullWord = activePref && !typed.startsWith(activePref) ? activePref + typed : typed
     wordInput.value = ''
-    room.sendToHost({ type: 'SUBMIT_WORD', word: fullWord })
+    room.sendToHost({
+      type: 'SUBMIT_WORD',
+      word: typed,
+      selectedStarter: gameState.selectedStarter,
+    })
   })
 
   // ==================== LOAD 626K PORTUGUESE DICTIONARY ====================

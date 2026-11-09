@@ -7,7 +7,7 @@
       content="width=device-width,initial-scale=1,viewport-fit=cover"
     />
     <title>Atlas &amp; Bandeiras · NBP Games</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=20261109v6" />
   </head>
   <body>
     <canvas id="confetti-canvas" aria-hidden="true"></canvas>
@@ -23,6 +23,9 @@
           </button>
           <button type="button" class="mode-tab" data-mode="highlow" role="tab" aria-selected="false">
             📊 Mais ou Menos
+          </button>
+          <button type="button" class="mode-tab" data-mode="versus" role="tab" aria-selected="false">
+            ⚔️ Versus 1v1
           </button>
         </div>
 
@@ -183,6 +186,128 @@
           </div>
         </div>
       </section>
+
+      <!-- MODO 4: VERSUS 1v1 MULTIPLAYER P2P -->
+      <section id="view-versus" class="game-view versus-view" hidden>
+        <div class="vs-topbar">
+          <div class="vs-room-row">
+            <div class="vs-name-field">
+              <label for="vs-player-name">Você:</label>
+              <input id="vs-player-name" type="text" maxlength="16" placeholder="Seu apelido" />
+            </div>
+
+            <div class="vs-room-controls">
+              <span class="seed-label">Sala 1v1:</span>
+              <input id="vs-room-code" type="text" maxlength="14" placeholder="VS-1234" />
+              <button type="button" id="btn-vs-join" class="btn-subtle">Entrar</button>
+              <button type="button" id="btn-vs-host" class="btn-primary-sm">Criar Sala</button>
+              <button type="button" id="btn-vs-copy" class="btn-icon" title="Copiar código da sala">📋</button>
+            </div>
+
+            <span id="vs-p2p-status" class="vs-status-badge">🟢 Sala Pronta</span>
+          </div>
+
+          <div class="vs-options-row">
+            <button
+              type="button"
+              id="btn-vs-continent"
+              class="toggle-chip"
+              aria-pressed="false"
+            >
+              🌍 Continente: <strong>OFF</strong>
+            </button>
+            <button
+              type="button"
+              id="btn-vs-inputmode"
+              class="toggle-chip active"
+              aria-pressed="true"
+            >
+              🎯 Múltipla Escolha: <strong>ON</strong>
+            </button>
+            <button type="button" id="btn-vs-start" class="btn-vs-start">
+              ▶️ Iniciar Duelo 1v1
+            </button>
+          </div>
+        </div>
+
+        <div class="versus-arena">
+          <!-- LADO ESQUERDO: VOCÊ -->
+          <div id="vs-my-panel" class="versus-panel my-panel">
+            <div class="vs-player-header">
+              <div class="vs-player-id">
+                <span id="vs-my-dot" class="vs-avatar-dot">V</span>
+                <div>
+                  <strong id="vs-my-name">Você</strong>
+                  <small>Seu lado · Bandeira exclusiva</small>
+                </div>
+              </div>
+              <div class="vs-player-stats">
+                <span id="vs-my-lives" class="vs-lives" title="3 erros = derrota">❤️❤️❤️</span>
+                <span id="vs-my-errors" class="vs-error-pill">0/3 erros</span>
+                <span id="vs-my-score" class="vs-score-pill">0 pts</span>
+              </div>
+            </div>
+
+            <div id="vs-my-card" class="flag-showcase vs-flag-card">
+              <span id="vs-my-region" class="region-badge" hidden>Continente</span>
+              <div class="flag-frame vs-flag-frame">
+                <img id="vs-my-flag" src="" alt="Sua bandeira atual" />
+              </div>
+              <p id="vs-my-feedback" class="vs-feedback">Clique em Iniciar Duelo 1v1 para começar!</p>
+            </div>
+
+            <div id="vs-my-options" class="quiz-options vs-options"></div>
+
+            <div id="vs-my-write-box" class="quiz-write-box vs-write-box" hidden>
+              <div class="input-row">
+                <input
+                  id="vs-my-write-input"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="Digite o país ou estado..."
+                />
+                <button type="button" id="btn-vs-write-submit" class="btn-guess">Responder</button>
+                <button type="button" id="btn-vs-write-skip" class="btn-subtle">Pular (-1 ❤️)</button>
+              </div>
+              <ul id="vs-my-suggestions" class="suggestions-list" hidden></ul>
+            </div>
+          </div>
+
+          <!-- DIVISOR CENTRAL VS -->
+          <div class="vs-divider-col">
+            <div class="vs-circle">1v1</div>
+            <span class="vs-rule-tag">Quem errar 3 perde!</span>
+          </div>
+
+          <!-- LADO DIREITO: ADVERSÁRIO -->
+          <div id="vs-opp-panel" class="versus-panel opp-panel">
+            <div class="vs-player-header">
+              <div class="vs-player-id">
+                <span id="vs-opp-dot" class="vs-avatar-dot opp">A</span>
+                <div>
+                  <strong id="vs-opp-name">Bot Atlas 🤖</strong>
+                  <small id="vs-opp-sub">Adversário · Outra bandeira</small>
+                </div>
+              </div>
+              <div class="vs-player-stats">
+                <span id="vs-opp-lives" class="vs-lives" title="3 erros = derrota">❤️❤️❤️</span>
+                <span id="vs-opp-errors" class="vs-error-pill">0/3 erros</span>
+                <span id="vs-opp-score" class="vs-score-pill">0 pts</span>
+              </div>
+            </div>
+
+            <div id="vs-opp-card" class="flag-showcase vs-flag-card">
+              <span id="vs-opp-region" class="region-badge" hidden>Continente</span>
+              <div class="flag-frame vs-flag-frame">
+                <img id="vs-opp-flag" src="" alt="Bandeira do adversário" />
+              </div>
+              <p id="vs-opp-feedback" class="vs-feedback">Aguardando início do duelo...</p>
+            </div>
+
+            <div id="vs-opp-options" class="quiz-options vs-options opp-options"></div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Modal de Resultado / Compartilhar -->
@@ -200,6 +325,8 @@
       </div>
     </div>
 
-    <script src="game.js"></script>
+    <script src="../../vendor/peerjs.min.js?v=20261109v6"></script>
+    <script src="../../vendor/nbp-p2p.js?v=20261109v6"></script>
+    <script src="game.js?v=20261109v6"></script>
   </body>
 </html>

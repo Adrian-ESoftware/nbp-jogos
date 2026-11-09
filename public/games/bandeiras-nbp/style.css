@@ -880,3 +880,289 @@ body {
   padding: 6px;
   cursor: pointer;
 }
+
+/* ==================== MODO 4: VERSUS 1v1 ==================== */
+.versus-view {
+  max-width: 1120px;
+  gap: 12px;
+}
+
+.vs-topbar {
+  width: 100%;
+  background: rgba(19, 35, 59, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vs-room-row,
+.vs-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vs-name-field,
+.vs-room-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vs-name-field label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+#vs-player-name,
+#vs-room-code {
+  background: rgba(9, 21, 38, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #fff;
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+#vs-player-name {
+  width: 125px;
+}
+
+#vs-room-code {
+  width: 96px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.vs-status-badge {
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.btn-vs-start {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 0.86rem;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.32);
+  transition: transform 0.15s ease;
+}
+
+.btn-vs-start:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn-vs-start:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.versus-arena {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+@media (max-width: 860px) {
+  .versus-arena {
+    grid-template-columns: 1fr;
+  }
+}
+
+.versus-panel {
+  background: rgba(19, 35, 59, 0.72);
+  border: 2px solid rgba(148, 163, 184, 0.22);
+  border-radius: 18px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.versus-panel.my-panel {
+  border-color: rgba(56, 189, 248, 0.42);
+}
+
+.versus-panel.opp-panel {
+  border-color: rgba(245, 158, 11, 0.38);
+}
+
+.versus-panel.flash-correct {
+  border-color: var(--correct);
+  box-shadow: 0 0 28px rgba(16, 185, 129, 0.35);
+}
+
+.versus-panel.flash-wrong {
+  border-color: var(--wrong);
+  box-shadow: 0 0 28px rgba(239, 68, 68, 0.4);
+  animation: shake-wrong 0.38s ease;
+}
+
+.vs-player-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.vs-player-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vs-player-id strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.vs-player-id small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.vs-avatar-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 99px;
+  background: #0ea5e9;
+  color: #fff;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.vs-avatar-dot.opp {
+  background: #f59e0b;
+}
+
+.vs-player-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.vs-lives {
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+}
+
+.vs-error-pill {
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  padding: 3px 8px;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.vs-score-pill {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #7dd3fc;
+  padding: 3px 8px;
+  border-radius: 99px;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.vs-flag-card {
+  padding: 12px;
+  max-width: 100%;
+  background: rgba(9, 21, 38, 0.6);
+}
+
+.vs-flag-frame {
+  width: min(100%, 235px);
+}
+
+.vs-feedback {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #cbd5e1;
+  text-align: center;
+  min-height: 1.2em;
+}
+
+.vs-feedback.ok {
+  color: #34d399;
+}
+
+.vs-feedback.bad {
+  color: #f87171;
+}
+
+.vs-options {
+  max-width: 100%;
+  gap: 8px;
+}
+
+.vs-options .option-btn {
+  padding: 10px 12px;
+  font-size: 0.85rem;
+}
+
+.opp-options .option-btn {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.vs-divider-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.vs-rule-tag {
+  writing-mode: horizontal-tb;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  padding: 4px 8px;
+  border-radius: 99px;
+  text-align: center;
+  max-width: 96px;
+}
+
+#vs-my-write-input {
+  flex: 1;
+  background: rgba(19, 35, 59, 0.95);
+  border: 2px solid rgba(56, 189, 248, 0.4);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
