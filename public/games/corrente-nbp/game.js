@@ -277,6 +277,7 @@
           gameState.selectedStarter = ch
           playTone(480, 0.05)
           renderUI()
+          room.sendToHost({ type: 'LIVE_TYPING', text: normalizePt(wordInput.value), selectedStarter: ch })
           wordInput.focus()
         })
         starterLettersGrid.appendChild(btn)
@@ -714,7 +715,8 @@
   // ==================== P2P ROOM SETUP ====================
   function setupRoomAsHost(code) {
     room.hostRoom(code)
-    gameState.roomCode = code
+    const normalized = room.roomCode || code
+    gameState.roomCode = normalized
     gameState.status = 'lobby'
     gameState.players = [
       {
@@ -736,33 +738,79 @@
         eliminated: false,
       },
     ]
-    roomCodeInput.value = code
+    roomCodeInput.value = normalized
     renderUI()
   }
 
   function initP2P() {
     room = new window.NBPRoom({
       gameId: 'corrente-nbp',
+      defaultPrefix: 'ELO',
       onStatus(st) {
-        if (st.isHost) {
-          p2pStatus.textContent = `🟢 Host · Sala ${st.roomCode}`
-        } else if (st.connected) {
-          p2pStatus.textContent = `🟢 Conectado · Sala ${st.roomCode}`
+        if (st.connecting) {
+          p2pStatus.textContent = st.isHost
+            ? `🟡 Abrindo Sala ${st.roomCode}...`
+            : `🟡 Conectando a ${st.roomCode}...`
+        } else if (st.isHost && st.connected) {
+          p2pStatus.textContent = `🟢 Host Online · ${st.roomCode}`
+        } else if (!st.isHost && st.connected) {
+          p2pStatus.textContent = `🟢 Conectado · ${st.roomCode}`
         } else {
-          p2pStatus.textContent = `🟠 Reconectando...`
+          p2pStatus.textContent = `🔴 Offline · ${st.roomCode || ''}`
+        }
+      },
+      onError(err) {
+        if (err && err.message) {
+          showToast(`⚠️ ${err.message}`, 3600)
         }
       },
       onStateSync(remoteState) {
+        const wasLobby = gameState.status === 'lobby' && gameState.roomCode !== remoteState.roomCode
+        const prevTurnId = gameState.players[gameState.turnIndex]?.id
+        const prevChainLen = gameState.chain.length
         Object.assign(gameState, remoteState)
+        roomCodeInput.value = gameState.roomCode
+        if (wasLobby) {
+          showToast(`✅ Conectado à sala ${gameState.roomCode}!`, 2500)
+        }
+
+        const newTurnId = gameState.players[gameState.turnIndex]?.id
+        if (
+          gameState.status === 'playing' &&
+          newTurnId === room.profile.id &&
+          (prevTurnId !== newTurnId || gameState.chain.length !== prevChainLen)
+        ) {
+          wordInput.value = ''
+          setTimeout(() => wordInput.focus(), 40)
+        }
+
+        clearInterval(timerInterval)
+        if (!room.isHost && gameState.status === 'playing') {
+          const syncStart = Date.now()
+          const initialRem = gameState.turnRemainingMs
+          timerInterval = setInterval(() => {
+            const elapsed = Date.now() - syncStart
+            gameState.turnRemainingMs = Math.max(0, initialRem - elapsed)
+            updateTimerVisuals()
+          }, 80)
+        }
+
         updateTimerVisuals()
         renderUI()
       },
       onAction(action, senderProfile) {
         if (!action) return
         if (room.isHost) {
-          if (action.type === 'JOIN_REQUEST' && action.profile) {
+          if (action.type === 'PEER_CONNECTED') {
+            syncToClients()
+          } else if (action.type === 'JOIN_REQUEST' && action.profile) {
             const exists = gameState.players.find((p) => p.id === action.profile.id)
             if (!exists) {
+              // Remove automatic placeholder bot when a real friend joins in lobby
+              if (gameState.status === 'lobby') {
+                const botIdx = gameState.players.findIndex((p) => p.id === 'bot_initial')
+                if (botIdx !== -1) gameState.players.splice(botIdx, 1)
+              }
               gameState.players.push({
                 id: action.profile.id,
                 name: action.profile.name,
@@ -770,9 +818,11 @@
                 isBot: false,
                 lives: 3,
                 score: 0,
-                eliminated: gameState.status === 'playing',
+                eliminated: false,
               })
-              showToast(`👋 ${action.profile.name} entrou na sala!`)
+              const joinMsg = `👋 ${action.profile.name} entrou na sala!`
+              showToast(joinMsg)
+              room.broadcastEvent({ type: 'TOAST', message: joinMsg })
             } else {
               exists.name = action.profile.name
             }
@@ -781,6 +831,9 @@
             const currentPlayer = gameState.players[gameState.turnIndex]
             if (currentPlayer && senderProfile && currentPlayer.id === senderProfile.id) {
               gameState.liveTyping = action.text
+              if (action.selectedStarter && gameState.starterLetters.includes(action.selectedStarter)) {
+                gameState.selectedStarter = action.selectedStarter
+              }
               syncToClients()
             }
           } else if (action.type === 'SUBMIT_WORD') {
@@ -803,7 +856,14 @@
     })
 
     playerNameInput.value = room.profile.name
-    setupRoomAsHost(randomRoomCode())
+    const params = new URLSearchParams(window.location.search)
+    const joinParam = params.get('sala') || params.get('room')
+    if (joinParam) {
+      roomCodeInput.value = joinParam.toUpperCase()
+      room.joinRoom(joinParam)
+    } else {
+      setupRoomAsHost(randomRoomCode())
+    }
   }
 
   // ==================== EVENT LISTENERS ====================
@@ -817,9 +877,15 @@
   })
 
   btnHostRoom.addEventListener('click', () => {
-    const code = roomCodeInput.value.trim().toUpperCase() || randomRoomCode()
+    const typed = roomCodeInput.value.trim().toUpperCase()
+    const code = typed || randomRoomCode()
+    if (room.isHost && code === gameState.roomCode && room.peer && room.peer.open) {
+      navigator.clipboard?.writeText(code).catch(() => {})
+      showToast(`Sala ${code} já está ativa! Código copiado 📋`)
+      return
+    }
     setupRoomAsHost(code)
-    showToast(`Sala ${code} criada! Compartilhe o código com seus amigos.`)
+    showToast(`Sala ${room.roomCode} criada! Compartilhe o código com seus amigos.`)
   })
 
   btnJoinRoom.addEventListener('click', () => {
@@ -831,7 +897,15 @@
     clearInterval(timerInterval)
     clearTimeout(botThinkTimeout)
     room.joinRoom(code)
-    showToast(`Conectando à sala ${code}...`)
+    roomCodeInput.value = room.roomCode
+    showToast(`Conectando à sala ${room.roomCode}...`)
+  })
+
+  roomCodeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      btnJoinRoom.click()
+    }
   })
 
   btnCopyRoom.addEventListener('click', async () => {
@@ -880,7 +954,7 @@
         renderUI()
       }
     }
-    room.sendToHost({ type: 'LIVE_TYPING', text: clean })
+    room.sendToHost({ type: 'LIVE_TYPING', text: clean, selectedStarter: gameState.selectedStarter })
   })
 
   wordForm.addEventListener('submit', (e) => {

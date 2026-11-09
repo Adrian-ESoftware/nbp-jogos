@@ -34,7 +34,7 @@ function GamePage() {
           <button type="button" aria-label="Tela cheia" title="Tela cheia" onClick={fullscreen}><Maximize size={16} aria-hidden="true" /><span>Tela cheia</span></button>
         </div>
       </div>
-      <iframe key={instance} ref={frame} className="player-frame" src={game.entry} title={`Jogar ${game.title}`} allow="fullscreen; autoplay; gamepad" allowFullScreen />
+      <iframe key={instance} ref={frame} className="player-frame" src={game.entry} title={`Jogar ${game.title}`} allow="fullscreen; autoplay; gamepad" />
       {message && <p className="player-message" role="status">{message}</p>}
       <div className="player-footer">
         <details className="player-description"><summary>Sobre o jogo</summary><p>{game.description}</p></details>

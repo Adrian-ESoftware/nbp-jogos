@@ -32,6 +32,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
     links: [
       {
+        rel: 'icon',
+        type: 'image/svg+xml',
+        href: '/images/nbp-games-logo-dark.svg',
+      },
+      {
         rel: 'stylesheet',
         href: appCss,
       },
