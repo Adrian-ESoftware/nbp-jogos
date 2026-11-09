@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "games": [
+    {
+      "id": "nebula-wings",
+      "title": "Nebula Wings",
+      "description": "Abra suas asas e atravesse os portais da nebulosa! Toque, clique ou use Espaço para voar, desvie dos obstáculos e supere seu recorde. Um arcade original da NBP Games.",
+      "developer": "NBP Games",
+      "genres": ["Arcade"],
+      "modes": ["singleplayer"],
+      "status": "published",
+      "featured": true,
+      "engine": "html5",
+      "assets": {
+        "cover": "/games/nebula-wings/cover.svg",
+        "banner": "/games/nebula-wings/banner.svg",
+        "icon": "/games/nebula-wings/icon.svg"
+      },
+      "entry": "/games/nebula-wings/index.html"
+    }
+  ]
+}
