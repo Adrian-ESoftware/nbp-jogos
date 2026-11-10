@@ -1,1147 +1,1577 @@
-;(() => {
-  const BOT_PROFILES = [
-    { id: 'bot_lara', name: 'Bot Lara 🤖', color: '#f59e0b' },
-    { id: 'bot_caio', name: 'Bot Caio 🤖', color: '#10b981' },
-    { id: 'bot_nina', name: 'Bot Nina 🤖', color: '#ec4899' },
-    { id: 'bot_teo', name: 'Bot Téo 🤖', color: '#38bdf8' },
-  ]
+/**
+ * Palavras na Sala · Words on Stream (NBP Jogos)
+ * Multiplayer P2P em tempo real (PeerJS / NBPRoom) e Modo Solo/Bots
+ * Fiel às mecânicas oficiais do Words on Stream (wos.gg):
+ * - Salto de +3 Níveis ao encontrar 100% das palavras (PERFEITO!), +2 Níveis em 82%+ (MUITO BOM!), +1 Nível ao bater a META (PRONTO!)
+ * - Embaralhamento automático das letras com o tempo (sem botão manual)
+ * - Letras Falsas camufladas durante a rodada e reveladas em vermelho no final (revealTime)
+ * - Letras Escondidas (?1, ?2, ?3) escalando com os níveis
+ * - Pontos individuais por letra (estilo WOS) + destaque de Anagrama Máximo (hitMax)
+ * - Sistema de Cadeados na barra de tempo (Checkpoints WOS), Cooldown 4s ou Livre (Party Mode)
+ */
+(function () {
+  'use strict';
 
-  let dictReady = false
-  let allValidSet = new Set() // All valid 4..10 letter words for bonus word detection
-  let displayMap = new Map() // norm -> accented word
-  let commonByLen = new Map() // len -> array of { norm, display, tier, counts }
-  let rootPoolByLen = new Map() // len (6, 7, 8) -> array of root words with rich sub-anagrams
+  // Pontuação oficial estilo WOS por letra em Português
+  const LETTER_POINTS = {
+    A: 1, E: 1, I: 1, O: 1, S: 1, U: 1, M: 2, R: 1, T: 1,
+    D: 2, L: 2, C: 2, P: 2, N: 2, B: 3, F: 4, G: 3, H: 4,
+    V: 4, J: 5, Q: 6, X: 8, Z: 8, K: 8, W: 8, Y: 8
+  };
 
-  let soundEnabled = true
-  let audioCtx = null
-  let room = null
-  let timerInterval = null
-  let botInterval = null
-  let cooldownTimer = null
-  let myCooldownUntil = 0
+  // Fallback de palavras caso o fetch demore ou falhe
+  const FALLBACK_WORDS = [
+    'CASA','CASO','CAOS','SACO','ASCO','ROSA','RISO','RIOS','TELA','LATE','ALTE','AMOR','ROMA','RAMO','MORA','armo',
+    'VIDA','DIVA','FOGO','JOGO','NOTA','TONA','NATO','PORTA','PARTO','PRATO','TROPA','RAPTO','CARRO','CORAR','BARCO',
+    'COBRA','BROCA','BRAÇO','LIVRO','VERDE','VENTO','TEMPO','PONTE','PONTO','FORTE','FREIO','FERRO','TERRA','TORRE',
+    'NOITE','ONTEM','MENTE','MONTE','MUNDO','FUNDO','PLANO','PLENA','PEDRA','PADRE','PERDA','PODER','ORDEM','MORDE',
+    'CAMPO','CORPO','PORCO','POUCO','CURSO','SURCO','BANCO','BANDO','LINDA','LINDO','LONGE','LENTO','LENTE','LEITE',
+    'PRAIA','PARAR','PAPEL','PEIXE','PISTA','PASTA','FESTA','FATO','FOTO','FASE','FOME','FONTE','FORMA','FORNO',
+    'GRADE','GRANDE','GRITO','GRUPO','GOLPE','GOSTO','GENTE','GARFO','GATOS','GOTA','GALO','GELO','GIRO','GUIA',
+    'CHAVE','CHUVA','CHEIO','CHAMA','CLARO','COLAR','CORAL','CALOR','CARGO','CARNE','CARTA','CARTO','CORTE','CERTO',
+    'TRIGO','TIGRE','TRENO','TERNO','NORTE','TREVO','TROCA','TOCAR','CURTO','CONTO','CANTO','CONTA','CUSTO','CASTO',
+    'PLANTA','PLANETA','ESCOLA','ESCALA','COLHER','CASTELO','ESTRELA','JANELA','abelha','orelha','espelho','caminho'
+  ];
 
+  // Gerenciador de Efeitos Sonoros Sintetizados (Web Audio API)
+  const SoundFX = {
+    enabled: localStorage.getItem('wos_sound_off') !== '1',
+    ctx: null,
+    init() {
+      if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
+      }
+    },
+    tone(freq, dur, type = 'sine', vol = 0.12, delay = 0) {
+      if (!this.enabled) return;
+      try {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime + delay;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(vol, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + dur);
+      } catch (_) {}
+    },
+    play(name) {
+      if (!this.enabled) return;
+      switch (name) {
+        case 'hit':
+          this.tone(523.25, 0.11, 'triangle', 0.14, 0);
+          this.tone(659.25, 0.16, 'triangle', 0.14, 0.07);
+          break;
+        case 'hitmax':
+          this.tone(523.25, 0.1, 'triangle', 0.16, 0);
+          this.tone(659.25, 0.1, 'triangle', 0.16, 0.07);
+          this.tone(783.99, 0.12, 'triangle', 0.16, 0.14);
+          this.tone(1046.5, 0.26, 'sine', 0.18, 0.21);
+          break;
+        case 'bonus':
+          this.tone(587.33, 0.09, 'sine', 0.11, 0);
+          this.tone(880, 0.15, 'sine', 0.11, 0.06);
+          break;
+        case 'goal':
+          this.tone(440, 0.12, 'triangle', 0.15, 0);
+          this.tone(554.37, 0.12, 'triangle', 0.15, 0.09);
+          this.tone(659.25, 0.12, 'triangle', 0.15, 0.18);
+          this.tone(880, 0.32, 'triangle', 0.18, 0.27);
+          break;
+        case 'shuffle':
+          this.tone(330, 0.06, 'sine', 0.06, 0);
+          this.tone(392, 0.07, 'sine', 0.06, 0.05);
+          break;
+        case 'reveal':
+          this.tone(311.13, 0.14, 'sawtooth', 0.09, 0);
+          this.tone(277.18, 0.22, 'sawtooth', 0.09, 0.11);
+          break;
+        case 'unlock':
+          this.tone(698.46, 0.09, 'sine', 0.11, 0);
+          this.tone(932.33, 0.14, 'sine', 0.11, 0.06);
+          break;
+        case 'win':
+          this.tone(523.25, 0.12, 'triangle', 0.15, 0);
+          this.tone(659.25, 0.12, 'triangle', 0.15, 0.1);
+          this.tone(783.99, 0.12, 'triangle', 0.15, 0.2);
+          this.tone(1046.5, 0.35, 'triangle', 0.18, 0.3);
+          break;
+        case 'gameover':
+          this.tone(392, 0.18, 'sawtooth', 0.11, 0);
+          this.tone(349.23, 0.18, 'sawtooth', 0.11, 0.16);
+          this.tone(311.13, 0.35, 'sawtooth', 0.12, 0.32);
+          break;
+      }
+    }
+  };
+
+  // Dicionário carregado
+  const dict = {
+    loaded: false,
+    commonByLen: {}, // 4..8 -> array de palavras comuns (sem acento, maiúsculas)
+    allValidSet: new Set(), // todas as palavras aceitas (4..10 letras)
+    accentMap: new Map() // norm -> original acentuada
+  };
+
+  // Configuração da sala (sincronizada pelo Host)
+  const config = {
+    roundDuration: 120,
+    modifiersMode: 'fast',    // 'fast' | 'classic' | 'insane' | 'none'
+    startLevel: 1,
+    padlockMode: 'Party',     // 'Party' | 'checkpoints' | 'cooldown'
+    shuffleInterval: 13,      // segundos entre embaralhamentos automáticos
+    maxLives: 3,              // 1, 3 ou 99
+    autoPilot: true
+  };
+
+  // Estado da partida (sincronizado pela sala)
   const state = {
-    roomCode: '',
-    status: 'lobby', // 'lobby' | 'playing' | 'levelclear' | 'gameover'
     level: 1,
-    cooldownEnabled: false,
-    durationSec: 75,
-    remainingSec: 75,
-    quota: 5,
-    bonusFoundCount: 0,
-    bonusWordsUsed: [],
-    // Tiles: [{ id, char, isFake, isHidden, revealedFake }]
-    tiles: [],
-    // Board words: [{ norm, display, len, solved, finderName, finderColor, hintIndices: [] }]
-    words: [],
-    // Players: [{ id, name, color, isBot, score, wordsFound }]
-    players: [],
-    // Recent guesses feed: [{ word, playerName, type: 'hit'|'bonus' }]
-    feed: [],
-  }
+    record: Number(localStorage.getItem('wos_nbp_record') || 1),
+    lives: 3,
+    status: 'playing', // 'playing' | 'revealing_end' | 'intermission' | 'gameover'
+    timeLeft: 120,
+    roundDuration: 120,
+    revealTime: 22,    // segundos restantes em que as letras falsas e '?' são reveladas
+    rootWord: '',
+    baseLetters: [],   // letras reais da palavra-raiz
+    wheelTiles: [],    // [{ id, char, displayChar, points, isMystery, mysteryIndex, isFake, fakeRevealed }]
+    slots: [],         // [{ word, display, len, points, hitMax, solvedBy, solvedByName, revealedPositions: [], lockedPadlock: false }]
+    bonusWords: [],    // [{ word, byName }]
+    totalPoints: 0,
+    maxPoints: 100,
+    goalPoints: 65,
+    lockTarget: 5,     // mínimo de palavras equivalente
+    checkpointMarks: [0.72, 0.45, 0.20], // frações de tempo restantes onde os cadeados abrem
+    checkpointsOpened: [false, false, false],
+    lockedPlayers: {}, // { [peerId]: true } no modo checkpoints
+    players: {},       // { [id]: { id, name, score, turnScore, wordsFound, turnWords, isBot } }
+    feed: []           // [{ text, type, ts }]
+  };
 
-  // DOM Elements
-  const p2pStatus = document.getElementById('p2p-status')
-  const roomCodeDisplay = document.getElementById('room-code-display')
-  const levelBadge = document.getElementById('level-badge')
-  const btnCopyRoom = document.getElementById('btn-copy-room')
-  const btnStartMatch = document.getElementById('btn-start-match')
-  const btnToggleDrawer = document.getElementById('btn-toggle-drawer')
-  const roomDrawer = document.getElementById('room-drawer')
-  const btnSound = document.getElementById('btn-sound')
+  // Estado local do jogador
+  const local = {
+    myId: 'local-player',
+    myName: localStorage.getItem('wos_nbp_name') || ('Jogador ' + Math.floor(100 + Math.random() * 899)),
+    isHost: true,
+    inRoom: false,
+    roomCode: '',
+    room: null,
+    cooldownUntil: 0,
+    feedbackOverride: null, // { html, expiresAt }
+    feedbackTimeout: null,
+    timerInterval: null,
+    botInterval: null,
+    cooldownInterval: null,
+    autoShuffleElapsed: 0,
+    autoPilotTimer: null,
+    autoPilotRemaining: 0
+  };
 
-  const playerNameInput = document.getElementById('player-name-input')
-  const roomCodeInput = document.getElementById('room-code-input')
-  const btnJoinRoom = document.getElementById('btn-join-room')
-  const btnHostRoom = document.getElementById('btn-host-room')
-  const btnToggleCooldown = document.getElementById('btn-toggle-cooldown')
-  const btnAddBot = document.getElementById('btn-add-bot')
-  const btnRemoveBot = document.getElementById('btn-remove-bot')
+  // Referências DOM
+  const el = {
+    goalBox: document.getElementById('goal-box'),
+    hudLevel: document.getElementById('hud-level'),
+    hudRecord: document.getElementById('hud-record'),
+    heartsPill: document.getElementById('hearts-pill'),
+    hudHearts: document.getElementById('hud-hearts'),
+    goalPointsText: document.getElementById('goal-points-text'),
+    lockProgressText: document.getElementById('lock-progress-text'),
+    lockBarFill: document.getElementById('lock-bar-fill'),
+    lockIcon: document.getElementById('lock-icon'),
+    btnSoundToggle: document.getElementById('btn-sound-toggle'),
+    btnToggleDrawer: document.getElementById('btn-toggle-drawer'),
+    roomBadge: document.getElementById('room-Badge'),
+    roomDrawer: document.getElementById('room-drawer'),
+    playerNameInput: document.getElementById('player-name'),
+    roomCodeInput: document.getElementById('room-code-input'),
+    btnCreateRoom: document.getElementById('btn-create-room'),
+    btnJoinRoom: document.getElementById('btn-join-room'),
+    btnCopyRoom: document.getElementById('btn-copy-room'),
+    btnLeaveRoom: document.getElementById('btn-leave-room'),
+    roomStatusText: document.getElementById('room-status-text'),
+    optDuration: document.getElementById('opt-duration'),
+    optModifiers: document.getElementById('opt-modifiers'),
+    optStartLevel: document.getElementById('opt-start-level'),
+    optPadlock: document.getElementById('opt-padlock'),
+    optShuffle: document.getElementById('opt-shuffle'),
+    optLives: document.getElementById('opt-lives'),
+    optAutopilot: document.getElementById('opt-autopilot'),
+    btnAddBot: document.getElementById('btn-add-bot'),
+    btnRestartMatch: document.getElementById('btn-restart-match'),
+    boardPanel: document.getElementById('board-panel'),
+    wheelDock: document.getElementById('wheel-dock'),
+    timerBarFill: document.getElementById('timer-bar-fill'),
+    timerLocksLayer: document.getElementById('timer-locks-layer'),
+    hudTimer: document.getElementById('hud-timer'),
+    modifierBanner: document.getElementById('modifier-banner'),
+    wordsGrid: document.getElementById('words-grid'),
+    letterTiles: document.getElementById('letter-tiles'),
+    bonusCount: document.getElementById('bonus-count'),
+    shuffleIntervalLabel: document.getElementById('shuffle-interval-label'),
+    guessForm: document.getElementById('guess-form'),
+    guessInput: document.getElementById('guess-input'),
+    btnBackspace: document.getElementById('btn-backspace'),
+    cooldownOverlay: document.getElementById('cooldown-overlay'),
+    cooldownTimer: document.getElementById('cooldown-timer'),
+    playersCountLabel: document.getElementById('players-count-label'),
+    playersList: document.getElementById('players-list'),
+    feedList: document.getElementById('feed-list'),
+    roundModal: document.getElementById('round-modal'),
+    modalCard: document.getElementById('modal-card'),
+    modalStars: document.getElementById('modal-stars'),
+    modalBadge: document.getElementById('modal-badge'),
+    modalTitle: document.getElementById('modal-title'),
+    modalSubtitle: document.getElementById('modal-subtitle'),
+    nextLevelBanner: document.getElementById('next-level-banner'),
+    modalNextLevel: document.getElementById('modal-next-level'),
+    modalStats: document.getElementById('modal-stats'),
+    modalRkgTurnTitle: document.getElementById('modal-rkg-turn-title'),
+    modalRkgTurn: document.getElementById('modal-rkg-turn'),
+    modalRkgTotal: document.getElementById('modal-rkg-total'),
+    missedWordsBox: document.getElementById('missed-words-box'),
+    missedWordsList: document.getElementById('missed-words-list'),
+    btnNextLevel: document.getElementById('btn-next-level'),
+    autopilotCountdown: document.getElementById('autopilot-countdown')
+  };
 
-  const toastContainer = document.getElementById('toast-container')
-  const goalStatusText = document.getElementById('goal-status-text')
-  const modifiersRow = document.getElementById('modifiers-row')
-  const timerSeconds = document.getElementById('timer-seconds')
-  const timerPill = timerSeconds.parentElement
-  const wordsProgressFill = document.getElementById('words-progress-fill')
-  const timerBarLine = document.getElementById('timer-bar-line')
-  const lockMarker = document.getElementById('lock-marker')
-  const lockIcon = document.getElementById('lock-icon')
-  const lockQuotaText = document.getElementById('lock-quota-text')
-
-  const lettersPool = document.getElementById('letters-pool')
-  const btnShuffle = document.getElementById('btn-shuffle')
-  const wordsGrid = document.getElementById('words-grid')
-
-  const playersCountBadge = document.getElementById('players-count-badge')
-  const leaderboardList = document.getElementById('leaderboard-list')
-  const bonusCountBadge = document.getElementById('bonus-count-badge')
-  const liveFeed = document.getElementById('live-feed')
-
-  const guessForm = document.getElementById('guess-form')
-  const inputWrapper = document.getElementById('input-wrapper')
-  const cooldownBadge = document.getElementById('cooldown-badge')
-  const guessInput = document.getElementById('guess-input')
-  const modalSummary = document.getElementById('modal-summary')
-  const confettiCanvas = document.getElementById('confetti-canvas')
-
-  function normalizePt(str) {
+  function normalizeWord(str) {
     return String(str || '')
-      .toLocaleLowerCase('pt-BR')
+      .trim()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z]/g, '')
+      .toUpperCase()
+      .replace(/[^A-Z]/g, '');
   }
 
-  function countLetters(wordNorm) {
-    const counts = {}
-    for (let i = 0; i < wordNorm.length; i++) {
-      const ch = wordNorm[i]
-      counts[ch] = (counts[ch] || 0) + 1
+  function calcWordPoints(word) {
+    let sum = 0;
+    for (let i = 0; i < word.length; i++) {
+      sum += LETTER_POINTS[word[i]] || 2;
     }
-    return counts
+    return sum * 10;
   }
 
-  function canFormFromCounts(wordCounts, poolCounts) {
-    for (const ch of Object.keys(wordCounts)) {
-      if ((poolCounts[ch] || 0) < wordCounts[ch]) return false
+  // Carrega o banco de palavras em português
+  async function loadDictionary() {
+    for (let len = 4; len <= 10; len++) {
+      dict.commonByLen[len] = [];
     }
-    return true
-  }
 
-  function playTone(freq, duration = 0.08, type = 'sine', gainVal = 0.08) {
-    if (!soundEnabled) return
-    try {
-      if (!audioCtx) {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext
-        audioCtx = new AudioCtx()
+    const registerWord = (raw, isCommon) => {
+      const norm = normalizeWord(raw);
+      if (norm.length < 4 || norm.length > 10) return;
+      if (!dict.accentMap.has(norm)) {
+        dict.accentMap.set(norm, String(raw).toUpperCase());
       }
-      if (audioCtx.state === 'suspended') audioCtx.resume()
-      const osc = audioCtx.createOscillator()
-      const gain = audioCtx.createGain()
-      osc.type = type
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime)
-      gain.gain.setValueAtTime(gainVal, audioCtx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration)
-      osc.connect(gain)
-      gain.connect(audioCtx.destination)
-      osc.start()
-      osc.stop(audioCtx.currentTime + duration)
-    } catch {}
+      dict.allValidSet.add(norm);
+      if (isCommon && norm.length <= 8) {
+        dict.commonByLen[norm.length].push(norm);
+      }
+    };
+
+    FALLBACK_WORDS.forEach((w) => registerWord(w, true));
+
+    try {
+      const res = await fetch('/data/pt-br/palavras-por-tamanho.json');
+      if (res.ok) {
+        const data = await res.json();
+        const buckets = data.buckets || {};
+        Object.keys(buckets).forEach((lenKey) => {
+          const len = Number(lenKey);
+          if (len < 4 || len > 10) return;
+          const b = buckets[lenKey];
+          (b.facil || []).forEach((w) => registerWord(w, true));
+          (b.medio || []).forEach((w) => registerWord(w, len >= 6));
+          (b.dificil || []).forEach((w) => registerWord(w, false));
+        });
+      }
+    } catch (err) {
+      console.warn('[WOS-NBP] Usando vocabulário integrado de fallback:', err);
+    }
+
+    for (let len = 4; len <= 8; len++) {
+      dict.commonByLen[len] = Array.from(new Set(dict.commonByLen[len]));
+    }
+    dict.loaded = true;
   }
 
-  function playChord(notes, stepMs = 65) {
-    notes.forEach((n, idx) => setTimeout(() => playTone(n, 0.15, 'triangle', 0.1), idx * stepMs))
+  function countChars(word) {
+    const counts = {};
+    for (let i = 0; i < word.length; i++) {
+      const c = word[i];
+      counts[c] = (counts[c] || 0) + 1;
+    }
+    return counts;
   }
 
-  function showToast(msg, duration = 2300) {
-    const el = document.createElement('div')
-    el.className = 'toast'
-    el.textContent = msg
-    toastContainer.appendChild(el)
-    setTimeout(() => {
-      el.style.opacity = '0'
-      el.style.transition = 'opacity 0.2s ease'
-      setTimeout(() => el.remove(), 220)
-    }, duration)
-  }
-
-  function randomRoomCode() {
-    return `WOS-${Math.floor(1000 + Math.random() * 9000)}`
+  function canFormWord(candidate, rootCounts) {
+    const cCounts = countChars(candidate);
+    for (const ch in cCounts) {
+      if ((rootCounts[ch] || 0) < cCounts[ch]) return false;
+    }
+    return true;
   }
 
   function shuffleArray(arr) {
-    const copy = [...arr]
+    const copy = arr.slice();
     for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      const tmp = copy[i]
-      copy[i] = copy[j]
-      copy[j] = tmp
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = copy[i];
+      copy[i] = copy[j];
+      copy[j] = tmp;
     }
-    return copy
+    return copy;
   }
 
-  // ==================== LEVEL PUZZLE GENERATOR (Words on Stream Mechanics) ====================
-  function buildLevelPuzzle(levelNum) {
-    // Root word length scales with level:
-    // L1-2: 6 letters | L3-6: 7 letters | L7+: 8 letters
-    const rootLen = levelNum <= 2 ? 6 : levelNum <= 6 ? 7 : 8
-    const hasHidden = levelNum === 3 || levelNum >= 5
-    const hasFake = levelNum >= 4
-    const hiddenCount = levelNum >= 8 ? 2 : hasHidden ? 1 : 0
+  // Retorna quantas Letras Falsas e Letras Escondidas (?) o nível atual possui
+  // Fiel à tabela oficial do WOS (com suporte aos modos Acelerado, Clássico WOS, Caos e Puro)
+  function getLevelModifiers(level) {
+    const mode = config.modifiersMode;
+    if (mode === 'none') {
+      return { fakeCount: 0, hiddenCount: 0 };
+    }
+    if (mode === 'insane') {
+      if (level <= 2) return { fakeCount: 1, hiddenCount: 1 };
+      if (level <= 5) return { fakeCount: 2, hiddenCount: 1 };
+      if (level <= 9) return { fakeCount: 2, hiddenCount: 2 };
+      return { fakeCount: 2, hiddenCount: 3 };
+    }
+    if (mode === 'classic') {
+      // Tabela exata de wos.gg (módulo 2531: R=7, E=13, M=25, C=31, A=66)
+      if (level < 7) return { fakeCount: 0, hiddenCount: 0 };
+      if (level < 13) return { fakeCount: 1, hiddenCount: 0 };
+      if (level < 25) return { fakeCount: 1, hiddenCount: 1 };
+      if (level < 31) return { fakeCount: 2, hiddenCount: 1 };
+      if (level < 66) return { fakeCount: 2, hiddenCount: 2 };
+      return { fakeCount: 2, hiddenCount: 3 };
+    }
+    // Modo 'fast' (Acelerado — ideal para partidas rápidas em grupo)
+    if (level < 3) return { fakeCount: 0, hiddenCount: 0 };
+    if (level < 5) return { fakeCount: 1, hiddenCount: 0 };
+    if (level < 8) return { fakeCount: 1, hiddenCount: 1 };
+    if (level < 12) return { fakeCount: 2, hiddenCount: 1 };
+    if (level < 18) return { fakeCount: 2, hiddenCount: 2 };
+    return { fakeCount: 2, hiddenCount: 3 };
+  }
 
-    const candidateRoots = rootPoolByLen.get(rootLen) || rootPoolByLen.get(7) || []
-    let chosenSubWords = []
-    let rootNorm = 'portas'
+  // Texto oficial em Português do WOS para o banner de modificadores
+  function getModifierWarningHTML(fakeCount, hiddenCount) {
+    if (fakeCount === 0 && hiddenCount === 0) {
+      return 'SEJA O PRIMEIRO A ENCONTRAR O <strong data-color="cyan">ANAGRAMA</strong>!';
+    }
+    if (fakeCount === 1 && hiddenCount === 0) {
+      return 'CUIDADO! UMA DAS LETRAS É <strong data-color="red">FALSA</strong>!';
+    }
+    if (fakeCount === 1 && hiddenCount === 1) {
+      return 'HÁ UMA <strong data-color="red">LETRA FALSA</strong> E UMA <strong data-color="yellow">LETRA ESCONDIDA (?)</strong>!';
+    }
+    if (fakeCount === 2 && hiddenCount === 1) {
+      return 'ATENÇÃO! <strong data-color="red">DUAS LETRAS FALSAS</strong> E <strong data-color="yellow">UMA ESCONDIDA (?)</strong>!';
+    }
+    if (fakeCount === 2 && hiddenCount === 2) {
+      return 'ATENÇÃO! <strong data-color="red">DUAS LETRAS FALSAS</strong> E <strong data-color="yellow">DUAS ESCONDIDAS (?)</strong>!';
+    }
+    return 'ATENÇÃO! <strong data-color="red">DUAS LETRAS FALSAS</strong> E <strong data-color="yellow">TRÊS ESCONDIDAS (?)</strong>!';
+  }
 
-    // Pick a random root word that yields at least 10 sub-words
-    const shuffledRoots = shuffleArray(candidateRoots.slice(0, 350))
-    for (const rootCandidate of shuffledRoots) {
-      const rCounts = rootCandidate.counts
-      const matches = []
+  // Gera um quadro de anagramas para o nível atual
+  function generateBoardForLevel(level) {
+    const rootLen = level <= 2 ? 6 : level <= 7 ? 7 : 8;
+    const pool = (dict.commonByLen[rootLen] && dict.commonByLen[rootLen].length > 0)
+      ? dict.commonByLen[rootLen]
+      : FALLBACK_WORDS.map(normalizeWord).filter((w) => w.length >= 6);
 
-      for (let len = 4; len <= rootLen; len++) {
-        const list = commonByLen.get(len) || []
+    let bestRoot = 'PORTAS';
+    let bestSubwords = [];
+
+    for (let attempt = 0; attempt < 45; attempt++) {
+      const candidateRoot = pool[Math.floor(Math.random() * pool.length)];
+      if (!candidateRoot) continue;
+      const rootCounts = countChars(candidateRoot);
+      const found = [];
+
+      for (let len = 4; len <= candidateRoot.length; len++) {
+        const list = dict.commonByLen[len] || [];
         for (let i = 0; i < list.length; i++) {
-          const item = list[i]
-          if (canFormFromCounts(item.counts, rCounts)) {
-            matches.push(item)
+          const w = list[i];
+          if (canFormWord(w, rootCounts)) {
+            found.push(w);
           }
         }
       }
 
-      if (matches.length >= 10) {
-        rootNorm = rootCandidate.norm
-        // Prioritize facil first, then medio, cap board at 12..18 words
-        const maxBoardWords = Math.min(18, 9 + Math.floor(levelNum * 0.9))
-        matches.sort((a, b) => {
-          if (a.tier !== b.tier) return a.tier === 'facil' ? -1 : 1
-          return a.len - b.len || a.norm.localeCompare(b.norm)
-        })
-        chosenSubWords = matches.slice(0, maxBoardWords)
-        // Re-sort by length then alphabetically like Words on Stream
-        chosenSubWords.sort((a, b) => a.len - b.len || a.norm.localeCompare(b.norm))
-        break
+      const uniqueFound = Array.from(new Set(found));
+      if (uniqueFound.length >= 9 && uniqueFound.length <= 26) {
+        bestRoot = candidateRoot;
+        bestSubwords = uniqueFound;
+        break;
+      }
+      if (uniqueFound.length > bestSubwords.length) {
+        bestRoot = candidateRoot;
+        bestSubwords = uniqueFound;
       }
     }
 
-    // Build letter tiles from rootNorm
-    const tiles = rootNorm.split('').map((ch, idx) => ({
-      id: `t_${idx}_${ch}`,
+    if (!bestSubwords.includes(bestRoot)) {
+      bestSubwords.push(bestRoot);
+    }
+
+    // Seleciona até 21 palavras equilibradas por tamanho (sempre mantendo as palavras de tamanho máximo = hitMax!)
+    const maxWords = Math.min(21, Math.max(8, 8 + Math.floor(level * 1.1)));
+    let selected = bestSubwords.slice();
+    if (selected.length > maxWords) {
+      const fullAnagrams = selected.filter((w) => w.length === bestRoot.length);
+      const others = shuffleArray(selected.filter((w) => w.length !== bestRoot.length));
+      selected = [...fullAnagrams.slice(0, 3), ...others.slice(0, maxWords - Math.min(3, fullAnagrams.length))];
+    }
+
+    selected.sort((a, b) => a.length - b.length || a.localeCompare(b));
+
+    const maxWordLen = Math.max(...selected.map((w) => w.length));
+    const slots = selected.map((w) => {
+      const isHitMax = w.length === maxWordLen;
+      const pts = calcWordPoints(w) + (isHitMax ? 40 : 0);
+      return {
+        word: w,
+        display: dict.accentMap.get(w) || w,
+        len: w.length,
+        points: pts,
+        hitMax: isHitMax,
+        solvedBy: null,
+        solvedByName: null,
+        revealedPositions: [],
+        expired: false,
+        lockedPadlock: false
+      };
+    });
+
+    // Monta as peças da roda com Letras Falsas e Letras Escondidas (?)
+    const baseLetters = bestRoot.split('');
+    const { fakeCount, hiddenCount } = getLevelModifiers(level);
+
+    const tiles = baseLetters.map((ch, idx) => ({
+      id: 'real-' + idx,
       char: ch,
+      displayChar: ch,
+      points: LETTER_POINTS[ch] || 2,
+      isMystery: false,
+      mysteryLabel: '',
       isFake: false,
-      isHidden: false,
-      revealedFake: false,
-    }))
+      fakeRevealed: false
+    }));
 
-    // Apply Hidden Letter ('?') modifier
-    if (hiddenCount > 0) {
-      const indices = shuffleArray(tiles.map((_, i) => i))
-      for (let h = 0; h < Math.min(hiddenCount, indices.length); h++) {
-        tiles[indices[h]].isHidden = true
-      }
+    // Escolhe quais letras reais ficam escondidas como ?1, ?2, ?3
+    if (hiddenCount > 0 && tiles.length > hiddenCount) {
+      const candidateIndices = shuffleArray(tiles.map((_, i) => i)).slice(0, hiddenCount);
+      candidateIndices.forEach((tileIdx, mIdx) => {
+        tiles[tileIdx].isMystery = true;
+        tiles[tileIdx].mysteryLabel = '?' + (mIdx + 1);
+        tiles[tileIdx].displayChar = '?' + (mIdx + 1);
+      });
     }
 
-    // Apply Fake Letter modifier (a decoy letter that does NOT belong to rootNorm)
-    if (hasFake) {
-      const alphabet = 'bcdfghjlmnprstvz'.split('')
-      const rootSet = new Set(rootNorm.split(''))
-      const decoys = alphabet.filter((c) => !rootSet.has(c))
-      const fakeChar = decoys[Math.floor(Math.random() * decoys.length)] || 'z'
-      tiles.push({
-        id: `t_fake_${fakeChar}`,
-        char: fakeChar,
-        isFake: true,
-        isHidden: false,
-        revealedFake: false,
-      })
+    // Adiciona letras falsas que não pertencem à palavra-raiz
+    if (fakeCount > 0) {
+      const alphabet = 'ABCDEFGHIJLMNOPQRSTUVXZ';
+      const unused = alphabet.split('').filter((c) => !baseLetters.includes(c));
+      const chosenFakes = shuffleArray(unused).slice(0, fakeCount);
+      chosenFakes.forEach((fakeChar, fIdx) => {
+        tiles.push({
+          id: 'fake-' + fIdx,
+          char: fakeChar,
+          displayChar: fakeChar,
+          points: LETTER_POINTS[fakeChar] || 2,
+          isMystery: false,
+          mysteryLabel: '',
+          isFake: true,
+          fakeRevealed: false
+        });
+      });
     }
 
-    const totalWords = chosenSubWords.length
-    // Quota to unlock next level (~62% of board words)
-    const quota = Math.max(4, Math.min(totalWords, Math.ceil(totalWords * 0.62)))
-    const durationSec = Math.max(55, 80 - Math.min(20, (levelNum - 1) * 2))
+    const shuffledTiles = shuffleArray(tiles);
+    const maxPoints = slots.reduce((acc, s) => acc + s.points, 0);
+    // Meta de pontos (aprox 58% a 65% dos pontos totais, escalando levemente com o nível)
+    const goalRatio = Math.min(0.68, 0.54 + Math.min(0.14, level * 0.008));
+    const goalPoints = Math.max(40, Math.round((maxPoints * goalRatio) / 10) * 10);
+    const lockTarget = Math.max(3, Math.ceil(slots.length * 0.58));
 
     return {
-      tiles: shuffleArray(tiles),
-      words: chosenSubWords.map((w) => ({
-        norm: w.norm,
-        display: w.display,
-        len: w.len,
-        solved: false,
-        finderName: '',
-        finderColor: '',
-        hintIndices: [],
-      })),
-      quota,
-      durationSec,
+      rootWord: bestRoot,
+      baseLetters,
+      wheelTiles: shuffledTiles,
+      slots,
+      maxPoints,
+      goalPoints,
+      lockTarget
+    };
+  }
+
+  function ensureLocalPlayer() {
+    if (!state.players[local.myId]) {
+      state.players[local.myId] = {
+        id: local.myId,
+        name: local.myName,
+        score: 0,
+        turnScore: 0,
+        wordsFound: 0,
+        turnWords: 0,
+        isBot: false
+      };
+    } else {
+      state.players[local.myId].name = local.myName;
     }
   }
 
-  // ==================== UI RENDERING ====================
-  function renderUI() {
-    if (roomCodeDisplay) {
-      roomCodeDisplay.textContent = state.roomCode || 'WOS'
+  function readHostOptions() {
+    config.roundDuration = Number(el.optDuration.value) || 120;
+    config.modifiersMode = el.optModifiers.value || 'fast';
+    config.startLevel = Number(el.optStartLevel.value) || 1;
+    config.padlockMode = el.optPadlock.value || 'Party';
+    config.shuffleInterval = Number(el.optShuffle.value) || 13;
+    config.maxLives = Number(el.optLives.value) || 3;
+    config.autoPilot = Boolean(el.optAutopilot.checked);
+    el.shuffleIntervalLabel.textContent = config.shuffleInterval + 's';
+  }
+
+  function clearAutoPilotTimer() {
+    if (local.autoPilotTimer) {
+      clearInterval(local.autoPilotTimer);
+      local.autoPilotTimer = null;
     }
-    levelBadge.textContent = `NÍVEL ${state.level}`
+    el.autopilotCountdown.textContent = '';
+  }
 
-    // Cooldown toggle button
-    btnToggleCooldown.classList.toggle('active', state.cooldownEnabled)
-    btnToggleCooldown.setAttribute('aria-pressed', String(state.cooldownEnabled))
-    btnToggleCooldown.innerHTML = `🔒 Cadeado 3s: <strong>${state.cooldownEnabled ? 'ON' : 'OFF'}</strong>`
+  function startLevel(levelNum, resetScores) {
+    if (!local.isHost) return;
+    clearAutoPilotTimer();
+    readHostOptions();
 
-    const isHost = room ? room.isHost : true
-    btnToggleCooldown.disabled = !isHost
-    btnAddBot.disabled = !isHost
-    btnRemoveBot.disabled = !isHost
-
-    if (state.status === 'lobby') {
-      btnStartMatch.hidden = !isHost
-      btnStartMatch.disabled = !dictReady
-      btnStartMatch.textContent = `▶️ Iniciar Nível 1`
-    } else if (state.status === 'levelclear' || state.status === 'gameover') {
-      btnStartMatch.hidden = !isHost
-      btnStartMatch.disabled = false
-      btnStartMatch.textContent =
-        state.status === 'levelclear'
-          ? `▶️ Ir para Nível ${state.level + 1}`
-          : `🔄 Reiniciar no Nível 1`
+    if (resetScores) {
+      state.lives = config.maxLives;
+      Object.values(state.players).forEach((p) => {
+        p.score = 0;
+        p.turnScore = 0;
+        p.wordsFound = 0;
+        p.turnWords = 0;
+      });
+      state.feed = [];
     } else {
-      btnStartMatch.hidden = true
+      Object.values(state.players).forEach((p) => {
+        p.turnScore = 0;
+        p.turnWords = 0;
+      });
     }
 
-    // Modifiers pills (Hidden ? & Fake Letter)
-    const hiddenTilesCount = state.tiles.filter((t) => t.isHidden).length
-    const hasFakeTile = state.tiles.some((t) => t.isFake)
-    modifiersRow.innerHTML = ''
-    if (hiddenTilesCount > 0) {
-      const span = document.createElement('span')
-      span.className = 'mod-pill hidden-mod'
-      span.textContent = `❓ ${hiddenTilesCount} Letra(s) Oculta(s)`
-      modifiersRow.appendChild(span)
-    }
-    if (hasFakeTile) {
-      const span = document.createElement('span')
-      span.className = 'mod-pill fake-mod'
-      span.textContent = `🎭 1 Letra Falsa`
-      modifiersRow.appendChild(span)
+    const board = generateBoardForLevel(levelNum);
+    state.level = levelNum;
+    if (levelNum > state.record) {
+      state.record = levelNum;
+      localStorage.setItem('wos_nbp_record', String(state.record));
     }
 
-    // Solved count & Lock Progress
-    const solvedCount = state.words.filter((w) => w.solved).length
-    const totalWords = Math.max(1, state.words.length)
-    const unlocked = solvedCount >= state.quota
+    state.status = 'playing';
+    state.roundDuration = config.roundDuration;
+    state.timeLeft = config.roundDuration;
+    state.revealTime = Math.max(15, Math.round(config.roundDuration * 0.2));
+    state.rootWord = board.rootWord;
+    state.baseLetters = board.baseLetters;
+    state.wheelTiles = board.wheelTiles;
+    state.slots = board.slots;
+    state.maxPoints = board.maxPoints;
+    state.goalPoints = board.goalPoints;
+    state.lockTarget = board.lockTarget;
+    state.totalPoints = 0;
+    state.bonusWords = [];
+    state.checkpointsOpened = [false, false, false];
+    state.lockedPlayers = {};
+    local.autoShuffleElapsed = 0;
+    local.feedbackOverride = null;
 
-    if (state.status === 'lobby') {
-      goalStatusText.textContent = dictReady
-        ? 'Sala pronta! Convide amigos ou clique em Iniciar Nível 1.'
-        : 'Preparando gerador de anagramas em português...'
+    const { fakeCount, hiddenCount } = getLevelModifiers(levelNum);
+    let modSummary = 'Sem modificadores';
+    if (fakeCount > 0 || hiddenCount > 0) {
+      const parts = [];
+      if (fakeCount > 0) parts.push(`${fakeCount} letra(s) falsa(s)`);
+      if (hiddenCount > 0) parts.push(`${hiddenCount} escondida(s) (?)`);
+      modSummary = parts.join(' + ');
+    }
+
+    pushFeed(`🎬 Nível ${levelNum} iniciado (${modSummary})! Meta: ${state.goalPoints} pts.`, 'system');
+    el.roundModal.hidden = true;
+
+    broadcastState();
+    renderAll();
+    startHostLoop();
+  }
+
+  // Embaralhamento automático das letras com o tempo (igual ao WOS original)
+  function performAutoShuffle() {
+    if (state.status !== 'playing') return;
+    state.wheelTiles = shuffleArray(state.wheelTiles);
+    SoundFX.play('shuffle');
+    broadcastState();
+    renderWheel(true);
+  }
+
+  // Revela letras falsas, letras escondidas (?) e dicas na reta final
+  function applyTimedReveals() {
+    let changed = false;
+
+    // Quando chega no revealTime (ex: últimos 22s), revela as Letras Falsas (em vermelho) e as Letras Escondidas (?)
+    if (state.timeLeft === state.revealTime) {
+      let revealedAnyMod = false;
+      state.wheelTiles.forEach((t) => {
+        if (t.isFake && !t.fakeRevealed) {
+          t.fakeRevealed = true;
+          changed = true;
+          revealedAnyMod = true;
+        }
+        if (t.isMystery && t.displayChar !== t.char) {
+          t.displayChar = t.char;
+          changed = true;
+          revealedAnyMod = true;
+        }
+      });
+      if (revealedAnyMod) {
+        SoundFX.play('reveal');
+        pushFeed('🔍 Reta final: Letras Falsas e Letras Escondidas (?) foram reveladas!', 'system');
+      }
+
+      // Também revela a 1ª letra de palavras ainda não descobertas
+      state.slots.forEach((s) => {
+        if (!s.solvedBy && !s.revealedPositions.includes(0)) {
+          s.revealedPositions.push(0);
+          changed = true;
+        }
+      });
+    }
+
+    // Aos 12s restantes: revela a última letra das palavras não resolvidas
+    if (state.timeLeft === 12) {
+      state.slots.forEach((s) => {
+        const lastIdx = s.word.length - 1;
+        if (!s.solvedBy && !s.revealedPositions.includes(lastIdx)) {
+          s.revealedPositions.push(lastIdx);
+          changed = true;
+        }
+      });
+      if (changed) {
+        pushFeed('💡 Dica final: última letra revelada nas palavras restantes!', 'system');
+      }
+    }
+
+    // Checkpoints de Cadeado na barra de tempo (Modo 'checkpoints')
+    if (config.padlockMode === 'checkpoints') {
+      const frac = state.timeLeft / Math.max(1, state.roundDuration);
+      state.checkpointMarks.forEach((markFrac, idx) => {
+        if (!state.checkpointsOpened[idx] && frac <= markFrac) {
+          state.checkpointsOpened[idx] = true;
+          state.lockedPlayers = {};
+          state.slots.forEach((s) => {
+            if (s.lockedPadlock) s.lockedPadlock = false;
+          });
+          changed = true;
+          SoundFX.play('unlock');
+          pushFeed('🔓 Cadeado da barra aberto! Todos os jogadores podem palpitar novamente!', 'system');
+        }
+      });
+    }
+
+    if (changed) {
+      broadcastState();
+      renderAll();
+    }
+  }
+
+  function startHostLoop() {
+    if (local.timerInterval) clearInterval(local.timerInterval);
+    if (local.botInterval) clearInterval(local.botInterval);
+
+    local.timerInterval = setInterval(() => {
+      if (!local.isHost || state.status !== 'playing') return;
+
+      state.timeLeft = Math.max(0, state.timeLeft - 1);
+      local.autoShuffleElapsed += 1;
+
+      // Embaralhamento automático no intervalo configurado (para de embaralhar nos últimos 6 segundos)
+      if (
+        config.shuffleInterval > 0 &&
+        state.timeLeft > 6 &&
+        local.autoShuffleElapsed >= config.shuffleInterval
+      ) {
+        local.autoShuffleElapsed = 0;
+        performAutoShuffle();
+      }
+
+      applyTimedReveals();
+
+      if (state.timeLeft <= 0) {
+        finishRound();
+      } else {
+        broadcastTimer();
+        renderTopHUD();
+      }
+    }, 1000);
+
+    // Loop dos Bots
+    local.botInterval = setInterval(() => {
+      if (!local.isHost || state.status !== 'playing') return;
+      const bots = Object.values(state.players).filter((p) => p.isBot);
+      if (bots.length === 0) return;
+      const unsolved = state.slots.filter((s) => !s.solvedBy);
+      if (unsolved.length === 0) return;
+
+      if (Math.random() < 0.25) {
+        const bot = bots[Math.floor(Math.random() * bots.length)];
+        if (config.padlockMode === 'checkpoints' && state.lockedPlayers[bot.id]) return;
+        const shortUnsolved = unsolved.filter((s) => s.len <= 5);
+        const pool = shortUnsolved.length > 0 ? shortUnsolved : unsolved;
+        const target = pool[Math.floor(Math.random() * pool.length)];
+        handleGuessSubmission(bot.id, bot.name, target.word);
+      }
+    }, 3400);
+  }
+
+  // Calcula quantos níveis a equipe avança (+1, +2 ou +3 níveis de uma vez!)
+  function computeLevelSkip() {
+    const solvedCount = state.slots.filter((s) => Boolean(s.solvedBy)).length;
+    const totalSlots = state.slots.length;
+    const allSolved = totalSlots > 0 && solvedCount === totalSlots;
+
+    if (allSolved) {
+      return {
+        passed: true,
+        skip: 3,
+        stars: '🌟🌟🌟',
+        badge: 'PERFEITO!',
+        title: 'VOCÊ AVANÇOU 3 NÍVEIS DE UMA VEZ!'
+      };
+    }
+
+    const highGoal = state.totalPoints >= Math.round(state.maxPoints * 0.82) ||
+      (totalSlots > 0 && solvedCount / totalSlots >= 0.82);
+
+    if (highGoal && state.totalPoints >= state.goalPoints) {
+      return {
+        passed: true,
+        skip: 2,
+        stars: '⭐⭐',
+        badge: 'MUITO BOM!',
+        title: 'VOCÊ AVANÇOU 2 NÍVEIS!'
+      };
+    }
+
+    if (state.totalPoints >= state.goalPoints || solvedCount >= state.lockTarget) {
+      return {
+        passed: true,
+        skip: 1,
+        stars: '⭐',
+        badge: 'PRONTO!',
+        title: 'VOCÊ AVANÇOU 1 NÍVEL!'
+      };
+    }
+
+    return {
+      passed: false,
+      skip: 0,
+      stars: '💔',
+      badge: 'META NÃO ALCANÇADA',
+      title: `FIM DO NÍVEL ${state.level}`
+    };
+  }
+
+  function finishRound() {
+    if (!local.isHost || (state.status !== 'playing' && state.status !== 'revealing_end')) return;
+
+    const outcome = computeLevelSkip();
+
+    // Revela todas as letras falsas/ocultas e palavras restantes no tabuleiro por 2.2s antes do modal
+    state.wheelTiles.forEach((t) => {
+      if (t.isFake) t.fakeRevealed = true;
+      if (t.isMystery) t.displayChar = t.char;
+    });
+    state.slots.forEach((s) => {
+      if (!s.solvedBy) s.expired = true;
+    });
+
+    if (!outcome.passed) {
+      if (config.maxLives < 90) {
+        state.lives = Math.max(0, state.lives - 1);
+      }
+      state.status = state.lives > 0 ? 'intermission' : 'gameover';
+      SoundFX.play('gameover');
     } else {
-      goalStatusText.textContent = unlocked
-        ? `🔓 Nível ${state.level} Garantido! (${solvedCount}/${totalWords} palavras)`
-        : `🔒 Encontre ${state.quota - solvedCount} palavra(s) para abrir o cadeado! (${solvedCount}/${state.quota})`
+      state.status = 'intermission';
+      SoundFX.play('win');
     }
 
-    const fillPct = Math.min(100, Math.round((solvedCount / totalWords) * 100))
-    const lockPct = Math.min(92, Math.max(15, Math.round((state.quota / totalWords) * 100)))
-    wordsProgressFill.style.width = `${fillPct}%`
-    lockMarker.style.left = `${lockPct}%`
-    lockMarker.classList.toggle('unlocked', unlocked)
-    lockIcon.textContent = unlocked ? '🔓' : '🔒'
-    lockQuotaText.textContent = `${solvedCount}/${state.quota}`
+    broadcastState();
+    renderAll();
+    showRoundModal();
+  }
 
-    // Render Scrambled Letter Tiles
-    lettersPool.innerHTML = ''
-    for (const tile of state.tiles) {
-      const btn = document.createElement('button')
-      btn.type = 'button'
-      const showChar =
-        state.status === 'gameover' || state.status === 'levelclear'
-          ? tile.char.toUpperCase()
-          : tile.isHidden
-            ? '?'
-            : tile.char.toUpperCase()
+  function showBannerFeedback(html, durationMs = 1900) {
+    local.feedbackOverride = {
+      html,
+      expiresAt: Date.now() + durationMs
+    };
+    if (local.feedbackTimeout) clearTimeout(local.feedbackTimeout);
+    renderTopHUD();
+    local.feedbackTimeout = setTimeout(() => {
+      local.feedbackOverride = null;
+      renderTopHUD();
+    }, durationMs);
+  }
 
-      btn.className = `letter-tile${tile.isHidden && state.status === 'playing' ? ' mystery' : ''}${tile.revealedFake || (tile.isFake && state.status !== 'playing') ? ' revealed-fake' : ''}`
-      btn.textContent = showChar
-      btn.title = tile.revealedFake
-        ? 'Letra Falsa revelada!'
-        : tile.isHidden
-          ? 'Letra Oculta (?): descubra qual é pelas palavras!'
-          : `Clique para inserir "${tile.char.toUpperCase()}"`
+  function flashBoard(isHitMax) {
+    const cls = isHitMax ? 'flash-hitmax' : 'flash-hit';
+    el.boardPanel.classList.add(cls);
+    setTimeout(() => el.boardPanel.classList.remove(cls), 750);
+  }
+
+  function handleGuessSubmission(playerId, playerName, rawWord) {
+    if (state.status !== 'playing') return;
+    const norm = normalizeWord(rawWord);
+    if (norm.length < 4) return;
+
+    // Verifica se o jogador está bloqueado pelo cadeado no modo checkpoints
+    if (config.padlockMode === 'checkpoints' && state.lockedPlayers[playerId]) {
+      if (playerId === local.myId) {
+        pushFeed('🔒 Seu cadeado está fechado! Aguarde a barra cruzar o próximo cadeado.', 'miss');
+        renderFeed();
+      }
+      return;
+    }
+
+    if (!state.players[playerId]) {
+      state.players[playerId] = {
+        id: playerId,
+        name: playerName || 'Jogador',
+        score: 0,
+        turnScore: 0,
+        wordsFound: 0,
+        turnWords: 0,
+        isBot: false
+      };
+    }
+
+    const player = state.players[playerId];
+    player.name = playerName || player.name;
+
+    // 1. Verifica se está nos slots principais do painel
+    const slot = state.slots.find((s) => s.word === norm);
+    if (slot) {
+      if (slot.solvedBy) {
+        if (playerId === local.myId) {
+          pushFeed(`⚠️ "${slot.display}" já foi encontrada por ${slot.solvedByName}!`, 'miss');
+          renderFeed();
+        }
+        return;
+      }
+
+      const wasBelowGoal = state.totalPoints < state.goalPoints;
+
+      slot.solvedBy = playerId;
+      slot.solvedByName = player.name;
+      player.score += slot.points;
+      player.turnScore = (player.turnScore || 0) + slot.points;
+      player.wordsFound += 1;
+      player.turnWords = (player.turnWords || 0) + 1;
+      state.totalPoints += slot.points;
+
+      // Se houver letra misteriosa (?) que faz parte desta palavra, verifica se ela foi usada
+      state.wheelTiles.forEach((tile) => {
+        if (tile.isMystery && tile.displayChar !== tile.char) {
+          const nonMysteryCount = state.wheelTiles.filter(
+            (t) => !t.isFake && !t.isMystery && t.char === tile.char
+          ).length;
+          const usedInWord = countChars(norm)[tile.char] || 0;
+          if (usedInWord > nonMysteryCount) {
+            tile.displayChar = tile.char;
+            pushFeed(`✨ ${player.name} revelou a letra escondida "${tile.char}"!`, 'hit');
+          }
+        }
+      });
+
+      // Aplica cadeado se modo checkpoints estiver ativo
+      if (config.padlockMode === 'checkpoints') {
+        slot.lockedPadlock = true;
+        state.lockedPlayers[playerId] = true;
+      }
+
+      const crossedGoalNow = wasBelowGoal && state.totalPoints >= state.goalPoints;
+      if (slot.hitMax) {
+        SoundFX.play('hitmax');
+        pushFeed(`💎 ${player.name} encontrou o ANAGRAMA "${slot.display}" (+${slot.points} pts)!`, 'hitmax');
+        showBannerFeedback(
+          `<strong data-color="cyan">${escapeHtml(player.name)}</strong> ENCONTROU O ANAGRAMA <strong data-color="yellow">${slot.display}</strong>!`
+        );
+      } else {
+        SoundFX.play(crossedGoalNow ? 'goal' : 'hit');
+        pushFeed(`✅ ${player.name} descobriu "${slot.display}" (+${slot.points} pts)`, 'hit');
+        showBannerFeedback(
+          `<strong data-color="green">${escapeHtml(player.name)}</strong> ENCONTROU <strong data-color="yellow">${slot.display}</strong>!`
+        );
+      }
+
+      flashBoard(slot.hitMax);
+
+      // Se encontrou 100% das palavras do quadro, encerra imediatamente e salta +3 Níveis!
+      const allSolved = state.slots.every((s) => Boolean(s.solvedBy));
+      if (allSolved) {
+        pushFeed(`🌟 PERFEITO! Todas as ${state.slots.length} palavras encontradas! Saltando +3 NÍVEIS!`, 'hitmax');
+        finishRound();
+        return;
+      }
+
+      broadcastState();
+      renderAll();
+      return;
+    }
+
+    // 2. Verifica se é uma palavra Bônus válida formada pelas letras reais
+    const rootCounts = countChars(state.rootWord);
+    if (canFormWord(norm, rootCounts) && dict.allValidSet.has(norm)) {
+      const alreadyBonus = state.bonusWords.some((b) => b.word === norm);
+      if (alreadyBonus) {
+        if (playerId === local.myId) {
+          pushFeed(`⭐ Palavra bônus "${norm}" já foi registrada!`, 'miss');
+          renderFeed();
+        }
+        return;
+      }
+      const bonusPts = 25;
+      state.bonusWords.push({ word: norm, byName: player.name });
+      player.score += bonusPts;
+      player.turnScore = (player.turnScore || 0) + bonusPts;
+      state.totalPoints += bonusPts;
+      SoundFX.play('bonus');
+      pushFeed(`⭐ ${player.name} achou palavra bônus "${dict.accentMap.get(norm) || norm}" (+${bonusPts} pts)`, 'bonus');
+      broadcastState();
+      renderAll();
+      return;
+    }
+
+    // 3. Palavra inválida
+    if (playerId === local.myId) {
+      pushFeed(`❌ "${norm}" não forma palavra válida com as letras reais.`, 'miss');
+      renderFeed();
+    }
+  }
+
+  function pushFeed(text, type) {
+    state.feed.unshift({ text, type: type || 'system', ts: Date.now() });
+    if (state.feed.length > 30) {
+      state.feed.length = 30;
+    }
+  }
+
+  // Renderização
+  function renderAll() {
+    renderTopHUD();
+    renderWordsGrid();
+    renderWheel(false);
+    renderPlayers();
+    renderFeed();
+  }
+
+  function renderTopHUD() {
+    el.hudLevel.textContent = String(state.level);
+    el.hudRecord.textContent = String(Math.max(state.record, state.level));
+    el.hudTimer.textContent = `${state.timeLeft}s`;
+
+    // Vidas
+    if (config.maxLives >= 90) {
+      el.hudHearts.textContent = '∞';
+    } else {
+      const full = '❤️'.repeat(Math.max(0, state.lives));
+      const empty = '🖤'.repeat(Math.max(0, config.maxLives - state.lives));
+      el.hudHearts.textContent = full + empty;
+    }
+
+    const solvedCount = state.slots.filter((s) => Boolean(s.solvedBy)).length;
+    const totalSlots = state.slots.length;
+    el.goalPointsText.textContent = `${state.totalPoints} / ${state.goalPoints}`;
+    el.lockProgressText.textContent = `${solvedCount} / ${totalSlots}`;
+
+    const pct = state.goalPoints > 0 ? Math.min(100, Math.round((state.totalPoints / state.goalPoints) * 100)) : 0;
+    el.lockBarFill.style.width = `${pct}%`;
+
+    const isGoalMet = state.totalPoints >= state.goalPoints || solvedCount >= state.lockTarget;
+    el.goalBox.classList.toggle('unlocked', isGoalMet);
+    el.wheelDock.classList.toggle('goal-achieved', isGoalMet);
+    el.lockIcon.textContent = isGoalMet ? '🔓' : '🔒';
+
+    // Barra de tempo
+    const timePct = state.roundDuration > 0
+      ? Math.max(0, Math.min(100, (state.timeLeft / state.roundDuration) * 100))
+      : 0;
+    el.timerBarFill.style.width = `${timePct}%`;
+    el.timerBarFill.classList.toggle('danger', state.timeLeft <= state.revealTime);
+
+    // Checkpoints de cadeado na barra de tempo
+    if (config.padlockMode === 'checkpoints') {
+      el.timerLocksLayer.innerHTML = state.checkpointMarks.map((markFrac, idx) => {
+        const opened = state.checkpointsOpened[idx];
+        const leftPct = Math.round(markFrac * 100);
+        return `<div class="timer-lock-node ${opened ? 'opened' : ''}" style="left: ${leftPct}%" title="Checkpoint de Cadeado">${opened ? '🔓' : '🔒'}</div>`;
+      }).join('');
+    } else {
+      el.timerLocksLayer.innerHTML = '';
+    }
+
+    // Banner de Feedback / Avisos de Letras Falsas e Escondidas
+    if (local.feedbackOverride && Date.now() < local.feedbackOverride.expiresAt) {
+      el.modifierBanner.innerHTML = local.feedbackOverride.html;
+    } else if (isGoalMet) {
+      const remaining = totalSlots - solvedCount;
+      el.modifierBanner.innerHTML = remaining > 0
+        ? `🎉 <strong data-color="yellow">META ALCANÇADA!</strong> Faltam <strong>${remaining}</strong> palavras para saltar <strong data-color="cyan">+3 NÍVEIS!</strong>`
+        : `🌟 <strong data-color="cyan">PERFEITO!</strong> TODAS AS PALAVRAS ENCONTRADAS!`;
+    } else {
+      const { fakeCount, hiddenCount } = getLevelModifiers(state.level);
+      el.modifierBanner.innerHTML = getModifierWarningHTML(fakeCount, hiddenCount);
+    }
+
+    // Overlay de cadeado se o jogador local estiver trancado no modo checkpoints
+    if (config.padlockMode === 'checkpoints' && state.lockedPlayers[local.myId] && state.status === 'playing') {
+      el.cooldownOverlay.hidden = false;
+      el.cooldownTimer.textContent = 'até o próximo 🔓 na barra';
+    } else if (Date.now() >= local.cooldownUntil) {
+      el.cooldownOverlay.hidden = true;
+    }
+
+    el.bonusCount.textContent = String(state.bonusWords.length);
+  }
+
+  function renderWordsGrid() {
+    el.wordsGrid.innerHTML = '';
+    state.slots.forEach((slot) => {
+      const row = document.createElement('div');
+      const classes = ['word-slot'];
+      if (slot.hitMax) classes.push('hitmax-slot');
+      if (slot.solvedBy) classes.push('solved');
+      else if (slot.expired) classes.push('expired-slot');
+      row.className = classes.join(' ');
+
+      const boxes = document.createElement('div');
+      boxes.className = 'slot-boxes';
+
+      const displayChars = (slot.solvedBy || slot.expired ? slot.display : slot.word).split('');
+      for (let i = 0; i < slot.len; i++) {
+        const cell = document.createElement('span');
+        const isHinted = !slot.solvedBy && !slot.expired && slot.revealedPositions.includes(i);
+        cell.className = 'slot-char' + (isHinted ? ' hint-revealed' : '');
+        if (slot.solvedBy || slot.expired || isHinted) {
+          cell.textContent = displayChars[i] || slot.word[i];
+        } else {
+          cell.textContent = '';
+        }
+        boxes.appendChild(cell);
+      }
+
+      const finder = document.createElement('span');
+      finder.className = 'slot-finder';
+      if (slot.solvedByName) {
+        finder.textContent = (slot.lockedPadlock ? '🔒 ' : '') + slot.solvedByName;
+      } else if (slot.hitMax) {
+        finder.textContent = `💎 ${slot.points}`;
+      } else {
+        finder.textContent = `${slot.points} pts`;
+      }
+
+      row.appendChild(boxes);
+      row.appendChild(finder);
+      el.wordsGrid.appendChild(row);
+    });
+  }
+
+  function renderWheel(animateFlip) {
+    el.letterTiles.innerHTML = '';
+    state.wheelTiles.forEach((tile) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      const classes = ['letter-tile'];
+      if (animateFlip) classes.push('shuffle-flip');
+      if (tile.isMystery && tile.displayChar.startsWith('?')) classes.push('mystery-tile');
+      if (tile.isFake && tile.fakeRevealed) classes.push('fake-revealed');
+      btn.className = classes.join(' ');
+
+      const charSpan = document.createElement('span');
+      charSpan.textContent = tile.displayChar;
+      btn.appendChild(charSpan);
+
+      const ptsSpan = document.createElement('span');
+      ptsSpan.className = 'tile-points';
+      ptsSpan.textContent = tile.displayChar.startsWith('?') ? '?' : String(tile.points || 1);
+      btn.appendChild(ptsSpan);
 
       btn.addEventListener('click', () => {
-        if (state.status !== 'playing' || tile.isHidden || tile.revealedFake) return
-        guessInput.value += tile.char.toUpperCase()
-        playTone(460, 0.04)
-        guessInput.focus()
-      })
-      lettersPool.appendChild(btn)
-    }
+        if (tile.isFake && tile.fakeRevealed) return;
+        if (tile.displayChar.startsWith('?')) return;
+        if (el.guessInput.value.length < 12) {
+          el.guessInput.value += tile.displayChar;
+          el.guessInput.focus();
+        }
+      });
 
-    // Render Hidden & Solved Words Grid
-    wordsGrid.innerHTML = ''
-    const revealAll = state.status === 'gameover' || state.status === 'levelclear'
-    for (const w of state.words) {
-      const slot = document.createElement('div')
-      slot.className = `word-slot${w.solved ? ' solved' : revealAll ? ' missed' : ''}`
+      el.letterTiles.appendChild(btn);
+    });
+  }
 
-      const boxes = document.createElement('div')
-      boxes.className = 'slot-boxes'
-      const chars = (w.solved || revealAll ? w.display : w.norm).split('')
+  function renderPlayers() {
+    const list = Object.values(state.players).sort((a, b) => b.score - a.score);
+    el.playersCountLabel.textContent = `${list.length} ${list.length === 1 ? 'jogador' : 'jogadores'}`;
+    el.roomBadge.textContent = String(list.length);
 
-      for (let i = 0; i < chars.length; i++) {
-        const cBox = document.createElement('span')
-        const isHinted = !w.solved && !revealAll && (w.hintIndices || []).includes(i)
-        cBox.className = `slot-char${isHinted ? ' slot-Char-hint' : ''}`
-        cBox.textContent = w.solved || revealAll || isHinted ? chars[i].toUpperCase() : ''
-        boxes.appendChild(cBox)
-      }
-      slot.appendChild(boxes)
-
-      if (w.solved && w.finderName) {
-        const finder = document.createElement('span')
-        finder.className = 'slot-finder'
-        finder.textContent = w.finderName
-        slot.appendChild(finder)
-      }
-      wordsGrid.appendChild(slot)
-    }
-
-    // Render Leaderboard
-    playersCountBadge.textContent = `${state.players.length} jogador${state.players.length === 1 ? '' : 'es'}`
-    leaderboardList.innerHTML = ''
-    const sortedPlayers = [...state.players].sort((a, b) => b.score - a.score)
-    for (const p of sortedPlayers) {
-      const row = document.createElement('div')
-      row.className = 'leader-row'
-      const youSuffix = p.id === room?.profile.id ? ' (Você)' : ''
+    el.playersList.innerHTML = '';
+    list.forEach((p, idx) => {
+      const row = document.createElement('div');
+      row.className = 'player-row' + (p.id === local.myId ? ' is-me' : '');
+      const isLocked = config.padlockMode === 'checkpoints' && state.lockedPlayers[p.id];
       row.innerHTML = `
-        <div class="leader-left">
-          <span class="leader-dot" style="background:${p.color || '#a855f7'}">${p.name.charAt(0).toUpperCase()}</span>
-          <span class="leader-name">${p.name}${youSuffix}</span>
+        <div class="player-info">
+          <span class="rank-num">#${idx + 1}</span>
+          <span class="player-nick">${escapeHtml(p.name)}${p.isBot ? ' 🤖' : ''}${isLocked ? ' 🔒' : ''}</span>
         </div>
-        <div class="leader-stats">
-          <span class="leader-words">${p.wordsFound || 0} pal.</span>
-          <span class="leader-pts">${p.score || 0} pts</span>
-        </div>
-      `
-      leaderboardList.appendChild(row)
-    }
+        <span class="player-score">${p.score} pts (${p.wordsFound}w)</span>
+      `;
+      el.playersList.appendChild(row);
+    });
+  }
 
-    // Render Live Feed & Bonus Counter
-    bonusCountBadge.textContent = `⭐ ${state.bonusFoundCount} bônus`
-    if (state.feed.length === 0) {
-      liveFeed.innerHTML = '<span class="feed-empty">Digite palavras de 4+ letras abaixo!</span>'
+  function renderFeed() {
+    el.feedList.innerHTML = '';
+    state.feed.slice(0, 18).forEach((item) => {
+      const div = document.createElement('div');
+      div.className = `feed-item feed-${item.type || 'system'}`;
+      div.textContent = item.text;
+      el.feedList.appendChild(div);
+    });
+  }
+
+  function showRoundModal() {
+    clearAutoPilotTimer();
+    const solvedCount = state.slots.filter((s) => Boolean(s.solvedBy)).length;
+    const totalSlots = state.slots.length;
+    const outcome = computeLevelSkip();
+
+    el.modalCard.className = 'modal-card' + (outcome.skip >= 3 ? ' win-3' : outcome.skip === 2 ? ' win-2' : '');
+    el.modalStars.textContent = outcome.stars;
+    el.modalBadge.textContent = outcome.badge;
+    el.modalTitle.textContent = outcome.title;
+
+    const targetNextLevel = outcome.passed ? state.level + outcome.skip : (state.lives > 0 ? state.level : config.startLevel);
+
+    if (outcome.passed) {
+      el.modalSubtitle.textContent = outcome.skip === 3
+        ? `Vocês desvendaram 100% das palavras (${solvedCount}/${totalSlots}) e saltaram 3 níveis de uma vez!`
+        : `Vocês somaram ${state.totalPoints} pontos (${solvedCount}/${totalSlots} palavras)!`;
+      el.nextLevelBanner.hidden = false;
+      el.modalNextLevel.textContent = `NÍVEL ${targetNextLevel}`;
+      el.btnNextLevel.innerHTML = `Ir para Nível ${targetNextLevel} ▶ <span class="autopilot-countdown" id="autopilot-countdown"></span>`;
+    } else if (state.lives > 0) {
+      el.modalSubtitle.textContent = `Faltaram pontos para a meta (${state.totalPoints}/${state.goalPoints}), mas a equipe ainda tem ${state.lives} ❤️!`;
+      el.nextLevelBanner.hidden = false;
+      el.modalNextLevel.textContent = `REPETIR NÍVEL ${state.level}`;
+      el.btnNextLevel.innerHTML = `Tentar Nível ${state.level} Novamente ▶ <span class="autopilot-countdown" id="autopilot-countdown"></span>`;
     } else {
-      liveFeed.innerHTML = ''
-      for (const item of state.feed.slice(0, 14)) {
-        const row = document.createElement('div')
-        row.className = `feed-item ${item.type}`
-        row.innerHTML = `
-          <span><strong class="feed-word">${item.word}</strong> · ${item.playerName}</span>
-          <span>${item.type === 'bonus' ? '⭐ +40' : '✅'}</span>
-        `
-        liveFeed.appendChild(row)
-      }
-    }
-  }
-
-  function updateTimerVisuals() {
-    const sec = Math.max(0, Math.ceil(state.remainingSec))
-    timerSeconds.textContent = `${sec}s`
-    timerPill.classList.toggle('urgent', state.status === 'playing' && sec <= 12)
-    const pct = Math.max(0, Math.min(100, (state.remainingSec / Math.max(1, state.durationSec)) * 100))
-    timerBarLine.style.width = `${pct}%`
-  }
-
-  // ==================== HOST GAME LOOP & WORD VALIDATION ====================
-  function syncToClients() {
-    if (room && room.isHost) {
-      room.broadcastState(state)
-    }
-    renderUI()
-  }
-
-  function startLevelOnHost(levelNum) {
-    if (!dictReady || !room?.isHost) return
-    clearInterval(timerInterval)
-    clearInterval(botInterval)
-
-    if (levelNum === 1) {
-      for (const p of state.players) {
-        p.score = 0
-        p.wordsFound = 0
-      }
-      state.feed = []
+      el.modalSubtitle.textContent = `Vocês alcançaram o Nível ${state.level} (Recorde: Nível ${state.record})!`;
+      el.nextLevelBanner.hidden = true;
+      el.btnNextLevel.innerHTML = `Jogar Novamente (Nível ${config.startLevel}) 🔄 <span class="autopilot-countdown" id="autopilot-countdown"></span>`;
     }
 
-    const puzzle = buildLevelPuzzle(levelNum)
-    state.level = levelNum
-    state.status = 'playing'
-    state.tiles = puzzle.tiles
-    state.words = puzzle.words
-    state.quota = puzzle.quota
-    state.durationSec = puzzle.durationSec
-    state.remainingSec = puzzle.durationSec
-    state.bonusFoundCount = 0
-    state.bonusWordsUsed = []
+    el.autopilotCountdown = document.getElementById('autopilot-countdown');
 
-    modalSummary.hidden = true
-    if (roomDrawer) {
-      roomDrawer.hidden = true
-      btnToggleDrawer?.setAttribute('aria-expanded', 'false')
+    el.modalStats.innerHTML = `
+      <div class="stat-chip">Pontos no Nível<strong>${state.totalPoints} / ${state.goalPoints}</strong></div>
+      <div class="stat-chip">Palavras<strong>${solvedCount} / ${totalSlots}</strong></div>
+      <div class="stat-chip">Salto de Nível<strong>${outcome.passed ? '+' + outcome.skip : '0'}</strong></div>
+    `;
+
+    // Dual Rankings (Ranking do Nível vs Ranking Geral)
+    el.modalRkgTurnTitle.textContent = `RANKING NÍVEL ${state.level}`;
+    const turnList = Object.values(state.players).sort((a, b) => (b.turnScore || 0) - (a.turnScore || 0));
+    el.modalRkgTurn.innerHTML = turnList.map((p, i) => `
+      <div class="modal-rkg-row">
+        <span>#${i + 1} ${escapeHtml(p.name)}</span>
+        <strong>+${p.turnScore || 0} pts (${p.turnWords || 0}w)</strong>
+      </div>
+    `).join('');
+
+    const totalList = Object.values(state.players).sort((a, b) => b.score - a.score);
+    el.modalRkgTotal.innerHTML = totalList.map((p, i) => `
+      <div class="modal-rkg-row">
+        <span>#${i + 1} ${escapeHtml(p.name)}</span>
+        <strong>${p.score} pts (${p.wordsFound}w)</strong>
+      </div>
+    `).join('');
+
+    const missed = state.slots.filter((s) => !s.solvedBy);
+    if (missed.length > 0) {
+      el.missedWordsBox.hidden = false;
+      el.missedWordsList.innerHTML = missed
+        .map((m) => `<span class="missed-word-tag">${escapeHtml(m.display)}</span>`)
+        .join('');
+    } else {
+      el.missedWordsBox.hidden = true;
     }
 
-    playChord([440, 554.37, 659.25], 65)
-    syncToClients()
-    updateTimerVisuals()
-    setTimeout(() => guessInput.focus(), 50)
+    el.btnNextLevel.disabled = !local.isHost;
+    el.roundModal.hidden = false;
 
-    let hint25Given = false
-    let hint12Given = false
-    const startTs = Date.now()
-
-    timerInterval = setInterval(() => {
-      const elapsed = (Date.now() - startTs) / 1000
-      state.remainingSec = Math.max(0, state.durationSec - elapsed)
-      updateTimerVisuals()
-
-      // Progressive letter hints & Fake letter cross-out like Words on Stream!
-      if (!hint25Given && state.remainingSec <= 30) {
-        hint25Given = true
-        revealProgressiveHintsOnHost(1)
+    // Piloto Automático
+    if (local.isHost && config.autoPilot && (outcome.passed || state.lives > 0)) {
+      local.autoPilotRemaining = 8;
+      if (el.autopilotCountdown) {
+        el.autopilotCountdown.textContent = `${local.autoPilotRemaining}s`;
       }
-      if (!hint12Given && state.remainingSec <= 15) {
-        hint12Given = true
-        revealProgressiveHintsOnHost(2)
-      }
-
-      if (state.remainingSec <= 0) {
-        clearInterval(timerInterval)
-        clearInterval(botInterval)
-        finishLevelOnHost()
-      }
-    }, 200)
-
-    startBotsLoopOnHost()
-  }
-
-  function revealProgressiveHintsOnHost(stage) {
-    if (!room?.isHost || state.status !== 'playing') return
-    // Cross out fake letter at stage 1 (30s left)
-    for (const t of state.tiles) {
-      if (t.isFake && !t.revealedFake) {
-        t.revealedFake = true
-        showToast(`🎭 Dica: A letra falsa "${t.char.toUpperCase()}" foi riscada!`, 2600)
-      }
-    }
-    // Reveal 1st letter on unsolved words at stage 1, and last letter at stage 2
-    for (const w of state.words) {
-      if (w.solved) continue
-      if (!w.hintIndices.includes(0)) {
-        w.hintIndices.push(0)
-      } else if (stage >= 2 && w.len >= 5 && !w.hintIndices.includes(w.len - 1)) {
-        w.hintIndices.push(w.len - 1)
-      }
-    }
-    syncToClients()
-  }
-
-  function startBotsLoopOnHost() {
-    clearInterval(botInterval)
-    if (!room?.isHost || state.status !== 'playing') return
-
-    botInterval = setInterval(() => {
-      if (state.status !== 'playing') {
-        clearInterval(botInterval)
-        return
-      }
-      const bots = state.players.filter((p) => p.isBot)
-      if (!bots.length) return
-      const unsolved = state.words.filter((w) => !w.solved)
-      if (!unsolved.length) return
-
-      const bot = bots[Math.floor(Math.random() * bots.length)]
-      // Bots prefer shorter unsolved words
-      const candidate = unsolved[Math.floor(Math.random() * Math.min(unsolved.length, 4))]
-      if (candidate) {
-        processGuessOnHost(candidate.norm, bot)
-      }
-    }, 5200)
-  }
-
-  function processGuessOnHost(rawWord, senderProfile) {
-    if (!room?.isHost || state.status !== 'playing') return
-    const norm = normalizePt(rawWord)
-    if (norm.length < 4) return
-
-    let player = state.players.find((p) => p.id === senderProfile?.id)
-    if (!player && senderProfile) {
-      player = {
-        id: senderProfile.id,
-        name: senderProfile.name || 'Jogador',
-        color: senderProfile.color || '#38bdf8',
-        isBot: false,
-        score: 0,
-        wordsFound: 0,
-      }
-      state.players.push(player)
-    }
-    if (!player) return
-
-    // 1. Check if it matches an unsolved word on the board
-    const boardWord = state.words.find((w) => w.norm === norm)
-    if (boardWord) {
-      if (boardWord.solved) {
-        sendFeedbackToPlayer(player.id, 'already', `"${boardWord.display.toUpperCase()}" já foi encontrada!`)
-        return
-      }
-
-      boardWord.solved = true
-      boardWord.finderName = player.name
-      boardWord.finderColor = player.color
-
-      const pts = boardWord.len * 25 + state.level * 10
-      player.score = (player.score || 0) + pts
-      player.wordsFound = (player.wordsFound || 0) + 1
-
-      state.feed.unshift({
-        word: boardWord.display.toUpperCase(),
-        playerName: player.name,
-        type: 'hit',
-      })
-      if (state.feed.length > 20) state.feed.pop()
-
-      playChord([523.25, 659.25, 783.99], 50)
-      room.broadcastEvent({
-        type: 'WORD_FOUND',
-        playerId: player.id,
-        word: boardWord.display.toUpperCase(),
-        isBonus: false,
-      })
-
-      // Check if all board words are solved -> instant level clear!
-      if (state.words.every((w) => w.solved)) {
-        clearInterval(timerInterval)
-        clearInterval(botInterval)
-        finishLevelOnHost()
-        return
-      }
-
-      syncToClients()
-      return
-    }
-
-    // 2. Check if it's a valid Bonus Word formed by the real letters
-    if (allValidSet.has(norm)) {
-      const realChars = state.tiles.filter((t) => !t.isFake).map((t) => t.char).join('')
-      const poolCounts = countLetters(realChars)
-      const guessCounts = countLetters(norm)
-
-      if (canFormFromCounts(guessCounts, poolCounts)) {
-        if (state.bonusWordsUsed.includes(norm)) {
-          sendFeedbackToPlayer(player.id, 'already', `Palavra bônus "${norm.toUpperCase()}" já usada!`)
-          return
+      local.autoPilotTimer = setInterval(() => {
+        local.autoPilotRemaining -= 1;
+        if (el.autopilotCountdown) {
+          el.autopilotCountdown.textContent = local.autoPilotRemaining > 0 ? `${local.autoPilotRemaining}s` : '';
         }
-        state.bonusWordsUsed.push(norm)
-        state.bonusFoundCount++
-        player.score = (player.score || 0) + 40
-
-        const disp = (displayMap.get(norm) || norm).toUpperCase()
-        state.feed.unshift({
-          word: disp,
-          playerName: player.name,
-          type: 'bonus',
-        })
-        if (state.feed.length > 20) state.feed.pop()
-
-        playTone(660, 0.12, 'triangle', 0.1)
-        room.broadcastEvent({
-          type: 'WORD_FOUND',
-          playerId: player.id,
-          word: disp,
-          isBonus: true,
-        })
-        syncToClients()
-        return
-      }
+        if (local.autoPilotRemaining <= 0) {
+          clearAutoPilotTimer();
+          triggerNextFromModal();
+        }
+      }, 1000);
     }
-
-    sendFeedbackToPlayer(player.id, 'invalid', `"${norm.toUpperCase()}" não está no quadro!`)
   }
 
-  function sendFeedbackToPlayer(playerId, kind, msg) {
-    if (playerId === room.profile.id) {
-      handleLocalReject(msg)
+  function triggerNextFromModal() {
+    if (!local.isHost) return;
+    clearAutoPilotTimer();
+    const outcome = computeLevelSkip();
+    if (outcome.passed) {
+      startLevel(state.level + outcome.skip, false);
+    } else if (state.lives > 0) {
+      startLevel(state.level, false);
     } else {
-      room.broadcastEvent({ type: 'REJECT', playerId, message: msg })
+      startLevel(config.startLevel, true);
     }
   }
 
-  function handleLocalReject(msg) {
-    playTone(165, 0.15, 'sawtooth', 0.1)
-    inputWrapper.classList.remove('shake')
-    void inputWrapper.offsetWidth
-    inputWrapper.classList.add('shake')
-    showToast(msg, 1700)
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
-  function triggerLocalCooldown() {
-    if (!state.cooldownEnabled) return
-    myCooldownUntil = Date.now() + 3000
-    clearInterval(cooldownTimer)
-    cooldownBadge.hidden = false
-    guessInput.disabled = true
+  // Cooldown anti-spam de 4s quando o modo 'cooldown' está selecionado
+  function triggerLocalPadlock() {
+    if (config.padlockMode !== 'cooldown') return;
+    const durationMs = 4000;
+    local.cooldownUntil = Date.now() + durationMs;
+    el.cooldownOverlay.hidden = false;
 
-    cooldownTimer = setInterval(() => {
-      const rem = (myCooldownUntil - Date.now()) / 1000
+    if (local.cooldownInterval) clearInterval(local.cooldownInterval);
+    local.cooldownInterval = setInterval(() => {
+      const rem = local.cooldownUntil - Date.now();
       if (rem <= 0) {
-        clearInterval(cooldownTimer)
-        cooldownBadge.hidden = true
-        guessInput.disabled = false
-        guessInput.focus()
+        clearInterval(local.cooldownInterval);
+        el.cooldownOverlay.hidden = true;
+        SoundFX.play('unlock');
       } else {
-        cooldownBadge.textContent = `🔒 ${rem.toFixed(1)}s`
+        el.cooldownTimer.textContent = (rem / 1000).toFixed(1) + 's';
       }
-    }, 100)
+    }, 100);
   }
 
-  function finishLevelOnHost() {
-    const solvedCount = state.words.filter((w) => w.solved).length
-    const passed = solvedCount >= state.quota
-    state.status = passed ? 'levelclear' : 'gameover'
-    syncToClients()
-    room.broadcastEvent({
-      type: 'LEVEL_END',
-      passed,
-      level: state.level,
-      solvedCount,
-      totalWords: state.words.length,
-    })
-    openSummaryModal(passed, solvedCount, state.words.length)
-  }
-
-  function openSummaryModal(passed, solvedCount, totalWords) {
-    if (passed) {
-      launchConfetti()
-      playChord([523.25, 659.25, 783.99, 1046.5], 70)
-    } else {
-      playTone(150, 0.3, 'sawtooth', 0.12)
-    }
-
-    document.getElementById('modal-badge').textContent = passed
-      ? `🔓 NÍVEL ${state.level} SUPERADO!`
-      : `🔒 FIM DE JOGO NO NÍVEL ${state.level}`
-    document.getElementById('modal-title').textContent = passed
-      ? `Rumo ao Nível ${state.level + 1}! 🎉`
-      : `O Cadeado Não Abriu!`
-    document.getElementById('modal-subtitle').textContent = passed
-      ? `A sala encontrou ${solvedCount} de ${totalWords} palavras (meta: ${state.quota})!`
-      : `Vocês encontraram ${solvedCount} de ${state.quota} palavras necessárias.`
-
-    const wordsList = document.getElementById('modal-words-list')
-    const missedBox = document.getElementById('modal-Missed-box')
-    missedBox.hidden = false
-    wordsList.innerHTML = ''
-    for (const w of state.words) {
-      const pill = document.createElement('span')
-      pill.className = `modal-word-pill ${w.solved ? 'found' : 'missed'}`
-      pill.textContent = w.display.toUpperCase()
-      wordsList.appendChild(pill)
-    }
-
-    const sorted = [...state.players].sort((a, b) => b.score - a.score)
-    const mvp = sorted[0]
-    document.getElementById('modal-mvp-box').textContent = mvp
-      ? `👑 Destaque da Sala: ${mvp.name} (${mvp.score} pts · ${mvp.wordsFound} palavras)`
-      : 'Parabéns à equipe!'
-
-    const btnNext = document.getElementById('btn-next-action')
-    const isHost = room ? room.isHost : true
-    btnNext.hidden = !isHost
-    btnNext.textContent = passed
-      ? `▶️ Iniciar Nível ${state.level + 1}`
-      : `🔄 Jogar Novamente (Nível 1)`
-
-    modalSummary.hidden = false
-  }
-
-  function launchConfetti() {
-    const ctx = confettiCanvas.getContext('2d')
-    confettiCanvas.width = window.innerWidth
-    confettiCanvas.height = window.innerHeight
-    const colors = ['#a855f7', '#38bdf8', '#10b981', '#fbbf24', '#f43f5e']
-    const pieces = Array.from({ length: 80 }, () => ({
-      x: window.innerWidth / 2 + (Math.random() - 0.5) * 200,
-      y: window.innerHeight * 0.35,
-      vx: (Math.random() - 0.5) * 13,
-      vy: -Math.random() * 12 - 4,
-      size: Math.random() * 7 + 5,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      rot: Math.random() * Math.PI,
-      vrot: (Math.random() - 0.5) * 0.22,
-    }))
-    let frame = 0
-    function tick() {
-      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height)
-      for (const p of pieces) {
-        p.x += p.vx
-        p.y += p.vy
-        p.vy += 0.35
-        p.rot += p.vrot
-        ctx.save()
-        ctx.translate(p.x, p.y)
-        ctx.rotate(p.rot)
-        ctx.fillStyle = p.color
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65)
-        ctx.restore()
+  // Multiplayer P2P (NBPRoom)
+  function broadcastState() {
+    if (!local.inRoom || !local.room || !local.isHost) return;
+    local.room.broadcast({
+      type: 'wos_state',
+      config,
+      state: {
+        level: state.level,
+        record: state.record,
+        lives: state.lives,
+        status: state.status,
+        timeLeft: state.timeLeft,
+        roundDuration: state.roundDuration,
+        revealTime: state.revealTime,
+        rootWord: state.rootWord,
+        baseLetters: state.baseLetters,
+        wheelTiles: state.wheelTiles,
+        slots: state.slots,
+        bonusWords: state.bonusWords,
+        totalPoints: state.totalPoints,
+        maxPoints: state.maxPoints,
+        goalPoints: state.goalPoints,
+        lockTarget: state.lockTarget,
+        checkpointMarks: state.checkpointMarks,
+        checkpointsOpened: state.checkpointsOpened,
+        lockedPlayers: state.lockedPlayers,
+        players: state.players,
+        feed: state.feed
       }
-      frame++
-      if (frame < 100) requestAnimationFrame(tick)
-      else ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height)
-    }
-    requestAnimationFrame(tick)
+    });
   }
 
-  // ==================== P2P MULTIPLAYER ROOM ====================
-  function setupRoomAsHost(code) {
-    clearInterval(timerInterval)
-    clearInterval(botInterval)
-    room.hostRoom(code)
-    const normalized = room.roomCode || code
-    state.roomCode = normalized
-    state.status = 'lobby'
-    state.level = 1
-    state.players = [
-      {
-        id: room.profile.id,
-        name: room.profile.name,
-        color: room.profile.color || '#a855f7',
-        isBot: false,
-        score: 0,
-        wordsFound: 0,
-      },
-    ]
-    roomCodeInput.value = normalized
-    if (dictReady) {
-      const preview = buildLevelPuzzle(1)
-      state.tiles = preview.tiles
-      state.words = preview.words
-      state.quota = preview.quota
-      state.durationSec = preview.durationSec
-      state.remainingSec = preview.durationSec
-    }
-    renderUI()
+  function broadcastTimer() {
+    if (!local.inRoom || !local.room || !local.isHost) return;
+    local.room.broadcast({
+      type: 'wos_timer',
+      timeLeft: state.timeLeft
+    });
   }
 
-  function initP2P() {
-    room = new window.NBPRoom({
-      gameId: 'wos-nbp',
-      defaultPrefix: 'WOS',
-      onStatus(st) {
-        if (st.connecting) {
-          p2pStatus.textContent = st.isHost
-            ? `🟡 Abrindo ${st.roomCode}...`
-            : `🟡 Conectando a ${st.roomCode}...`
-        } else if (st.isHost && st.connected) {
-          p2pStatus.textContent = `🟢 Host Online · ${st.roomCode}`
-        } else if (!st.isHost && st.connected) {
-          p2pStatus.textContent = `🟢 Conectado · ${st.roomCode}`
-        } else {
-          p2pStatus.textContent = `🔴 Offline · ${st.roomCode || ''}`
-        }
-      },
-      onError(err) {
-        if (err && err.message) showToast(`⚠️ ${err.message}`, 3200)
-      },
-      onStateSync(remoteState) {
-        Object.assign(state, remoteState)
-        roomCodeInput.value = state.roomCode
-        clearInterval(timerInterval)
-        if (!room.isHost && state.status === 'playing') {
-          const syncTs = Date.now()
-          const initRem = state.remainingSec
-          timerInterval = setInterval(() => {
-            const elapsed = (Date.now() - syncTs) / 1000
-            state.remainingSec = Math.max(0, initRem - elapsed)
-            updateTimerVisuals()
-          }, 200)
-        }
-        updateTimerVisuals()
-        renderUI()
-      },
-      onAction(action, senderProfile) {
-        if (!action) return
-        if (room.isHost) {
-          if (action.type === 'PEER_CONNECTED') {
-            syncToClients()
-          } else if (
-            (action.type === 'JOIN_REQUEST' || action.type === 'HEARTBEAT') &&
-            action.profile
-          ) {
-            const p = action.profile
-            const exists = state.players.find((pl) => pl.id === p.id)
-            if (!exists) {
-              state.players.push({
-                id: p.id,
-                name: p.name,
-                color: p.color || '#38bdf8',
-                isBot: false,
-                score: 0,
-                wordsFound: 0,
-              })
-              const joinMsg = `👋 ${p.name} entrou na sala!`
-              showToast(joinMsg)
-              room.broadcastEvent({ type: 'TOAST', message: joinMsg })
-              syncToClients()
-            } else if (action.type === 'JOIN_REQUEST') {
-              exists.name = p.name
-              syncToClients()
-            }
-          } else if (action.type === 'PLAYER_LEFT') {
-            const leftId = action.playerId || senderProfile?.id
-            const idx = state.players.findIndex((p) => p.id === leftId && !p.isBot)
-            if (idx !== -1) {
-              const leftName = state.players[idx].name
-              state.players.splice(idx, 1)
-              showToast(`🚪 ${leftName} saiu da sala.`)
-              syncToClients()
-            }
-          } else if (action.type === 'SUBMIT_GUESS') {
-            processGuessOnHost(action.word, senderProfile)
-          }
-        } else {
-          if (action.type === 'HOST_LEFT') {
-            const hostIdx = state.players.findIndex((p) => p.id === (action.hostId || senderProfile?.id))
-            if (hostIdx !== -1) state.players.splice(hostIdx, 1)
-            const nextHost = state.players.find((p) => !p.isBot)
-            if (!nextHost || nextHost.id === room.profile.id) {
-              room.promoteToHost(state.players)
-              showToast(`👑 Você assumiu como Host da sala ${state.roomCode}!`)
-              syncToClients()
-            }
-          } else if (action.type === 'WORD_FOUND') {
-            if (action.playerId === room.profile.id) {
-              playChord([523.25, 659.25, 783.99], 50)
-              triggerLocalCooldown()
-            } else {
-              playTone(587.33, 0.08, 'triangle', 0.07)
-            }
-          } else if (action.type === 'REJECT' && action.playerId === room.profile.id) {
-            handleLocalReject(action.message)
-          } else if (action.type === 'TOAST' && action.message) {
-            showToast(action.message)
-          } else if (action.type === 'LEVEL_END') {
-            openSummaryModal(action.passed, action.solvedCount, action.totalWords)
-          }
-        }
-      },
-    })
-
-    playerNameInput.value = room.profile.name
-    const params = new URLSearchParams(window.location.search)
-    const joinParam = params.get('sala') || params.get('room')
-    if (joinParam) {
-      roomCodeInput.value = joinParam.toUpperCase()
-      room.joinRoom(joinParam)
-    } else {
-      setupRoomAsHost(randomRoomCode())
+  function applyRemoteState(remoteState, remoteConfig) {
+    if (remoteConfig) {
+      Object.assign(config, remoteConfig);
+      el.shuffleIntervalLabel.textContent = config.shuffleInterval + 's';
+    }
+    const prevStatus = state.status;
+    Object.assign(state, remoteState);
+    renderAll();
+    if (state.status !== 'playing' && prevStatus === 'playing') {
+      showRoundModal();
+    } else if (state.status === 'playing') {
+      el.roundModal.hidden = true;
     }
   }
 
-  // ==================== EVENT LISTENERS ====================
-  btnToggleDrawer.addEventListener('click', () => {
-    const nextOpen = roomDrawer.hidden
-    roomDrawer.hidden = !nextOpen
-    btnToggleDrawer.setAttribute('aria-expanded', String(nextOpen))
-  })
+  function setupMultiplayer(mode) {
+    const rawName = el.playerNameInput.value.trim();
+    if (rawName) {
+      local.myName = rawName;
+      localStorage.setItem('wos_nbp_name', rawName);
+    }
 
-  playerNameInput.addEventListener('change', () => {
-    room.setPlayerName(playerNameInput.value)
-    const me = state.players.find((p) => p.id === room.profile.id)
-    if (me) me.name = room.profile.name
-    if (room.isHost) syncToClients()
-    else room.sendToHost({ type: 'JOIN_REQUEST', profile: room.profile })
-    showToast(`Apelido atualizado para ${room.profile.name}`)
-  })
+    if (local.room) {
+      local.room.destroy();
+      local.room = null;
+    }
 
-  btnHostRoom.addEventListener('click', () => {
-    const code = roomCodeInput.value.trim().toUpperCase() || randomRoomCode()
-    setupRoomAsHost(code)
-    showToast(`Sala ${room.roomCode} criada! Compartilhe com os amigos.`)
-  })
+    const code = mode === 'create'
+      ? (el.roomCodeInput.value.trim() || NBPRoom.generateCode('WOS'))
+      : el.roomCodeInput.value.trim();
 
-  btnJoinRoom.addEventListener('click', () => {
-    const code = roomCodeInput.value.trim().toUpperCase()
     if (!code) {
-      showToast('Digite o código da sala!')
-      return
+      el.roomStatusText.textContent = '⚠️ Digite o código da sala para entrar.';
+      return;
     }
-    clearInterval(timerInterval)
-    clearInterval(botInterval)
-    room.joinRoom(code)
-    roomCodeInput.value = room.roomCode
-    roomDrawer.hidden = true
-    btnToggleDrawer.setAttribute('aria-expanded', 'false')
-    showToast(`Conectando à sala ${room.roomCode}...`)
-  })
 
-  btnCopyRoom.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(state.roomCode)
-      showToast(`Código ${state.roomCode} copiado! Envie para seus amigos 📋`)
-    } catch {
-      showToast(`Sala: ${state.roomCode}`)
-    }
-  })
+    el.roomCodeInput.value = code;
+    el.roomStatusText.textContent = '⏳ Conectando à sala P2P...';
 
-  btnToggleCooldown.addEventListener('click', () => {
-    if (!room?.isHost) return
-    state.cooldownEnabled = !state.cooldownEnabled
-    syncToClients()
-  })
+    const room = NBPRoom.create({
+      gameSlug: 'wos-nbp',
+      code,
+      name: local.myName,
+      onStatus: (st, msg) => {
+        el.roomStatusText.textContent = msg;
+        if (st === 'hosting' || st === 'connected') {
+          local.inRoom = true;
+          local.isHost = room.isHost;
+          local.myId = room.myPeerId || 'local-player';
+          local.roomCode = room.roomCode;
+          el.btnCopyRoom.hidden = false;
+          el.btnLeaveRoom.hidden = false;
+          el.btnCreateRoom.hidden = true;
+          el.btnJoinRoom.hidden = true;
 
-  btnAddBot.addEventListener('click', () => {
-    if (!room?.isHost) return
-    const botCount = state.players.filter((p) => p.isBot).length
-    if (botCount >= BOT_PROFILES.length) {
-      showToast('Limite máximo de Bots atingido!')
-      return
-    }
-    const meta = BOT_PROFILES[botCount]
-    state.players.push({
-      id: `${meta.id}_${Date.now()}`,
-      name: meta.name,
-      color: meta.color,
-      isBot: true,
-      score: 0,
-      wordsFound: 0,
-    })
-    syncToClients()
-  })
-
-  btnRemoveBot.addEventListener('click', () => {
-    if (!room?.isHost) return
-    const idx = state.players.map((p) => p.isBot).lastIndexOf(true)
-    if (idx === -1) return
-    state.players.splice(idx, 1)
-    syncToClients()
-  })
-
-  btnStartMatch.addEventListener('click', () => {
-    if (!room?.isHost) return
-    const nextLvl = state.status === 'levelclear' ? state.level + 1 : 1
-    startLevelOnHost(nextLvl)
-  })
-
-  document.getElementById('btn-next-action').addEventListener('click', () => {
-    if (!room?.isHost) return
-    const nextLvl = state.status === 'levelclear' ? state.level + 1 : 1
-    startLevelOnHost(nextLvl)
-  })
-
-  document.getElementById('btn-close-modal').addEventListener('click', () => {
-    modalSummary.hidden = true
-  })
-
-  document.getElementById('btn-share-wos').addEventListener('click', async () => {
-    const sorted = [...state.players].sort((a, b) => b.score - a.score)
-    const topStr = sorted
-      .slice(0, 4)
-      .map((p, i) => `${i + 1}º ${p.name}: ${p.score} pts (${p.wordsFound} pal.)`)
-      .join('\n')
-    const text = `🟣 NBP Palavras em Live (Words on Stream)\n🏆 Chegamos ao Nível ${state.level} na sala ${state.roomCode}!\n${topStr}`
-    try {
-      await navigator.clipboard.writeText(text)
-      showToast('Placar copiado para compartilhar! 📋')
-    } catch {
-      showToast('Não foi possível copiar o placar.')
-    }
-  })
-
-  btnShuffle.addEventListener('click', () => {
-    state.tiles = shuffleArray(state.tiles)
-    playTone(390, 0.05)
-    renderUI()
-  })
-
-  btnSound.addEventListener('click', () => {
-    soundEnabled = !soundEnabled
-    btnSound.setAttribute('aria-pressed', String(soundEnabled))
-    btnSound.textContent = soundEnabled ? '🔊' : '🔇'
-  })
-
-  guessForm.addEventListener('submit', (e) => {
-    e.preventDefault()
-    if (state.status !== 'playing') {
-      if (room?.isHost && dictReady) {
-        startLevelOnHost(1)
+          if (local.isHost) {
+            delete state.players['local-player'];
+            ensureLocalPlayer();
+            startLevel(config.startLevel, true);
+          }
+        } else if (st === 'error' || st === 'closed') {
+          leaveRoomToSolo(msg);
+        }
+      },
+      onPlayers: (roster) => {
+        if (!local.isHost) return;
+        const activeIds = new Set(roster.map((r) => r.peerId));
+        Object.keys(state.players).forEach((pid) => {
+          if (!state.players[pid].isBot && !activeIds.has(pid)) {
+            delete state.players[pid];
+          }
+        });
+        roster.forEach((r) => {
+          if (!state.players[r.peerId]) {
+            state.players[r.peerId] = {
+              id: r.peerId,
+              name: r.name,
+              score: 0,
+              turnScore: 0,
+              wordsFound: 0,
+              turnWords: 0,
+              isBot: false
+            };
+          } else {
+            state.players[r.peerId].name = r.name;
+          }
+        });
+        broadcastState();
+        renderPlayers();
+      },
+      onMessage: (data, fromPeerId) => {
+        if (!data || typeof data !== 'object') return;
+        if (local.isHost) {
+          if (data.type === 'wos_guess') {
+            handleGuessSubmission(fromPeerId, data.name, data.word);
+          }
+        } else {
+          if (data.type === 'wos_state' && data.state) {
+            applyRemoteState(data.state, data.config);
+          } else if (data.type === 'wos_timer') {
+            state.timeLeft = data.timeLeft;
+            renderTopHUD();
+          }
+        }
       }
-      return
-    }
-    if (Date.now() < myCooldownUntil) return
+    });
 
-    const typed = normalizePt(guessInput.value)
-    if (typed.length < 4) {
-      handleLocalReject('As palavras precisam ter pelo menos 4 letras!')
-      return
-    }
-    guessInput.value = ''
-
-    if (room.isHost) {
-      const prevWords = state.players.find((p) => p.id === room.profile.id)?.wordsFound || 0
-      processGuessOnHost(typed, room.profile)
-      const nowWords = state.players.find((p) => p.id === room.profile.id)?.wordsFound || 0
-      if (nowWords > prevWords) {
-        triggerLocalCooldown()
-      }
+    local.room = room;
+    if (mode === 'create') {
+      room.host();
     } else {
-      room.sendToHost({ type: 'SUBMIT_GUESS', word: typed })
-    }
-  })
-
-  // ==================== LOAD PORTUGUESE WORD BANK ====================
-  async function loadDictionary() {
-    try {
-      const res = await fetch('../../data/pt-br/palavras-por-tamanho.json')
-      const data = await res.json()
-
-      for (let len = 4; len <= 10; len++) {
-        const group = data.lengths[String(len)]
-        if (!group) continue
-        const bucket = []
-        const seenNorm = new Set()
-
-        for (const tier of ['facil', 'medio']) {
-          for (const rawW of group[tier] || []) {
-            const norm = normalizePt(rawW)
-            if (norm.length !== len || seenNorm.has(norm)) continue
-            seenNorm.add(norm)
-            allValidSet.add(norm)
-            displayMap.set(norm, rawW)
-            bucket.push({
-              norm,
-              display: rawW,
-              len,
-              tier,
-              counts: countLetters(norm),
-            })
-          }
-        }
-        commonByLen.set(len, bucket)
-
-        for (const rawHard of group.dificil || []) {
-          const norm = normalizePt(rawHard)
-          if (norm.length === len) {
-            allValidSet.add(norm)
-            if (!displayMap.has(norm)) displayMap.set(norm, rawHard)
-          }
-        }
-      }
-
-      // Index rich root words of lengths 6, 7 and 8
-      for (const rLen of [6, 7, 8]) {
-        const roots = (commonByLen.get(rLen) || []).filter((w) => w.tier === 'facil')
-        rootPoolByLen.set(rLen, roots)
-      }
-
-      dictReady = true
-      if (state.status === 'lobby' && state.words.length === 0) {
-        const preview = buildLevelPuzzle(1)
-        state.tiles = preview.tiles
-        state.words = preview.words
-        state.quota = preview.quota
-        state.durationSec = preview.durationSec
-        state.remainingSec = preview.durationSec
-      }
-      renderUI()
-    } catch (err) {
-      console.error(err)
-      goalStatusText.textContent = 'Erro ao carregar banco de palavras PT-BR.'
+      room.join();
     }
   }
 
-  initP2P()
-  loadDictionary()
-})()
+  function leaveRoomToSolo(customMsg) {
+    if (local.room) {
+      local.room.destroy();
+      local.room = null;
+    }
+    local.inRoom = false;
+    local.isHost = true;
+    local.myId = 'local-player';
+    state.players = {};
+    ensureLocalPlayer();
+
+    el.btnCopyRoom.hidden = true;
+    el.btnLeaveRoom.hidden = true;
+    el.btnCreateRoom.hidden = false;
+    el.btnJoinRoom.hidden = false;
+    el.roomStatusText.textContent = customMsg || 'Modo Solo / Local ativo.';
+
+    startLevel(config.startLevel, true);
+  }
+
+  // Eventos de UI
+  function bindEvents() {
+    el.playerNameInput.value = local.myName;
+    el.btnSoundToggle.textContent = SoundFX.enabled ? '🔊' : '🔇';
+
+    el.btnSoundToggle.addEventListener('click', () => {
+      SoundFX.enabled = !SoundFX.enabled;
+      localStorage.setItem('wos_sound_off', SoundFX.enabled ? '0' : '1');
+      el.btnSoundToggle.textContent = SoundFX.enabled ? '🔊' : '🔇';
+      if (SoundFX.enabled) SoundFX.play('hit');
+    });
+
+    el.btnToggleDrawer.addEventListener('click', () => {
+      el.roomDrawer.hidden = !el.roomDrawer.hidden;
+    });
+
+    el.playerNameInput.addEventListener('change', () => {
+      const val = el.playerNameInput.value.trim();
+      if (val) {
+        local.myName = val;
+        localStorage.setItem('wos_nbp_name', val);
+        ensureLocalPlayer();
+        if (local.room) local.room.setName(val);
+        renderPlayers();
+      }
+    });
+
+    el.btnCreateRoom.addEventListener('click', () => setupMultiplayer('create'));
+    el.btnJoinRoom.addEventListener('click', () => setupMultiplayer('join'));
+
+    el.btnCopyRoom.addEventListener('click', () => {
+      if (!local.roomCode) return;
+      navigator.clipboard.writeText(local.roomCode).then(() => {
+        el.btnCopyRoom.textContent = '✅ Copiado!';
+        setTimeout(() => { el.btnCopyRoom.textContent = '📋 Copiar Código'; }, 1800);
+      });
+    });
+
+    el.btnLeaveRoom.addEventListener('click', () => leaveRoomToSolo());
+
+    el.btnBackspace.addEventListener('click', () => {
+      el.guessInput.value = el.guessInput.value.slice(0, -1);
+      el.guessInput.focus();
+    });
+
+    el.guessForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (Date.now() < local.cooldownUntil) return;
+      if (config.padlockMode === 'checkpoints' && state.lockedPlayers[local.myId]) return;
+
+      const word = el.guessInput.value.trim();
+      if (!word) return;
+      el.guessInput.value = '';
+
+      triggerLocalPadlock();
+
+      if (local.isHost) {
+        handleGuessSubmission(local.myId, local.myName, word);
+      } else if (local.room) {
+        local.room.sendToHost({
+          type: 'wos_guess',
+          name: local.myName,
+          word
+        });
+      }
+    });
+
+    el.btnAddBot.addEventListener('click', () => {
+      if (!local.isHost) return;
+      const botNames = ['Bot Sofia', 'Bot Lucas', 'Bot Clara', 'Bot Pedro', 'Bot Bia'];
+      const botId = 'bot-' + Math.floor(1000 + Math.random() * 9000);
+      const existingCount = Object.values(state.players).filter((p) => p.isBot).length;
+      const name = botNames[existingCount % botNames.length];
+      state.players[botId] = {
+        id: botId,
+        name,
+        score: 0,
+        turnScore: 0,
+        wordsFound: 0,
+        turnWords: 0,
+        isBot: true
+      };
+      pushFeed(`🤖 ${name} entrou na sala!`, 'system');
+      broadcastState();
+      renderPlayers();
+      renderFeed();
+    });
+
+    el.btnRestartMatch.addEventListener('click', () => {
+      if (!local.isHost) return;
+      readHostOptions();
+      startLevel(config.startLevel, true);
+    });
+
+    el.btnNextLevel.addEventListener('click', () => {
+      triggerNextFromModal();
+    });
+  }
+
+  async function init() {
+    bindEvents();
+    ensureLocalPlayer();
+    await loadDictionary();
+    readHostOptions();
+    startLevel(config.startLevel, true);
+  }
+
+  init();
+})();
