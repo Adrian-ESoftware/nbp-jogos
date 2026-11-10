@@ -119,6 +119,7 @@
     loaded: false,
     commonByLen: {}, // 4..8 -> array de palavras comuns (sem acento, maiúsculas)
     allValidSet: new Set(), // todas as palavras aceitas (4..10 letras)
+    easySet: new Set(), // palavras fáceis e conhecidas (prioridade no quadro)
     accentMap: new Map() // norm -> original acentuada
   };
 
@@ -267,32 +268,35 @@
       dict.commonByLen[len] = [];
     }
 
-    const registerWord = (raw, isCommon) => {
+    const registerWord = (raw, isCommon, isEasy) => {
       const norm = normalizeWord(raw);
       if (norm.length < 4 || norm.length > 10) return;
       if (!dict.accentMap.has(norm)) {
         dict.accentMap.set(norm, String(raw).toUpperCase());
       }
       dict.allValidSet.add(norm);
+      if (isEasy) {
+        dict.easySet.add(norm);
+      }
       if (isCommon && norm.length <= 8) {
         dict.commonByLen[norm.length].push(norm);
       }
     };
 
-    FALLBACK_WORDS.forEach((w) => registerWord(w, true));
+    FALLBACK_WORDS.forEach((w) => registerWord(w, true, true));
 
     try {
       const res = await fetch('/data/pt-br/palavras-por-tamanho.json');
       if (res.ok) {
         const data = await res.json();
-        const buckets = data.buckets || {};
-        Object.keys(buckets).forEach((lenKey) => {
+        const lengths = data.lengths || data.buckets || {};
+        Object.keys(lengths).forEach((lenKey) => {
           const len = Number(lenKey);
           if (len < 4 || len > 10) return;
-          const b = buckets[lenKey];
-          (b.facil || []).forEach((w) => registerWord(w, true));
-          (b.medio || []).forEach((w) => registerWord(w, len >= 6));
-          (b.dificil || []).forEach((w) => registerWord(w, false));
+          const b = lengths[lenKey] || {};
+          (b.facil || []).forEach((w) => registerWord(w, true, true));
+          (b.medio || []).forEach((w) => registerWord(w, true, false));
+          (b.dificil || []).forEach((w) => registerWord(w, false, false));
         });
       }
     } catch (err) {
@@ -303,6 +307,20 @@
       dict.commonByLen[len] = Array.from(new Set(dict.commonByLen[len]));
     }
     dict.loaded = true;
+
+    // Carrega o superdicionário de validação (+190.000 palavras) em segundo plano
+    fetch('/data/pt-br/dicionario-validacao.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((fullData) => {
+        if (!fullData || !fullData.wordsByLength) return;
+        for (let len = 4; len <= 8; len++) {
+          const list = fullData.wordsByLength[String(len)] || [];
+          for (let i = 0; i < list.length; i++) {
+            dict.allValidSet.add(normalizeWord(list[i]));
+          }
+        }
+      })
+      .catch(() => {});
   }
 
   function countChars(word) {
@@ -431,7 +449,14 @@
     let selected = bestSubwords.slice();
     if (selected.length > maxWords) {
       const fullAnagrams = selected.filter((w) => w.length === bestRoot.length);
-      const others = shuffleArray(selected.filter((w) => w.length !== bestRoot.length));
+      const others = selected.filter((w) => w.length !== bestRoot.length);
+      // Prioriza palavras fáceis e conhecidas (como COLA, CASO, etc.) no quadro principal
+      others.sort((a, b) => {
+        const aEasy = dict.easySet.has(a) ? 1 : 0;
+        const bEasy = dict.easySet.has(b) ? 1 : 0;
+        if (aEasy !== bEasy) return bEasy - aEasy;
+        return a.length - b.length || Math.random() - 0.5;
+      });
       selected = [...fullAnagrams.slice(0, 3), ...others.slice(0, maxWords - Math.min(3, fullAnagrams.length))];
     }
 
@@ -554,9 +579,22 @@
     }
   }
 
+  function hideRoundModal() {
+    el.roundModal.hidden = true;
+    el.roundModal.style.display = 'none';
+    el.roundModal.classList.add('is-hidden');
+  }
+
+  function openRoundModal() {
+    el.roundModal.hidden = false;
+    el.roundModal.style.display = 'flex';
+    el.roundModal.classList.remove('is-hidden');
+  }
+
   function startLevel(levelNum, resetScores) {
     if (!local.isHost) return;
     clearAutoPilotTimer();
+    hideRoundModal();
     readHostOptions();
 
     if (resetScores) {
@@ -610,7 +648,7 @@
     }
 
     pushFeed(`🎬 Nível ${levelNum} iniciado (${modSummary})! Meta: ${state.goalPoints} pts.`, 'system');
-    el.roundModal.hidden = true;
+    hideRoundModal();
 
     broadcastState();
     renderAll();
@@ -944,7 +982,10 @@
 
     // 2. Verifica se é uma palavra Bônus válida formada pelas letras reais
     const rootCounts = countChars(state.rootWord);
-    if (canFormWord(norm, rootCounts) && dict.allValidSet.has(norm)) {
+    const usesRealLetters = canFormWord(norm, rootCounts);
+    const isValidPortuguese = dict.allValidSet.has(norm);
+
+    if (usesRealLetters && isValidPortuguese) {
       const alreadyBonus = state.bonusWords.some((b) => b.word === norm);
       if (alreadyBonus) {
         if (playerId === local.myId) {
@@ -965,9 +1006,20 @@
       return;
     }
 
-    // 3. Palavra inválida
+    // 3. Palavra não aceita com feedback didático
     if (playerId === local.myId) {
-      pushFeed(`❌ "${norm}" não forma palavra válida com as letras reais.`, 'miss');
+      if (!usesRealLetters) {
+        // Verifica se usou letras presentes na roda (inclusive letras falsas)
+        const wheelAllLetters = state.wheelTiles.map((t) => t.char).join('');
+        const usesWheelLetters = canFormWord(norm, countChars(wheelAllLetters));
+        if (usesWheelLetters) {
+          pushFeed(`❌ "${norm}" usa letra falsa! Letras falsas não formam palavras válidas.`, 'miss');
+        } else {
+          pushFeed(`❌ "${norm}" usa letras que não estão disponíveis no quadro.`, 'miss');
+        }
+      } else if (!isValidPortuguese) {
+        pushFeed(`❌ "${norm}" não consta no vocabulário de palavras aceitas em português.`, 'miss');
+      }
       renderFeed();
     }
   }
@@ -1231,7 +1283,7 @@
     }
 
     el.btnNextLevel.disabled = !local.isHost;
-    el.roundModal.hidden = false;
+    openRoundModal();
 
     // Piloto Automático
     if (local.isHost && config.autoPilot && (outcome.passed || state.lives > 0)) {
@@ -1255,6 +1307,7 @@
   function triggerNextFromModal() {
     if (!local.isHost) return;
     clearAutoPilotTimer();
+    hideRoundModal();
     const outcome = computeLevelSkip();
     if (outcome.passed) {
       startLevel(state.level + outcome.skip, false);
@@ -1344,7 +1397,7 @@
     if (state.status !== 'playing' && prevStatus === 'playing') {
       showRoundModal();
     } else if (state.status === 'playing') {
-      el.roundModal.hidden = true;
+      hideRoundModal();
     }
   }
 
@@ -1564,6 +1617,21 @@
 
     el.btnNextLevel.addEventListener('click', () => {
       triggerNextFromModal();
+    });
+
+    el.roundModal.addEventListener('click', (e) => {
+      if (e.target === el.roundModal && local.isHost) {
+        triggerNextFromModal();
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.key === 'Enter' || e.key === ' ') && !el.roundModal.hidden && local.isHost) {
+        if (document.activeElement !== el.guessInput) {
+          e.preventDefault();
+          triggerNextFromModal();
+        }
+      }
     });
   }
 

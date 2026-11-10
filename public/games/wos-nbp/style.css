@@ -1019,6 +1019,11 @@ html, body {
   z-index: 50;
 }
 
+.modal-backdrop[hidden],
+.modal-backdrop.is-hidden {
+  display: none !important;
+}
+
 .modal-card {
   background: linear-gradient(180deg, #2b125a 0%, #170836 100%);
   border: 2px solid rgba(168, 85, 247, 0.55);
