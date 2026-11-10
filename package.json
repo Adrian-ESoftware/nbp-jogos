@@ -9,7 +9,7 @@
     "dev": "vite dev --port 3000",
     "generate-routes": "vite build",
     "build": "npm run validate:catalog && npm run validate:datasets && vite build",
-    "build:cloudflare": "VITE_BASE_PATH=/ npm run build && VITE_BASE_PATH=/ node scripts/export-static.mjs",
+    "build:cloudflare": "NITRO_PRESET=node-server VITE_BASE_PATH=/ npm run build && VITE_BASE_PATH=/ node scripts/export-static.mjs",
     "deploy:cloudflare": "npm run build:cloudflare && npx wrangler pages deploy .output/public --project-name nbp-jogos --branch main",
     "build:datasets": "node scripts/build-datasets.mjs",
     "validate:catalog": "node scripts/validate-catalog.mjs",
