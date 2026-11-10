@@ -114,11 +114,19 @@
     }
   };
 
+  // Palavras estrangeiras, arcaicas, abreviações ou marcas bloqueadas dos alvos do quadro principal
+  const OBSCURE_TARGET_BLOCKLIST = new Set([
+    'LADA', 'FLAT', 'OVER', 'CLIP', 'HOST', 'SELF', 'COOL', 'SPAM', 'STOP',
+    'DEMO', 'NERD', 'BULL', 'BUSH', 'LINS', 'PERO', 'MERO', 'ARCA', 'MARI',
+    'AARU', 'AATA', 'ABAI', 'ABAL', 'ABAO', 'ABAR', 'ABAS', 'ABAX', 'ABAZ', 'ABDA',
+    'LESA', 'LOCA', 'SOLE', 'LECO', 'CAES', 'ESCOL', 'SOCA', 'LAOS', 'NADA2'
+  ]);
+
   // Dicionário carregado
   const dict = {
     loaded: false,
-    commonByLen: {}, // 4..8 -> array de palavras comuns (sem acento, maiúsculas)
-    allValidSet: new Set(), // todas as palavras aceitas (4..10 letras)
+    targetWordsByLen: {}, // 4..8 -> palavras autênticas e familiares para os slots do quadro
+    allValidSet: new Set(), // todas as palavras aceitas (+ flexões, bônus e dicionário completo)
     easySet: new Set(), // palavras fáceis e conhecidas (prioridade no quadro)
     accentMap: new Map() // norm -> original acentuada
   };
@@ -262,24 +270,24 @@
     return sum * 10;
   }
 
-  // Carrega o banco de palavras em português
+  // Carrega o banco de palavras em português com flexões femininas e plurais
   async function loadDictionary() {
     for (let len = 4; len <= 10; len++) {
-      dict.commonByLen[len] = [];
+      dict.targetWordsByLen[len] = [];
     }
 
-    const registerWord = (raw, isCommon, isEasy) => {
+    const registerWord = (raw, isTarget, isEasy) => {
       const norm = normalizeWord(raw);
       if (norm.length < 4 || norm.length > 10) return;
       if (!dict.accentMap.has(norm)) {
         dict.accentMap.set(norm, String(raw).toUpperCase());
       }
       dict.allValidSet.add(norm);
-      if (isEasy) {
+      if (isEasy && !OBSCURE_TARGET_BLOCKLIST.has(norm)) {
         dict.easySet.add(norm);
       }
-      if (isCommon && norm.length <= 8) {
-        dict.commonByLen[norm.length].push(norm);
+      if (isTarget && norm.length <= 8 && !OBSCURE_TARGET_BLOCKLIST.has(norm)) {
+        dict.targetWordsByLen[norm.length].push(norm);
       }
     };
 
@@ -294,8 +302,10 @@
           const len = Number(lenKey);
           if (len < 4 || len > 10) return;
           const b = lengths[lenKey] || {};
+          // Apenas palavras fáceis e autênticas entram como alvos do quadro principal!
           (b.facil || []).forEach((w) => registerWord(w, true, true));
-          (b.medio || []).forEach((w) => registerWord(w, true, false));
+          // Palavras médias e difíceis são aceitas para validação e bônus
+          (b.medio || []).forEach((w) => registerWord(w, false, false));
           (b.dificil || []).forEach((w) => registerWord(w, false, false));
         });
       }
@@ -303,8 +313,36 @@
       console.warn('[WOS-NBP] Usando vocabulário integrado de fallback:', err);
     }
 
+    // Gera dinamicamente flexões femininas (-a, -as) e plurais (-os, -s) regulares de adjetivos e palavras
+    const baseSnapshot = Array.from(dict.allValidSet);
+    baseSnapshot.forEach((norm) => {
+      if (norm.endsWith('O') && norm.length >= 4 && norm.length <= 8) {
+        const stem = norm.slice(0, -1);
+        const fem = stem + 'A';
+        const mascPl = stem + 'OS';
+        const femPl = stem + 'AS';
+        dict.allValidSet.add(fem);
+        dict.allValidSet.add(mascPl);
+        dict.allValidSet.add(femPl);
+
+        // Se a palavra de origem era fácil e conhecida (ex: NULO -> NULA), ela também pode ser alvo
+        if (dict.easySet.has(norm)) {
+          if (!OBSCURE_TARGET_BLOCKLIST.has(fem) && fem.length <= 8) {
+            dict.easySet.add(fem);
+            dict.targetWordsByLen[fem.length].push(fem);
+          }
+          if (!OBSCURE_TARGET_BLOCKLIST.has(mascPl) && mascPl.length <= 8) {
+            dict.targetWordsByLen[mascPl.length].push(mascPl);
+          }
+        }
+      }
+      if (/[AEIU]$/.test(norm) && norm.length >= 4 && norm.length <= 7) {
+        dict.allValidSet.add(norm + 'S');
+      }
+    });
+
     for (let len = 4; len <= 8; len++) {
-      dict.commonByLen[len] = Array.from(new Set(dict.commonByLen[len]));
+      dict.targetWordsByLen[len] = Array.from(new Set(dict.targetWordsByLen[len]));
     }
     dict.loaded = true;
 
@@ -405,21 +443,21 @@
   // Gera um quadro de anagramas para o nível atual
   function generateBoardForLevel(level) {
     const rootLen = level <= 2 ? 6 : level <= 7 ? 7 : 8;
-    const pool = (dict.commonByLen[rootLen] && dict.commonByLen[rootLen].length > 0)
-      ? dict.commonByLen[rootLen]
+    const pool = (dict.targetWordsByLen[rootLen] && dict.targetWordsByLen[rootLen].length > 0)
+      ? dict.targetWordsByLen[rootLen]
       : FALLBACK_WORDS.map(normalizeWord).filter((w) => w.length >= 6);
 
     let bestRoot = 'PORTAS';
     let bestSubwords = [];
 
-    for (let attempt = 0; attempt < 45; attempt++) {
+    for (let attempt = 0; attempt < 90; attempt++) {
       const candidateRoot = pool[Math.floor(Math.random() * pool.length)];
       if (!candidateRoot) continue;
       const rootCounts = countChars(candidateRoot);
       const found = [];
 
       for (let len = 4; len <= candidateRoot.length; len++) {
-        const list = dict.commonByLen[len] || [];
+        const list = dict.targetWordsByLen[len] || [];
         for (let i = 0; i < list.length; i++) {
           const w = list[i];
           if (canFormWord(w, rootCounts)) {
@@ -429,7 +467,7 @@
       }
 
       const uniqueFound = Array.from(new Set(found));
-      if (uniqueFound.length >= 9 && uniqueFound.length <= 26) {
+      if (uniqueFound.length >= 8 && uniqueFound.length <= 26) {
         bestRoot = candidateRoot;
         bestSubwords = uniqueFound;
         break;
