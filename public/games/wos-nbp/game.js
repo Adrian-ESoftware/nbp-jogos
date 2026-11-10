@@ -251,7 +251,8 @@
     cooldownInterval: null,
     autoShuffleElapsed: 0,
     autoPilotTimer: null,
-    autoPilotRemaining: 0
+    autoPilotRemaining: 0,
+    guessFeedbackTimer: null
   };
 
   // Referências DOM
@@ -308,6 +309,7 @@
     shuffleIntervalLabel: document.getElementById('shuffle-interval-label'),
     guessForm: document.getElementById('guess-form'),
     guessInput: document.getElementById('guess-input'),
+    guessFeedbackToast: document.getElementById('guess-feedback-toast'),
     btnBackspace: document.getElementById('btn-backspace'),
     cooldownOverlay: document.getElementById('cooldown-overlay'),
     cooldownTimer: document.getElementById('cooldown-timer'),
@@ -1046,6 +1048,23 @@
     setTimeout(() => el.boardPanel.classList.remove(cls), 750);
   }
 
+  function showLocalGuessFeedback(msg) {
+    if (!el.guessFeedbackToast) return;
+    el.guessFeedbackToast.textContent = msg;
+    el.guessFeedbackToast.hidden = false;
+    if (el.guessInput) {
+      el.guessInput.classList.remove('input-shake');
+      void el.guessInput.offsetWidth;
+      el.guessInput.classList.add('input-shake');
+    }
+
+    if (local.guessFeedbackTimer) clearTimeout(local.guessFeedbackTimer);
+    local.guessFeedbackTimer = setTimeout(() => {
+      if (el.guessFeedbackToast) el.guessFeedbackToast.hidden = true;
+      if (el.guessInput) el.guessInput.classList.remove('input-shake');
+    }, 2200);
+  }
+
   function handleGuessSubmission(playerId, playerName, rawWord) {
     if (state.status !== 'playing') return;
     const norm = normalizeWord(rawWord);
@@ -1054,8 +1073,7 @@
     // Verifica se o jogador está bloqueado pelo cadeado no modo checkpoints
     if (config.padlockMode === 'checkpoints' && state.lockedPlayers[playerId]) {
       if (playerId === local.myId) {
-        pushFeed('🔒 Seu cadeado está fechado! Aguarde a barra cruzar o próximo cadeado.', 'miss');
-        renderFeed();
+        showLocalGuessFeedback('🔒 Cadeado ativo! Aguarde a barra cruzar o próximo cadeado.');
       }
       return;
     }
@@ -1080,8 +1098,7 @@
     if (slot) {
       if (slot.solvedBy) {
         if (playerId === local.myId) {
-          pushFeed(`⚠️ "${slot.display}" já foi encontrada por ${slot.solvedByName}!`, 'miss');
-          renderFeed();
+          showLocalGuessFeedback(`⚠️ "${slot.display}" já foi encontrada por ${slot.solvedByName}!`);
         }
         return;
       }
@@ -1156,8 +1173,7 @@
       const alreadyBonus = state.bonusWords.some((b) => b.word === norm);
       if (alreadyBonus) {
         if (playerId === local.myId) {
-          pushFeed(`⭐ Palavra bônus "${norm}" já foi registrada!`, 'miss');
-          renderFeed();
+          showLocalGuessFeedback(`⭐ Palavra bônus "${norm}" já registrada!`);
         }
         return;
       }
@@ -1173,31 +1189,31 @@
       return;
     }
 
-    // 3. Palavra não aceita com feedback didático
+    // 3. Palavra não aceita com feedback visual local (não floda o feed de conquistas da sala)
     if (playerId === local.myId) {
       if (isBlocked) {
-        pushFeed(`❌ "${norm}" é nome próprio ou termo estrangeiro (não conta como palavra do jogo).`, 'miss');
+        showLocalGuessFeedback(`❌ "${norm}" é nome próprio ou termo estrangeiro.`);
       } else if (!usesRealLetters) {
         // Verifica se usou letras presentes na roda (inclusive letras falsas)
         const wheelAllLetters = state.wheelTiles.map((t) => t.char).join('');
         const usesWheelLetters = canFormWord(norm, countChars(wheelAllLetters));
         if (usesWheelLetters) {
-          pushFeed(`❌ "${norm}" usa letra falsa! Letras falsas não formam palavras válidas.`, 'miss');
+          showLocalGuessFeedback(`❌ "${norm}" usa letra falsa!`);
         } else {
-          pushFeed(`❌ "${norm}" usa letras que não estão disponíveis no quadro.`, 'miss');
+          showLocalGuessFeedback(`❌ "${norm}" usa letras fora do quadro.`);
         }
       } else if (!isValidPortuguese) {
-        pushFeed(`❌ "${norm}" não consta no vocabulário de palavras aceitas em português.`, 'miss');
+        showLocalGuessFeedback(`❌ "${norm}" não consta no vocabulário de palavras aceitas.`);
       }
-      renderFeed();
     }
   }
 
   function pushFeed(text, type) {
     state.feed.unshift({ text, type: type || 'system', ts: Date.now() });
-    if (state.feed.length > 30) {
-      state.feed.length = 30;
+    if (state.feed.length > 25) {
+      state.feed.length = 25;
     }
+    renderFeed();
   }
 
   function copyRoomShareLink() {
@@ -1211,8 +1227,6 @@
         el.quickRoomCode.textContent = 'COPIADO!';
         setTimeout(() => { el.quickRoomCode.textContent = prevCode; }, 1800);
       }
-      pushFeed(`📋 Link da sala (${code}) copiado para a área de transferência!`, 'system');
-      renderFeed();
       setTimeout(() => {
         if (el.btnCopyLinkRoom) el.btnCopyLinkRoom.textContent = '🔗 Copiar Link';
         if (el.btnLobbyCopyLink) el.btnLobbyCopyLink.textContent = '📋 Copiar Link';

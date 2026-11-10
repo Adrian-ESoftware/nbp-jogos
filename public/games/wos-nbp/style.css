@@ -1088,6 +1088,35 @@ html, body {
   white-space: nowrap;
 }
 
+.guess-feedback-toast {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  padding: 5px 12px;
+  border-radius: 10px;
+  margin-top: 6px;
+  pointer-events: none;
+  animation: fadeInDown 0.18s ease;
+}
+
+.guess-feedback-toast[hidden] {
+  display: none !important;
+}
+
+.input-shake {
+  animation: shakeX 0.35s ease;
+  border-color: #ef4444 !important;
+}
+
+@keyframes shakeX {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
 /* Sidebar: Players & Feed */
 .sidebar-panel {
   display: flex;
