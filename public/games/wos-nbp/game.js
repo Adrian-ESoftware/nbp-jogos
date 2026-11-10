@@ -549,7 +549,9 @@
       clearInterval(local.autoPilotTimer);
       local.autoPilotTimer = null;
     }
-    el.autopilotCountdown.textContent = '';
+    if (el.autopilotCountdown) {
+      el.autopilotCountdown.textContent = '';
+    }
   }
 
   function startLevel(levelNum, resetScores) {

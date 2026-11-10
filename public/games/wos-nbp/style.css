@@ -21,6 +21,10 @@
   padding: 0;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html, body {
   height: 100%;
   background: radial-gradient(circle at 50% 0%, #311263 0%, #140829 70%, #0b0418 100%);
