@@ -114,12 +114,80 @@
     }
   };
 
-  // Palavras estrangeiras, arcaicas, abreviações ou marcas bloqueadas dos alvos do quadro principal
+  // Nomes próprios (pessoas, bíblicos, entidades, países, cidades, marcas), estrangeirismos e termos arcaicos/obscuros
+  // que NUNCA devem aparecer como palavras-alvo no painel do jogo.
   const OBSCURE_TARGET_BLOCKLIST = new Set([
-    'LADA', 'FLAT', 'OVER', 'CLIP', 'HOST', 'SELF', 'COOL', 'SPAM', 'STOP',
-    'DEMO', 'NERD', 'BULL', 'BUSH', 'LINS', 'PERO', 'MERO', 'ARCA', 'MARI',
-    'AARU', 'AATA', 'ABAI', 'ABAL', 'ABAO', 'ABAR', 'ABAS', 'ABAX', 'ABAZ', 'ABDA',
-    'LESA', 'LOCA', 'SOLE', 'LECO', 'CAES', 'ESCOL', 'SOCA', 'LAOS', 'NADA2'
+    // Nomes próprios bíblicos, religiosos e mitológicos
+    'ADAO', 'ADÃO', 'EVA', 'NOE', 'NOÉ', 'ABRAAO', 'ABRAÃO', 'SARA', 'ISAQUE', 'ISAAC', 'ISAC',
+    'JACO', 'JACÓ', 'JOSE', 'JOSÉ', 'MOISES', 'MOISÉS', 'ARAAO', 'ARÃO', 'DAVI', 'DAVID',
+    'SALOMAO', 'SALOMÃO', 'ELIAS', 'ELISEU', 'ISAIAS', 'ISAÍAS', 'JEREMIAS', 'DANIEL', 'JONAS',
+    'JOAO', 'JOÃO', 'MARIA', 'PEDRO', 'PAULO', 'TIAGO', 'MATEUS', 'ANDRE', 'ANDRÉ', 'FELIPE',
+    'TOME', 'TOMÉ', 'SIMAO', 'SIMÃO', 'JUDAS', 'TADEU', 'LUCAS', 'MARCOS', 'JESUS', 'CRISTO',
+    'MESSIAS', 'BUDA', 'ALA', 'ALÁ', 'SHIVA', 'BRAHMA', 'ZEUS', 'APOLO', 'ARES', 'HERMES',
+    'AFRODITE', 'ATENA', 'HERA', 'ARTEMIS', 'DIONISIO', 'POSEIDON', 'NOEL', 'PAPAI', 'DEUS',
+
+    // Nomes próprios e apelidos populares
+    'CAIO', 'LUIS', 'LUÍS', 'LUIZ', 'JEAN', 'PAUL', 'JOHN', 'RITA', 'CRIS', 'BETO', 'MARI',
+    'INES', 'INÊS', 'NINA', 'VERA', 'VIVI', 'CHICO', 'BENTO', 'MARIO', 'MÁRIO', 'PAULA',
+    'CLAUDIA', 'CLÁUDIA', 'ANGEL', 'ARTHUR', 'ARTUR', 'BERNARDO', 'HEITOR', 'LORENZO', 'THEO',
+    'THÉO', 'ALICIA', 'LAURA', 'ALICE', 'SOPHIA', 'SOFIA', 'MANUELA', 'MANU', 'ISABELLA',
+    'ISABELA', 'HELENA', 'VALENTINA', 'CLARA', 'JULIA', 'JÚLIA', 'LIVIA', 'LÍVIA', 'BRUNA',
+    'CAMILA', 'LARISSA', 'LETICIA', 'LETÍCIA', 'AMANDA', 'JESSICA', 'JÉSSICA', 'PATRICIA',
+    'PATRÍCIA', 'ALINE', 'FERNANDA', 'ROBERTA', 'VANESSA', 'RENATA', 'MARINA', 'BIANCA',
+    'JULIANA', 'CARLOS', 'EDUARDO', 'RODRIGO', 'MARCELO', 'BRUNO', 'GUSTAVO', 'DIEGO',
+    'LEANDRO', 'THIAGO', 'DANILO', 'RICARDO', 'ALEXANDRE', 'FERNANDO', 'VITOR', 'ITALO',
+    'ÍTALO', 'HUGO', 'IGOR', 'OTAVIO', 'OTÁVIO', 'SERGIO', 'SÉRGIO', 'FABIO', 'FÁBIO',
+    'RAUL', 'CESAR', 'CÉSAR', 'AUGUSTO', 'ROGERIO', 'ROGÉRIO', 'CLAUDIO', 'CLÁUDIO',
+    'MARCIO', 'MÁRCIO', 'FLAVIO', 'FLÁVIO', 'ALBERTO', 'RENATO', 'ALEX', 'ALAN', 'ELZA',
+    'ELSA', 'OLGA', 'SONIA', 'SÔNIA', 'LUCIA', 'LÚCIA', 'TANIA', 'TÂNIA', 'MARA', 'NEUSA',
+    'REGINA', 'FATIMA', 'FÁTIMA', 'MONICA', 'MÔNICA', 'TERESA', 'TEREZA', 'CECILIA', 'CECÍLIA',
+
+    // Figuras públicas, políticos e marcas
+    'LULA', 'DILMA', 'TEMER', 'BOLSONARO', 'BUSH', 'OBAMA', 'BIDEN', 'TRUMP', 'ITAU', 'ITAÚ',
+    'BRADESCO', 'VASCO',
+
+    // Sobrenomes frequentes
+    'MOTA', 'MELO', 'SILVA', 'SOUZA', 'COSTA', 'SANTOS', 'OLIVEIRA', 'PEREIRA', 'RODRIGUES',
+    'ALMEIDA', 'NASCIMENTO', 'LIMA', 'ARAUJO', 'ARAÚJO', 'FERNANDES', 'CARVALHO', 'GOMES',
+    'MARTINS', 'ROCHA', 'RIBEIRO', 'ALVES', 'MONTEIRO', 'MENDES', 'BARROS', 'FREITAS',
+    'BARBOSA', 'PINTO', 'MOURA', 'CAVALCANTI', 'DIAS', 'CASTRO', 'CAMPOS', 'CARDOSO',
+    'TEIXEIRA', 'MARQUES', 'SANTANA', 'COELHO', 'MOREIRA', 'GUIMARAES', 'GUIMARÃES', 'CUNHA',
+    'MACHADO', 'LOPES', 'FARIA', 'BRAGA', 'SOUSA', 'LINS',
+
+    // Países, estados, continentes e cidades
+    'BRASIL', 'BRAZIL', 'ARGENTINA', 'CHILE', 'URUGUAI', 'PARAGUAI', 'PERU', 'BOLIVIA',
+    'BOLÍVIA', 'COLOMBIA', 'COLÔMBIA', 'VENEZUELA', 'EQUADOR', 'GUIANA', 'SURINAME', 'FRANCA',
+    'FRANÇA', 'ITALIA', 'ITÁLIA', 'ESPANHA', 'PORTUGAL', 'ALEMANHA', 'INGLATERRA', 'RUSSIA',
+    'RÚSSIA', 'CHINA', 'JAPAO', 'JAPÃO', 'COREIA', 'CORÉIA', 'INDIA', 'ÍNDIA', 'MEXICO',
+    'MÉXICO', 'CANADA', 'CANADÁ', 'CUBA', 'ANGOLA', 'MOCAMBIQUE', 'MOÇAMBIQUE', 'ASIA', 'ÁSIA',
+    'EUROPA', 'AFRICA', 'ÁFRICA', 'AMERICA', 'AMÉRICA', 'OCEANIA', 'ACRE', 'ALAGOAS', 'AMAPA',
+    'AMAPÁ', 'AMAZONAS', 'BAHIA', 'CEARA', 'CEARÁ', 'DISTRITO', 'ESPIRITO', 'ESPÍRITO', 'GOIAS',
+    'GOIÁS', 'MARANHAO', 'MARANHÃO', 'MINAS', 'GERAIS', 'PARAIBA', 'PARAÍBA', 'PARANA', 'PARANÁ',
+    'PERNAMBUCO', 'PIAUI', 'PIAUÍ', 'RIO', 'JANEIRO', 'RONDONIA', 'RONDÔNIA', 'RORAIMA',
+    'SANTA', 'CATARINA', 'SERGIPE', 'TOCANTINS', 'BRASILIA', 'BRASÍLIA', 'CURITIBA', 'RECIFE',
+    'SALVADOR', 'FORTALEZA', 'MANAUS', 'BELEM', 'BELÉM', 'GOIANIA', 'GOIÂNIA', 'VITORIA',
+    'VITÓRIA', 'NATAL', 'MACEIO', 'MACEIÓ', 'ARACAJU', 'TERESINA', 'PALMAS', 'CUIABA',
+    'CUIABÁ', 'FLORIANOPOLIS', 'PARIS', 'LONDRES', 'ROMA', 'MADRID', 'MADRI', 'LISBOA',
+    'BERLIM', 'TOQUIO', 'TÓQUIO', 'PEQUIM', 'MOSCOU', 'WASHINGTON', 'HAVANA', 'LUANDA',
+
+    // Estrangeirismos e anglicismos não nativos
+    'BLOG', 'SITE', 'POST', 'MAIL', 'GAME', 'STAR', 'GRID', 'LINE', 'LIVE', 'BEST', 'TOUR',
+    'JAVA', 'ZOOM', 'BLUE', 'HALL', 'OPEN', 'SURF', 'PART', 'JAZZ', 'CHAT', 'CHIP', 'MISS',
+    'AIDS', 'COCA', 'GIRL', 'CHEF', 'SOUL', 'FLASH', 'COVER', 'LOGIN', 'LASER', 'LIGHT',
+    'SHOW', 'LINK', 'ONLINE', 'FEED', 'CHECK', 'CLICK', 'PRINT', 'MOUSE', 'DRIVE', 'RESET',
+    'SHARE', 'LEVEL', 'PLAYER', 'ROOM', 'LOBBY', 'STATUS', 'TREND', 'MATCH', 'PIXEL', 'ROUND',
+    'STREAM', 'WORDS', 'MAKER', 'CLEAN', 'STAFF', 'DESIGN', 'LAYOUT', 'BANNER', 'RANKING',
+    'SCORE', 'VERSUS', 'SINGLE', 'MULTI', 'CARD', 'PACK', 'DECK', 'PLAY', 'FAST', 'SPEED',
+    'TEST', 'DEMO', 'STOP', 'SPAM', 'FLAT', 'OVER', 'CLIP', 'HOST', 'SELF', 'COOL', 'NERD',
+    'BULL',
+
+    // Palavras arcaicas, truncadas, abreviações ou gírias incoerentes no tabuleiro
+    'SADA', 'SOBA', 'LADA', 'AARU', 'AATA', 'ABAI', 'ABAL', 'ABAO', 'ABAR', 'ABAS', 'ABAX',
+    'ABAZ', 'ABDA', 'LESA', 'LOCA', 'SOLE', 'LECO', 'CAES', 'ESCOL', 'SOCA', 'LAOS', 'NADA2',
+    'TAVA', 'DELE', 'DELA', 'NELE', 'NELA', 'SEUS', 'MEUS', 'ESTE', 'ESSE', 'ESTA', 'ESSA',
+    'ISTO', 'ISSO', 'NUMA', 'AQUI', 'ONDE', 'QUEM', 'POIS', 'QUAL', 'APOS', 'APÓS', 'ALEM',
+    'ALÉM', 'DALI', 'DUMA', 'ECRA', 'ECRÃ', 'HEIN', 'POXA', 'BORA', 'CADE', 'CADÊ', 'AVOS',
+    'AVÓS', 'VOVO', 'VOVÓ', 'GAIA', 'PERO', 'MERO', 'ARCA'
   ]);
 
   // Dicionário carregado
@@ -463,7 +531,7 @@
 
     for (let attempt = 0; attempt < 90; attempt++) {
       const candidateRoot = pool[Math.floor(Math.random() * pool.length)];
-      if (!candidateRoot) continue;
+      if (!candidateRoot || OBSCURE_TARGET_BLOCKLIST.has(candidateRoot)) continue;
       const rootCounts = countChars(candidateRoot);
       const found = [];
 
@@ -471,7 +539,7 @@
         const list = dict.targetWordsByLen[len] || [];
         for (let i = 0; i < list.length; i++) {
           const w = list[i];
-          if (canFormWord(w, rootCounts)) {
+          if (canFormWord(w, rootCounts) && !OBSCURE_TARGET_BLOCKLIST.has(w)) {
             found.push(w);
           }
         }
@@ -489,7 +557,7 @@
       }
     }
 
-    if (!bestSubwords.includes(bestRoot)) {
+    if (!bestSubwords.includes(bestRoot) && !OBSCURE_TARGET_BLOCKLIST.has(bestRoot)) {
       bestSubwords.push(bestRoot);
     }
 
@@ -1082,8 +1150,9 @@
     const rootCounts = countChars(state.rootWord);
     const usesRealLetters = canFormWord(norm, rootCounts);
     const isValidPortuguese = dict.allValidSet.has(norm);
+    const isBlocked = OBSCURE_TARGET_BLOCKLIST.has(norm);
 
-    if (usesRealLetters && isValidPortuguese) {
+    if (usesRealLetters && isValidPortuguese && !isBlocked) {
       const alreadyBonus = state.bonusWords.some((b) => b.word === norm);
       if (alreadyBonus) {
         if (playerId === local.myId) {
@@ -1106,7 +1175,9 @@
 
     // 3. Palavra não aceita com feedback didático
     if (playerId === local.myId) {
-      if (!usesRealLetters) {
+      if (isBlocked) {
+        pushFeed(`❌ "${norm}" é nome próprio ou termo estrangeiro (não conta como palavra do jogo).`, 'miss');
+      } else if (!usesRealLetters) {
         // Verifica se usou letras presentes na roda (inclusive letras falsas)
         const wheelAllLetters = state.wheelTiles.map((t) => t.char).join('');
         const usesWheelLetters = canFormWord(norm, countChars(wheelAllLetters));
