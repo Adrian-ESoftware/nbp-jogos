@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>Palavras em Live · Words on Stream · NBP Games</title>
+    <link rel="stylesheet" href="style.css?v=20261110v1" />
+  </head>
+  <body>
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+    <!-- Compact Topbar with Collapsible Drawer -->
+    <header class="topbar">
+      <div class="topbar-main">
+        <div class="room-quick-bar">
+          <span id="p2p-status" class="p2p-badge">🟢 Sala Pronta</span>
+          <button
+            type="button"
+            id="btn-copy-room"
+            class="btn-room-chip"
+            title="Clique para copiar o código da sala e jogar com amigos"
+          >
+            <span>📋</span>
+            <strong id="room-code-display">WOS-0000</strong>
+          </button>
+          <span id="level-badge" class="level-badge">NÍVEL 1</span>
+        </div>
+
+        <div class="topbar-actions">
+          <button
+            type="button"
+            id="btn-start-match"
+            class="btn-start-sm"
+            disabled
+          >
+            ▶️ Iniciar Nível 1
+          </button>
+          <button
+            type="button"
+            id="btn-toggle-drawer"
+            class="btn-drawer-toggle"
+            aria-expanded="false"
+            title="Configurar sala, apelido, cadeado e bots"
+          >
+            ⚙️ Sala &amp; Opções
+          </button>
+          <button
+            type="button"
+            id="btn-sound"
+            class="btn-icon"
+            aria-pressed="true"
+            title="Ativar/Desativar som"
+          >
+            🔊
+          </button>
+        </div>
+      </div>
+
+      <div id="room-drawer" class="room-drawer" hidden>
+        <div class="drawer-grid">
+          <div class="player-name-box">
+            <label for="player-name-input">Seu apelido:</label>
+            <input
+              id="player-name-input"
+              type="text"
+              maxlength="16"
+              placeholder="Seu apelido"
+            />
+          </div>
+
+          <div class="room-controls">
+            <label for="room-code-input">Sala Multiplayer:</label>
+            <input
+              id="room-code-input"
+              type="text"
+              maxlength="14"
+              placeholder="WOS-1234"
+            />
+            <button
+              type="button"
+              id="btn-join-room"
+              class="btn-subtle"
+              title="Entrar na sala de um amigo"
+            >
+              Entrar
+            </button>
+            <button
+              type="button"
+              id="btn-host-room"
+              class="btn-primary-sm"
+              title="Criar nova sala como Host"
+            >
+              Criar Nova
+            </button>
+          </div>
+
+          <div id="host-settings" class="host-settings">
+            <button
+              type="button"
+              id="btn-toggle-cooldown"
+              class="toggle-chip"
+              aria-pressed="false"
+              title="Ativa um cadeado de 3 segundos após cada acerto para ninguém monopolizar todas as palavras"
+            >
+              🔒 Cadeado 3s: <strong>OFF</strong>
+            </button>
+            <button
+              type="button"
+              id="btn-add-bot"
+              class="btn-subtle"
+              title="Adicionar Bot parceiro para ajudar a encontrar palavras"
+            >
+              + Bot 🤖
+            </button>
+            <button
+              type="button"
+              id="btn-remove-bot"
+              class="btn-subtle"
+              title="Remover Bot"
+            >
+              - Bot
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div
+      id="toast-container"
+      class="toast-container"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+    <!-- Main Game Layout -->
+    <main class="wos-arena">
+      <!-- Center / Left: Anagram Tiles + Progress Lock + Words Grid -->
+      <section class="board-column" aria-label="Tabuleiro de Palavras">
+        <!-- Timer & Level Goal Bar -->
+        <div class="goal-card">
+          <div class="goal-top-row">
+            <div class="goal-meta">
+              <strong id="goal-status-text">Carregando dicionário PT-BR...</strong>
+              <span id="modifiers-row" class="modifiers-row"></span>
+            </div>
+            <div class="timer-pill">
+              <span>⏱️</span>
+              <strong id="timer-seconds">75s</strong>
+            </div>
+          </div>
+
+          <!-- Progress Track with Lock Threshold -->
+          <div class="lock-progress-track" title="Encontre palavras até abrir o cadeado para passar de nível!">
+            <div id="words-progress-fill" class="words-progress-fill"></div>
+            <div id="timer-bar-line" class="timer-bar-line"></div>
+            <div id="lock-marker" class="lock-marker">
+              <span id="lock-icon">🔒</span>
+              <small id="lock-quota-text">0/5</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrambled Letters Pool (with Shuffle, Hidden '?' & Fake Letter warnings) -->
+        <div class="letters-stage">
+          <div id="letters-pool" class="letters-pool" role="group" aria-label="Letras embaralhadas"></div>
+          <button
+            type="button"
+            id="btn-shuffle"
+            class="btn-shuffle"
+            title="Embaralhar posição das letras (Espaço)"
+          >
+            🔀 Embaralhar
+          </button>
+        </div>
+
+        <!-- Hidden & Solved Words Multi-Column Grid -->
+        <div id="words-grid" class="words-grid" aria-live="polite"></div>
+      </section>
+
+      <!-- Right / Bottom: Live Leaderboard & Recent Feed -->
+      <aside class="sidebar-column" aria-label="Ranking e Atividade da Sala">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2>🏆 Ranking da Sala</h2>
+            <span id="players-count-badge" class="small-badge">1 jogador</span>
+          </div>
+          <div id="leaderboard-list" class="leaderboard-list"></div>
+        </div>
+
+        <div class="panel-card feed-card">
+          <div class="panel-header">
+            <h2>⚡ Palpites ao Vivo</h2>
+            <span id="bonus-count-badge" class="small-badge bonus">⭐ 0 bônus</span>
+          </div>
+          <div id="live-feed" class="live-feed">
+            <span class="feed-empty">Digite palavras de 4+ letras abaixo!</span>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Bottom Sticky Input Bar (Chat-style direct word entry without stream!) -->
+    <footer class="guess-bar">
+      <form id="guess-form" class="guess-form" autocomplete="off">
+        <div id="input-wrapper" class="input-wrapper">
+          <span id="cooldown-badge" class="cooldown-badge" hidden>🔒 3.0s</span>
+          <input
+            id="guess-input"
+            type="text"
+            maxlength="16"
+            placeholder="Digite uma palavra com as letras acima e aperte Enter..."
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+          />
+        </div>
+        <button type="submit" id="btn-submit-guess" class="btn-submit">
+          Enviar ↵
+        </button>
+      </form>
+    </footer>
+
+    <!-- Level Complete / Game Over Modal -->
+    <div id="modal-summary" class="modal-backdrop" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <span id="modal-badge" class="modal-badge">FIM DE JOGO</span>
+        <h2 id="modal-title">Nível Concluído!</h2>
+        <p id="modal-subtitle"></p>
+
+        <div id="modal-Missed-box" class="missed-words-box" hidden>
+          <small>Palavras do quadro:</small>
+          <div id="modal-words-list" class="modal-words-list"></div>
+        </div>
+
+        <div id="modal-mvp-box" class="mvp-box"></div>
+
+        <div class="modal-actions">
+          <button type="button" id="btn-next-action" class="btn-next">
+            ▶️ Próximo Nível
+          </button>
+          <button type="button" id="btn-share-wos" class="btn-share">
+            📋 Copiar Placar da Sala
+          </button>
+          <button type="button" id="btn-close-modal" class="btn-close-text">
+            Ver tabuleiro
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../vendor/peerjs.min.js?v=20261110v1"></script>
+    <script src="../../vendor/nbp-p2p.js?v=20261110v1"></script>
+    <script src="game.js?v=20261110v1"></script>
+  </body>
+</html>

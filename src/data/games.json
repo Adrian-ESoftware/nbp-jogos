@@ -94,6 +94,30 @@
         "icon": "/games/bandeiras-nbp/icon.svg"
       },
       "entry": "/games/bandeiras-nbp/index.html"
+    },
+    {
+      "id": "wos-nbp",
+      "title": "Palavras na Sala · Words on Stream",
+      "description": "O clássico Words on Stream direto no navegador e sem precisar de live! Crie uma sala P2P com seus amigos, desembaralhe as letras da roda para descobrir palavras ocultas em tempo real, destranque o cadeado para subir de nível e enfrente letras misteriosas (?) e letras falsas!",
+      "developer": "NBP Games",
+      "genres": [
+        "Palavras",
+        "Party",
+        "Multiplayer"
+      ],
+      "modes": [
+        "singleplayer",
+        "multiplayer"
+      ],
+      "status": "published",
+      "featured": true,
+      "engine": "html5",
+      "assets": {
+        "cover": "/games/wos-nbp/cover.svg",
+        "banner": "/games/wos-nbp/banner.svg",
+        "icon": "/games/wos-nbp/icon.svg"
+      },
+      "entry": "/games/wos-nbp/index.html"
     }
   ]
 }
