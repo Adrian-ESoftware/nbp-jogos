@@ -7,13 +7,13 @@
       content="width=device-width,initial-scale=1,viewport-fit=cover"
     />
     <title>Termo, Dueto &amp; Quarteto · NBP Games</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=20261110v9" />
   </head>
   <body>
     <canvas id="confetti-canvas" aria-hidden="true"></canvas>
 
     <header class="topbar">
-      <div class="topbar-group">
+      <div class="topbar-main">
         <div class="mode-tabs" role="tablist" aria-label="Modo de jogo">
           <button type="button" class="mode-tab active" data-mode="termo" role="tab" aria-selected="true">
             Termo <small>1</small>
@@ -26,43 +26,56 @@
           </button>
         </div>
 
-        <div class="tier-selector" aria-label="Nível de dificuldade">
-          <label for="tier-select">Nível:</label>
-          <select id="tier-select">
-            <option value="facil">Fácil (Comuns)</option>
-            <option value="medio" selected>Médio (Padrão)</option>
-            <option value="dificil">Difícil (Raras)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="topbar-group right">
-        <div class="seed-box" title="Use o mesmo código com seus amigos para jogar as mesmas palavras!">
-          <span class="seed-label">Sala/Seed:</span>
-          <input
-            id="seed-input"
-            type="text"
-            maxlength="20"
-            placeholder="DIARIO"
-            aria-label="Código da sala para jogar com amigos"
-          />
-          <button type="button" id="btn-apply-seed" class="btn-subtle" title="Entrar na sala digitada">
-            Ir
-          </button>
-          <button type="button" id="btn-daily-seed" class="btn-subtle" title="Jogar o Desafio do Dia">
-            📅 Dia
-          </button>
+        <div class="topbar-actions">
           <button type="button" id="btn-random-seed" class="btn-primary-sm" title="Sortear nova partida aleatória">
             🎲 Nova
           </button>
+          <button
+            type="button"
+            id="btn-toggle-termo-drawer"
+            class="btn-subtle"
+            aria-expanded="false"
+            title="Escolher nível de dificuldade ou código de sala"
+          >
+            ⚙️ Nível &amp; Sala
+          </button>
+          <button type="button" id="btn-sound" class="btn-icon" aria-pressed="true" title="Ativar/Desativar sons">
+            🔊
+          </button>
+          <button type="button" id="btn-help" class="btn-icon" title="Como jogar">
+            ❓
+          </button>
         </div>
+      </div>
 
-        <button type="button" id="btn-sound" class="btn-icon" aria-pressed="true" title="Ativar/Desativar sons">
-          🔊
-        </button>
-        <button type="button" id="btn-help" class="btn-icon" title="Como jogar">
-          ❓
-        </button>
+      <div id="termo-drawer" class="termo-drawer" hidden>
+        <div class="termo-drawer-inner">
+          <div class="tier-selector" aria-label="Nível de dificuldade">
+            <label for="tier-select">Nível:</label>
+            <select id="tier-select">
+              <option value="facil">Fácil (Comuns)</option>
+              <option value="medio" selected>Médio (Padrão)</option>
+              <option value="dificil">Difícil (Raras)</option>
+            </select>
+          </div>
+
+          <div class="seed-box" title="Use o mesmo código com seus amigos para jogar as mesmas palavras!">
+            <span class="seed-label">Sala/Seed:</span>
+            <input
+              id="seed-input"
+              type="text"
+              maxlength="20"
+              placeholder="DIARIO"
+              aria-label="Código da sala para jogar com amigos"
+            />
+            <button type="button" id="btn-apply-seed" class="btn-subtle" title="Entrar na sala digitada">
+              Ir
+            </button>
+            <button type="button" id="btn-daily-seed" class="btn-subtle" title="Jogar o Desafio do Dia">
+              📅 Dia
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -157,6 +170,6 @@
       </div>
     </div>
 
-    <script src="game.js"></script>
+    <script src="game.js?v=20261110v9"></script>
   </body>
 </html>

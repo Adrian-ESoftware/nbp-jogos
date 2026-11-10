@@ -600,6 +600,7 @@ body { padding:0; background:#13121b; }
 .player-content { max-width:1280px; margin:12px auto 0; overflow:hidden; border:1px solid #ffffff12; border-radius:16px; background:#191622; }
 .player-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 16px; }
 .player-identity { display:flex; align-items:center; gap:11px; min-width:0; }
+.player-back-mobile { display:none; }
 .player-identity > div { min-width:0; }
 .player-icon { width:40px; height:40px; border-radius:10px; object-fit:cover; flex-shrink:0; }
 .player-heading h1 { margin:0; font:700 clamp(16px,2vw,21px)/1.2 'Space Grotesk',sans-serif; letter-spacing:-.03em; }
@@ -623,16 +624,17 @@ body { padding:0; background:#13121b; }
 .player-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; }
 .player-empty .play-button { min-height:42px; margin-top:12px; font-size:12px; }
 @media(max-width:700px) {
-  .player-page { padding:10px 10px 16px; }
-  .player-header img { width:120px; }
-  .player-back { font-size:11px; }
-  .player-content { margin-top:8px; border-radius:12px; }
-  .player-heading { padding:10px; gap:8px; }
-  .player-icon { width:34px; height:34px; border-radius:8px; }
-  .player-identity { gap:8px; }
-  .player-heading p { font-size:10px; }
-  .player-actions button { width:44px; min-height:44px; padding:0; }
+  .player-page { padding:0; display:flex; flex-direction:column; height:100dvh; overflow:hidden; }
+  .player-header { display:none; }
+  .player-content { margin:0; border:0; border-radius:0; flex:1; display:flex; flex-direction:column; min-height:0; }
+  .player-heading { padding:6px 10px; gap:6px; border-bottom:1px solid #ffffff12; background:#14121b; }
+  .player-icon { width:26px; height:26px; border-radius:6px; }
+  .player-identity { gap:7px; }
+  .player-heading h1 { font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .player-heading p { display:none; }
+  .player-back-mobile { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border:1px solid #ffffff14; border-radius:8px; background:#231e30; color:#e6dcff; flex-shrink:0; }
+  .player-actions button { width:34px; min-height:34px; padding:0; border-radius:8px; }
   .player-actions button span { display:none; }
-  .player-frame { height:calc(100dvh - 190px); min-height:300px; }
-  .player-footer { padding:9px 12px; gap:10px; }
+  .player-frame { flex:1; height:auto; min-height:0; border:0; }
+  .player-footer { display:none; }
 }

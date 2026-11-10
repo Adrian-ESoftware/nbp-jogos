@@ -42,9 +42,12 @@
   // DOM Elements
   const playerNameInput = document.getElementById('player-name-input')
   const roomCodeInput = document.getElementById('room-code-input')
+  const roomCodeDisplay = document.getElementById('room-code-display')
   const btnJoinRoom = document.getElementById('btn-join-room')
   const btnHostRoom = document.getElementById('btn-host-room')
   const btnCopyRoom = document.getElementById('btn-copy-room')
+  const btnToggleDrawer = document.getElementById('btn-toggle-drawer')
+  const roomDrawer = document.getElementById('room-drawer')
   const p2pStatus = document.getElementById('p2p-status')
   const ruleModeSelect = document.getElementById('rule-mode-select')
   const btnAddBot = document.getElementById('btn-add-bot')
@@ -336,6 +339,9 @@
 
     // Host controls
     const isHost = room ? room.isHost : true
+    if (roomCodeDisplay) {
+      roomCodeDisplay.textContent = gameState.roomCode || 'ELO'
+    }
     btnStartMatch.hidden = !isHost || gameState.status === 'playing'
     btnStartMatch.disabled = !dictReady
     btnAddBot.disabled = !isHost || gameState.status === 'playing'
@@ -396,6 +402,10 @@
 
     gameState.turnIndex = 0
     modalWinner.hidden = true
+    if (roomDrawer) {
+      roomDrawer.hidden = true
+      btnToggleDrawer?.setAttribute('aria-expanded', 'false')
+    }
     playChord([440, 554.37, 659.25], 65)
     startTurnOnHost(true)
   }
@@ -1049,7 +1059,7 @@
     }
   })
 
-  btnCopyRoom.addEventListener('click', async () => {
+    btnCopyRoom.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(gameState.roomCode)
       showToast(`Código ${gameState.roomCode} copiado! Envie para seus amigos 📋`)
@@ -1057,6 +1067,14 @@
       showToast(`Código da sala: ${gameState.roomCode}`)
     }
   })
+
+  if (btnToggleDrawer && roomDrawer) {
+    btnToggleDrawer.addEventListener('click', () => {
+      const nextOpen = roomDrawer.hidden
+      roomDrawer.hidden = !nextOpen
+      btnToggleDrawer.setAttribute('aria-expanded', String(nextOpen))
+    })
+  }
 
   btnAddBot.addEventListener('click', addBotOnHost)
   btnRemoveBot.addEventListener('click', removeBotOnHost)

@@ -43,6 +43,8 @@
   const btnRandomSeed = document.getElementById('btn-random-seed')
   const btnSound = document.getElementById('btn-sound')
   const btnHelp = document.getElementById('btn-help')
+  const btnToggleTermoDrawer = document.getElementById('btn-toggle-termo-drawer')
+  const termoDrawer = document.getElementById('termo-drawer')
   const modalResult = document.getElementById('modal-result')
   const modalHelp = document.getElementById('modal-help')
   const confettiCanvas = document.getElementById('confetti-canvas')
@@ -619,6 +621,10 @@
     state.won = false
 
     modalResult.hidden = true
+    if (termoDrawer) {
+      termoDrawer.hidden = true
+      btnToggleTermoDrawer?.setAttribute('aria-expanded', 'false')
+    }
     buildBoardsDOM()
     buildKeyboardDOM()
     renderActiveRow()
@@ -687,6 +693,14 @@
   btnHelp.addEventListener('click', () => {
     modalHelp.hidden = false
   })
+
+  if (btnToggleTermoDrawer && termoDrawer) {
+    btnToggleTermoDrawer.addEventListener('click', () => {
+      const nextOpen = termoDrawer.hidden
+      termoDrawer.hidden = !nextOpen
+      btnToggleTermoDrawer.setAttribute('aria-expanded', String(nextOpen))
+    })
+  }
 
   document.getElementById('btn-close-help').addEventListener('click', () => {
     modalHelp.hidden = true

@@ -37,6 +37,10 @@
   // DOM Elements
   const hudScore = document.getElementById('hud-score')
   const hudStreak = document.getElementById('hud-streak')
+  const soloHudPills = document.getElementById('solo-hud-pills')
+  const soloSeedBox = document.getElementById('solo-seed-box')
+  const btnToggleGeoDrawer = document.getElementById('btn-toggle-geo-drawer')
+  const geoDrawer = document.getElementById('geo-drawer')
   const tierSelect = document.getElementById('tier-select')
   const seedInput = document.getElementById('seed-input')
   const btnApplySeed = document.getElementById('btn-apply-seed')
@@ -796,6 +800,9 @@
 
   const vsPlayerNameInput = document.getElementById('vs-player-name')
   const vsRoomCodeInput = document.getElementById('vs-room-code')
+  const vsRoomChipCode = document.getElementById('vs-room-chip-code')
+  const btnVsToggleConfig = document.getElementById('btn-vs-toggle-config')
+  const vsConfigDrawer = document.getElementById('vs-config-drawer')
   const vsRoomLabel = document.getElementById('vs-room-label')
   const vsPlayersCount = document.getElementById('vs-players-count')
   const btnVsJoin = document.getElementById('btn-vs-join')
@@ -974,6 +981,9 @@
 
     vsRoomLabel.textContent = isRoyale ? 'Sala Royale (6P):' : 'Sala 1v1:'
     vsPlayersCount.textContent = `👥 ${vsState.players.length}/${maxP}`
+    if (vsRoomChipCode) {
+      vsRoomChipCode.textContent = vsState.roomCode || 'VS'
+    }
     vsCenterCircle.textContent = isRoyale ? '👑 BR' : '1v1'
 
     const aliveCount = vsState.players.filter((p) => !p.eliminated).length
@@ -1171,6 +1181,10 @@
 
     buildVersusDecks()
     modalSummary.hidden = true
+    if (vsConfigDrawer) {
+      vsConfigDrawer.hidden = true
+      btnVsToggleConfig?.setAttribute('aria-expanded', 'false')
+    }
     playChord([440, 554.37, 659.25], 65)
     syncVersusToClients()
     vsRoom.broadcastEvent({ type: 'VS_START' })
@@ -1630,6 +1644,22 @@
     startVersusMatchOnHost()
   })
 
+  if (btnVsToggleConfig && vsConfigDrawer) {
+    btnVsToggleConfig.addEventListener('click', () => {
+      const nextOpen = vsConfigDrawer.hidden
+      vsConfigDrawer.hidden = !nextOpen
+      btnVsToggleConfig.setAttribute('aria-expanded', String(nextOpen))
+    })
+  }
+
+  if (btnToggleGeoDrawer && geoDrawer) {
+    btnToggleGeoDrawer.addEventListener('click', () => {
+      const nextOpen = geoDrawer.hidden
+      geoDrawer.hidden = !nextOpen
+      btnToggleGeoDrawer.setAttribute('aria-expanded', String(nextOpen))
+    })
+  }
+
   vsMyWriteInput.addEventListener('input', () => {
     const q = normalizePt(vsMyWriteInput.value)
     if (!q || vsState.status !== 'playing' || vsMyLocked) {
@@ -1750,6 +1780,15 @@
     viewFlagle.hidden = state.mode !== 'flagle'
     viewHighlow.hidden = state.mode !== 'highlow'
     viewVersus.hidden = state.mode !== 'versus' && state.mode !== 'royale'
+
+    const isVsMode = state.mode === 'versus' || state.mode === 'royale'
+    if (soloHudPills) soloHudPills.hidden = isVsMode
+    if (soloSeedBox) soloSeedBox.hidden = isVsMode
+    if (btnRandomSeed) btnRandomSeed.hidden = isVsMode
+    if (geoDrawer) {
+      geoDrawer.hidden = true
+      btnToggleGeoDrawer?.setAttribute('aria-expanded', 'false')
+    }
 
     if (state.mode === 'quiz') startQuizMode()
     else if (state.mode === 'flagle') startFlagleMode()

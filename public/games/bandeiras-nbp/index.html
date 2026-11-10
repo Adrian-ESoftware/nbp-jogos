@@ -7,60 +7,77 @@
       content="width=device-width,initial-scale=1,viewport-fit=cover"
     />
     <title>Atlas &amp; Bandeiras · NBP Games</title>
-    <link rel="stylesheet" href="style.css?v=20261109v8" />
+    <link rel="stylesheet" href="style.css?v=20261110v9" />
   </head>
   <body>
     <canvas id="confetti-canvas" aria-hidden="true"></canvas>
 
     <header class="topbar">
-      <div class="topbar-group">
+      <div class="topbar-main">
         <div class="mode-tabs" role="tablist" aria-label="Modo de jogo geográfico">
           <button type="button" class="mode-tab active" data-mode="quiz" role="tab" aria-selected="true">
             🏁 Quiz
           </button>
           <button type="button" class="mode-tab" data-mode="flagle" role="tab" aria-selected="false">
-            🧭 Flagle &amp; Bússola
+            🧭 Flagle
           </button>
           <button type="button" class="mode-tab" data-mode="highlow" role="tab" aria-selected="false">
-            📊 Mais ou Menos
+            📊 População
           </button>
           <button type="button" class="mode-tab" data-mode="versus" role="tab" aria-selected="false">
-            ⚔️ Versus 1v1
+            ⚔️ 1v1
           </button>
           <button type="button" class="mode-tab" data-mode="royale" role="tab" aria-selected="false">
-            👑 Battle Royale (6P)
+            👑 Royale (6P)
           </button>
         </div>
 
-        <div class="tier-selector">
-          <label for="tier-select">Banco/Nível:</label>
-          <select id="tier-select">
-            <option value="1">Nível 1 · Fácil (45 famosos)</option>
-            <option value="2" selected>Nível 2 · Médio (119 países)</option>
-            <option value="3">Nível 3 · Difícil (ONU completo)</option>
-            <option value="4">Nível 4 · Insano (250 países/ilhas)</option>
-            <option value="br">🇧🇷 Estados do Brasil (27 UFs)</option>
-          </select>
+        <div class="topbar-right-compact">
+          <div id="solo-hud-pills" class="hud-pills">
+            <span class="hud-pill">Pts: <strong id="hud-score">0</strong></span>
+            <span class="hud-pill streak">🔥 <strong id="hud-streak">0</strong></span>
+          </div>
+
+          <button type="button" id="btn-random-seed" class="btn-primary-sm" title="Sortear nova partida aleatória">
+            🎲 Nova
+          </button>
+
+          <button
+            type="button"
+            id="btn-toggle-geo-drawer"
+            class="btn-subtle"
+            aria-expanded="false"
+            title="Escolher nível de dificuldade ou código de desafio"
+          >
+            ⚙️ Nível &amp; Desafio
+          </button>
+
+          <button type="button" id="btn-sound" class="btn-icon" aria-pressed="true" title="Ativar/Desativar som">
+            🔊
+          </button>
         </div>
       </div>
 
-      <div class="topbar-group right">
-        <div class="hud-pills">
-          <span class="hud-pill">Pontos: <strong id="hud-score">0</strong></span>
-          <span class="hud-pill streak">🔥 <strong id="hud-streak">0</strong></span>
-        </div>
+      <div id="geo-drawer" class="geo-drawer" hidden>
+        <div class="geo-drawer-inner">
+          <div class="tier-selector">
+            <label for="tier-select">Banco/Nível:</label>
+            <select id="tier-select">
+              <option value="1">Nível 1 · Fácil (45 famosos)</option>
+              <option value="2" selected>Nível 2 · Médio (119 países)</option>
+              <option value="3">Nível 3 · Difícil (ONU completo)</option>
+              <option value="4">Nível 4 · Insano (250 países/ilhas)</option>
+              <option value="br">🇧🇷 Estados do Brasil (27 UFs)</option>
+            </select>
+          </div>
 
-        <div class="seed-box" title="Use o mesmo código com seus amigos para jogar a mesma sequência!">
-          <span class="seed-label">Sala:</span>
-          <input id="seed-input" type="text" maxlength="18" placeholder="ATLAS" aria-label="Código da sala" />
-          <button type="button" id="btn-apply-seed" class="btn-subtle" title="Entrar na sala digitada">Ir</button>
-          <button type="button" id="btn-daily-seed" class="btn-subtle" title="Jogar o Desafio do Dia">📅 Dia</button>
-          <button type="button" id="btn-random-seed" class="btn-primary-sm" title="Sortear nova partida aleatória">🎲 Nova</button>
+          <div id="solo-seed-box" class="seed-box" title="Use o mesmo código com seus amigos para jogar a mesma sequência!">
+            <span class="seed-label">Código Desafio:</span>
+            <input id="seed-input" type="text" maxlength="18" placeholder="ATLAS" aria-label="Código da sala" />
+            <button type="button" id="btn-apply-seed" class="btn-subtle" title="Carregar código">Ir</button>
+            <button type="button" id="btn-daily-seed" class="btn-subtle" title="Jogar o Desafio do Dia">📅 Dia</button>
+          </div>
         </div>
-
-        <button type="button" id="btn-sound" class="btn-icon" aria-pressed="true" title="Ativar/Desativar som">
-          🔊
-        </button>
       </div>
     </header>
 
@@ -193,57 +210,74 @@
       <!-- MODO 4 & 5: VERSUS 1v1 & BATTLE ROYALE (ATÉ 6 PLAYERS) -->
       <section id="view-versus" class="game-view versus-view" hidden>
         <div class="vs-topbar">
-          <div class="vs-room-row">
-            <div class="vs-name-field">
-              <label for="vs-player-name">Você:</label>
-              <input id="vs-player-name" type="text" maxlength="16" placeholder="Seu apelido" />
-            </div>
-
-            <div class="vs-room-controls">
-              <span id="vs-room-label" class="seed-label">Sala 1v1:</span>
-              <input id="vs-room-code" type="text" maxlength="14" placeholder="VS-1234" />
-              <button type="button" id="btn-vs-join" class="btn-subtle">Entrar</button>
-              <button type="button" id="btn-vs-host" class="btn-primary-sm">Criar Sala</button>
-              <button type="button" id="btn-vs-copy" class="btn-icon" title="Copiar código da sala">📋</button>
-            </div>
-
+          <div class="vs-quick-bar">
             <div class="vs-status-group">
-              <span id="vs-players-count" class="vs-count-badge">👥 2/2</span>
               <span id="vs-p2p-status" class="vs-status-badge">🟢 Sala Pronta</span>
+              <span id="vs-players-count" class="vs-count-badge">👥 2/2</span>
+              <button type="button" id="btn-vs-copy" class="vs-copy-chip" title="Copiar código da sala">
+                📋 <strong id="vs-room-chip-code">VS-0000</strong>
+              </button>
+            </div>
+
+            <div class="vs-quick-actions">
+              <button
+                type="button"
+                id="btn-vs-toggle-config"
+                class="btn-subtle"
+                aria-expanded="false"
+                title="Trocar apelido, conectar em outra sala ou configurar regras"
+              >
+                ⚙️ Configurar Sala
+              </button>
+              <button type="button" id="btn-vs-start" class="btn-vs-start">
+                ▶️ Iniciar Duelo 1v1
+              </button>
             </div>
           </div>
 
-          <div class="vs-options-row">
-            <div class="vs-toggles-left">
-              <button
-                type="button"
-                id="btn-vs-continent"
-                class="toggle-chip"
-                aria-pressed="false"
-              >
-                🌍 Continente: <strong>OFF</strong>
-              </button>
-              <button
-                type="button"
-                id="btn-vs-inputmode"
-                class="toggle-chip active"
-                aria-pressed="true"
-              >
-                🎯 Múltipla Escolha: <strong>ON</strong>
-              </button>
-              <div id="vs-bot-controls" class="vs-bot-controls" hidden>
-                <button type="button" id="btn-vs-add-bot" class="btn-subtle" title="Adicionar Bot à sala Battle Royale">
-                  + Bot 🤖
-                </button>
-                <button type="button" id="btn-vs-rem-bot" class="btn-subtle" title="Remover Bot">
-                  - Bot
-                </button>
+          <div id="vs-config-drawer" class="vs-config-drawer" hidden>
+            <div class="vs-room-row">
+              <div class="vs-name-field">
+                <label for="vs-player-name">Você:</label>
+                <input id="vs-player-name" type="text" maxlength="16" placeholder="Seu apelido" />
+              </div>
+
+              <div class="vs-room-controls">
+                <span id="vs-room-label" class="seed-label">Sala 1v1:</span>
+                <input id="vs-room-code" type="text" maxlength="14" placeholder="VS-1234" />
+                <button type="button" id="btn-vs-join" class="btn-subtle">Entrar</button>
+                <button type="button" id="btn-vs-host" class="btn-primary-sm">Criar Nova</button>
               </div>
             </div>
 
-            <button type="button" id="btn-vs-start" class="btn-vs-start">
-              ▶️ Iniciar Duelo 1v1
-            </button>
+            <div class="vs-options-row">
+              <div class="vs-toggles-left">
+                <button
+                  type="button"
+                  id="btn-vs-continent"
+                  class="toggle-chip"
+                  aria-pressed="false"
+                >
+                  🌍 Continente: <strong>OFF</strong>
+                </button>
+                <button
+                  type="button"
+                  id="btn-vs-inputmode"
+                  class="toggle-chip active"
+                  aria-pressed="true"
+                >
+                  🎯 Múltipla Escolha: <strong>ON</strong>
+                </button>
+                <div id="vs-bot-controls" class="vs-bot-controls" hidden>
+                  <button type="button" id="btn-vs-add-bot" class="btn-subtle" title="Adicionar Bot à sala Battle Royale">
+                    + Bot 🤖
+                  </button>
+                  <button type="button" id="btn-vs-rem-bot" class="btn-subtle" title="Remover Bot">
+                    - Bot
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -317,8 +351,8 @@
       </div>
     </div>
 
-    <script src="../../vendor/peerjs.min.js?v=20261109v8"></script>
-    <script src="../../vendor/nbp-p2p.js?v=20261109v8"></script>
-    <script src="game.js?v=20261109v8"></script>
+    <script src="../../vendor/peerjs.min.js?v=20261110v9"></script>
+    <script src="../../vendor/nbp-p2p.js?v=20261110v9"></script>
+    <script src="game.js?v=20261110v9"></script>
   </body>
 </html>

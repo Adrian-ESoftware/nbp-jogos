@@ -26,6 +26,7 @@ function GamePage() {
     <section className="player-content" aria-labelledby="player-title">
       <div className="player-heading">
         <div className="player-identity">
+          <Link className="player-back-mobile" to="/" aria-label="Voltar ao catálogo" title="Voltar ao catálogo"><ArrowLeft size={16} aria-hidden="true" /></Link>
           {game.assets.icon && <img className="player-icon" src={game.assets.icon} alt="" />}
           <div><h1 id="player-title">{game.title}</h1><p>{game.developer} <span aria-hidden="true">·</span> {game.genres.join(' · ')}</p></div>
         </div>

@@ -44,22 +44,53 @@ body {
 /* Topbar */
 .topbar {
   display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.92);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  backdrop-filter: blur(12px);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.topbar-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#btn-toggle-termo-drawer[aria-expanded='true'] {
+  background: rgba(56, 189, 248, 0.22);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  color: #7dd3fc;
+}
+
+.termo-drawer {
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(11, 17, 32, 0.96);
+  padding: 10px 14px;
+  animation: toast-in 0.18s ease;
+}
+
+.termo-drawer[hidden] {
+  display: none !important;
+}
+
+.termo-drawer-inner {
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 8px 14px;
-  padding: 10px 16px;
-  background: rgba(15, 23, 42, 0.82);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
-  backdrop-filter: blur(10px);
-  z-index: 10;
-}
-
-.topbar-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  max-width: 980px;
+  margin: 0 auto;
 }
 
 .mode-tabs {
@@ -683,4 +714,96 @@ body {
 }
 .mini-tile.absent {
   background: var(--absent);
+}
+
+/* ==================== MOBILE OPTIMIZATIONS ==================== */
+@media (max-width: 640px) {
+  .topbar-main {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .mode-tab {
+    padding: 5px 8px;
+    font-size: 0.76rem;
+  }
+
+  .mode-tab small {
+    display: none;
+  }
+
+  #btn-toggle-termo-drawer {
+    font-size: 0.72rem;
+    padding: 5px 8px;
+  }
+
+  .tier-selector,
+  .seed-box {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tier-selector select,
+  #seed-input {
+    flex: 1;
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  .arena {
+    padding: 6px 8px;
+  }
+
+  .boards-container.mode-termo {
+    max-width: 280px;
+  }
+
+  .boards-container.mode-dueto,
+  .boards-container.mode-quarteto {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .board-card {
+    padding: 6px;
+    border-radius: 10px;
+    gap: 4px;
+  }
+
+  .board-row {
+    gap: 4px;
+  }
+
+  .tile {
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+
+  .mode-quarteto .tile {
+    font-size: 0.78rem;
+    border-radius: 5px;
+    border-width: 1.5px;
+  }
+
+  .keyboard-area {
+    padding: 4px 4px calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .keyboard {
+    gap: 5px;
+  }
+
+  .kb-row {
+    gap: 3px;
+  }
+
+  .key {
+    height: 46px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+  }
+
+  .key.wide {
+    font-size: 0.72rem;
+  }
 }

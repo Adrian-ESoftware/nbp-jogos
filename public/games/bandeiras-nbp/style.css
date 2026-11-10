@@ -41,22 +41,27 @@ body {
 /* Topbar */
 .topbar {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 12px;
-  padding: 10px 16px;
-  background: rgba(9, 21, 38, 0.86);
+  flex-direction: column;
+  background: rgba(9, 21, 38, 0.92);
   border-bottom: 1px solid rgba(148, 163, 184, 0.16);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   z-index: 20;
+  flex-shrink: 0;
 }
 
-.topbar-group {
+.topbar-main {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+}
+
+.topbar-right-compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .mode-tabs {
@@ -65,17 +70,26 @@ body {
   padding: 3px;
   border-radius: 10px;
   border: 1px solid rgba(148, 163, 184, 0.2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+
+.mode-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .mode-tab {
   background: transparent;
   color: var(--muted);
   border: none;
-  padding: 6px 12px;
+  padding: 6px 11px;
   border-radius: 7px;
   font-weight: 700;
-  font-size: 0.83rem;
+  font-size: 0.8rem;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s ease;
 }
 
@@ -83,6 +97,36 @@ body {
   background: linear-gradient(135deg, #0ea5e9, #10b981);
   color: #fff;
   box-shadow: 0 2px 12px rgba(14, 165, 233, 0.35);
+}
+
+.geo-drawer {
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(7, 17, 31, 0.96);
+  padding: 10px 14px;
+  animation: pop-in 0.18s ease;
+}
+
+.geo-drawer[hidden],
+.hud-pills[hidden],
+.seed-box[hidden],
+.btn-primary-sm[hidden] {
+  display: none !important;
+}
+
+.geo-drawer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+#btn-toggle-geo-drawer[aria-expanded='true'] {
+  background: rgba(56, 189, 248, 0.22);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  color: #7dd3fc;
 }
 
 .tier-selector {
@@ -99,7 +143,7 @@ body {
   color: var(--text);
   border: 1px solid rgba(148, 163, 184, 0.3);
   border-radius: 8px;
-  padding: 5px 9px;
+  padding: 6px 10px;
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
@@ -107,16 +151,17 @@ body {
 
 .hud-pills {
   display: flex;
-  gap: 6px;
+  gap: 5px;
 }
 
 .hud-pill {
   background: rgba(19, 35, 59, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.22);
-  padding: 5px 10px;
+  padding: 4px 9px;
   border-radius: 99px;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   color: var(--muted);
+  white-space: nowrap;
 }
 
 .hud-pill strong {
@@ -144,14 +189,14 @@ body {
 }
 
 #seed-input {
-  width: 86px;
+  width: 90px;
   background: rgba(9, 21, 38, 0.85);
   border: 1px solid rgba(148, 163, 184, 0.28);
   color: var(--accent);
   font-weight: 800;
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
-  padding: 4px 6px;
+  padding: 4px 7px;
   border-radius: 6px;
 }
 
@@ -881,21 +926,69 @@ body {
   cursor: pointer;
 }
 
-/* ==================== MODO 4: VERSUS 1v1 ==================== */
+/* ==================== MODO 4: VERSUS 1v1 & ROYALE ==================== */
 .versus-view {
   max-width: 1120px;
-  gap: 12px;
+  gap: 10px;
 }
 
 .vs-topbar {
   width: 100%;
-  background: rgba(19, 35, 59, 0.78);
+  background: rgba(19, 35, 59, 0.84);
   border: 1px solid rgba(148, 163, 184, 0.22);
   border-radius: 14px;
-  padding: 10px 14px;
+  padding: 8px 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.vs-quick-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vs-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.vs-copy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(9, 21, 38, 0.9);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#btn-vs-toggle-config[aria-expanded='true'] {
+  background: rgba(56, 189, 248, 0.22);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  color: #7dd3fc;
+}
+
+.vs-config-drawer {
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: pop-in 0.18s ease;
+}
+
+.vs-config-drawer[hidden] {
+  display: none !important;
 }
 
 .vs-room-row,
@@ -1234,4 +1327,234 @@ body {
   border-radius: 10px;
   font-size: 0.88rem;
   font-weight: 700;
+}
+
+/* ==================== MOBILE OPTIMIZATIONS ==================== */
+@media (max-width: 720px) {
+  .topbar-main {
+    flex-wrap: wrap;
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .mode-tabs {
+    width: 100%;
+    order: 2;
+    justify-content: space-between;
+  }
+
+  .mode-tab {
+    flex: 1;
+    text-align: center;
+    padding: 6px 6px;
+    font-size: 0.72rem;
+  }
+
+  .topbar-right-compact {
+    width: 100%;
+    order: 1;
+    justify-content: space-between;
+  }
+
+  .hud-pill {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+  }
+
+  .tier-selector,
+  .seed-box {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tier-selector select,
+  #seed-input {
+    flex: 1;
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  .main-stage {
+    align-items: flex-start;
+    padding: 8px 10px 14px;
+  }
+
+  .game-view {
+    gap: 10px;
+  }
+
+  .toggle-chip {
+    min-width: 135px;
+    padding: 6px 9px;
+    font-size: 0.72rem;
+  }
+
+  .flag-showcase {
+    padding: 12px 14px;
+    border-radius: 14px;
+    gap: 8px;
+  }
+
+  .flag-frame {
+    width: min(100%, 215px);
+  }
+
+  .quiz-options {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .option-btn {
+    padding: 11px 10px;
+    font-size: 0.84rem;
+    border-radius: 10px;
+  }
+
+  #quiz-write-input,
+  #flagle-input,
+  #vs-my-write-input {
+    font-size: 16px;
+    padding: 9px 11px;
+  }
+
+  /* Flagle compact on mobile */
+  .flagle-layout {
+    gap: 10px;
+  }
+
+  .flagle-right {
+    min-height: 170px;
+    padding: 10px;
+  }
+
+  .guess-item {
+    grid-template-columns: 28px 1fr auto auto 46px;
+    gap: 6px;
+    padding: 7px 9px;
+    font-size: 0.76rem;
+  }
+
+  /* HighLow side-by-side compact on mobile */
+  .highlow-prompt {
+    font-size: 0.9rem;
+  }
+
+  .duel-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .duel-card {
+    padding: 12px;
+    border-radius: 14px;
+    gap: 6px;
+  }
+
+  .duel-card img {
+    width: 125px;
+    height: 92px;
+  }
+
+  .duel-card h3 {
+    font-size: 1.05rem;
+  }
+
+  .pop-box {
+    padding: 7px 12px;
+  }
+
+  .pop-box strong {
+    font-size: 1.15rem;
+  }
+
+  .hl-actions {
+    flex-direction: row;
+  }
+
+  .btn-hl {
+    flex: 1;
+    padding: 9px 8px;
+    font-size: 0.78rem;
+  }
+
+  /* Versus & Battle Royale on mobile */
+  .vs-topbar {
+    padding: 7px 10px;
+    border-radius: 12px;
+  }
+
+  .vs-status-badge,
+  .vs-count-badge,
+  .vs-copy-chip {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
+  .vs-quick-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-vs-start {
+    flex: 1;
+    padding: 7px 12px;
+    font-size: 0.8rem;
+  }
+
+  .vs-name-field,
+  .vs-room-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  #vs-player-name,
+  #vs-room-code {
+    flex: 1;
+    font-size: 16px;
+  }
+
+  .versus-arena {
+    gap: 8px;
+  }
+
+  .versus-panel {
+    padding: 10px;
+    border-radius: 14px;
+    gap: 8px;
+  }
+
+  .vs-flag-frame {
+    width: min(100%, 175px);
+  }
+
+  .vs-divider-col {
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .vs-divider-col .vs-circle {
+    width: 34px;
+    height: 34px;
+    font-size: 0.75rem;
+  }
+
+  .vs-rule-tag {
+    max-width: none;
+  }
+
+  .vs-opponents-grid.multi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .vs-opponents-grid.multi-grid .vs-flag-frame {
+    width: min(100%, 105px);
+  }
+
+  .vs-opponents-grid.multi-grid .vs-player-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
 }
