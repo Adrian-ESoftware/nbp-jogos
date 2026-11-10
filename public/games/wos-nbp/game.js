@@ -147,7 +147,7 @@
     level: 1,
     record: Number(localStorage.getItem('wos_nbp_record') || 1),
     lives: 3,
-    status: 'playing', // 'playing' | 'revealing_end' | 'intermission' | 'gameover'
+    status: 'lobby', // 'lobby' | 'playing' | 'revealing_end' | 'intermission' | 'gameover'
     timeLeft: 120,
     roundDuration: 120,
     revealTime: 22,    // segundos restantes em que as letras falsas e '?' são reveladas
@@ -188,6 +188,17 @@
 
   // Referências DOM
   const el = {
+    quickRoomCode: document.getElementById('quick-room-code'),
+    btnQuickRoomCopy: document.getElementById('btn-quick-room-copy'),
+    btnTopGo: document.getElementById('btn-top-go'),
+    btnCopyLinkRoom: document.getElementById('btn-copy-link-room'),
+    lobbyOverlay: document.getElementById('lobby-overlay'),
+    lobbyRoomCode: document.getElementById('lobby-room-code'),
+    btnLobbyCopyLink: document.getElementById('btn-lobby-copy-link'),
+    lobbyPlayersCount: document.getElementById('lobby-players-count'),
+    lobbyPlayersTags: document.getElementById('lobby-players-tags'),
+    btnStartGame: document.getElementById('btn-start-game'),
+    guestWaitingBox: document.getElementById('guest-waiting-box'),
     goalBox: document.getElementById('goal-box'),
     hudLevel: document.getElementById('hud-level'),
     hudRecord: document.getElementById('hud-record'),
@@ -581,9 +592,11 @@
   }
 
   function ensureLocalPlayer() {
-    if (!state.players[local.myId]) {
-      state.players[local.myId] = {
-        id: local.myId,
+    const pid = (local.room && local.room.profile && local.room.profile.id) ? local.room.profile.id : local.myId;
+    local.myId = pid;
+    if (!state.players[pid]) {
+      state.players[pid] = {
+        id: pid,
         name: local.myName,
         score: 0,
         turnScore: 0,
@@ -592,7 +605,7 @@
         isBot: false
       };
     } else {
-      state.players[local.myId].name = local.myName;
+      state.players[pid].name = local.myName;
     }
   }
 
@@ -627,6 +640,53 @@
     el.roundModal.hidden = false;
     el.roundModal.style.display = 'flex';
     el.roundModal.classList.remove('is-hidden');
+  }
+
+  function randomRoomCode() {
+    return `WOS-${Math.floor(1000 + Math.random() * 9000)}`;
+  }
+
+  function prepareLobby(levelNum = 1) {
+    if (!local.isHost) return;
+    clearAutoPilotTimer();
+    hideRoundModal();
+    readHostOptions();
+
+    state.lives = config.maxLives;
+    Object.values(state.players).forEach((p) => {
+      p.score = 0;
+      p.turnScore = 0;
+      p.wordsFound = 0;
+      p.turnWords = 0;
+    });
+
+    const board = generateBoardForLevel(levelNum);
+    state.level = levelNum;
+    state.status = 'lobby';
+    state.roundDuration = config.roundDuration;
+    state.timeLeft = config.roundDuration;
+    state.revealTime = Math.max(15, Math.round(config.roundDuration * 0.2));
+    state.rootWord = board.rootWord;
+    state.baseLetters = board.baseLetters;
+    state.wheelTiles = board.wheelTiles;
+    state.slots = board.slots;
+    state.bonusWords = [];
+    state.maxPoints = board.maxPoints;
+    state.goalPoints = Math.round(board.maxPoints * (config.goalPercentage / 100));
+    state.totalPoints = 0;
+    state.lockTarget = Math.max(1, Math.round(board.slots.length * 0.6));
+    state.checkpointMarks = [
+      Math.round(state.goalPoints * 0.33),
+      Math.round(state.goalPoints * 0.66),
+      state.goalPoints
+    ];
+    state.checkpointsOpened = 0;
+    state.lockedPlayers = {};
+    local.autoShuffleElapsed = 0;
+
+    startHostLoop();
+    broadcastState();
+    renderAll();
   }
 
   function startLevel(levelNum, resetScores) {
@@ -1069,8 +1129,68 @@
     }
   }
 
+  function copyRoomShareLink() {
+    const code = (local.roomCode || el.roomCodeInput.value.trim() || 'WOS-0000').toUpperCase();
+    const url = `${window.location.origin}${window.location.pathname}?sala=${code}`;
+    navigator.clipboard.writeText(url).then(() => {
+      if (el.btnCopyLinkRoom) el.btnCopyLinkRoom.textContent = '✅ Link Copiado!';
+      if (el.btnLobbyCopyLink) el.btnLobbyCopyLink.textContent = '✅ Link Copiado!';
+      if (el.quickRoomCode) {
+        const prevCode = el.quickRoomCode.textContent;
+        el.quickRoomCode.textContent = 'COPIADO!';
+        setTimeout(() => { el.quickRoomCode.textContent = prevCode; }, 1800);
+      }
+      pushFeed(`📋 Link da sala (${code}) copiado para a área de transferência!`, 'system');
+      renderFeed();
+      setTimeout(() => {
+        if (el.btnCopyLinkRoom) el.btnCopyLinkRoom.textContent = '🔗 Copiar Link';
+        if (el.btnLobbyCopyLink) el.btnLobbyCopyLink.textContent = '📋 Copiar Link';
+      }, 2000);
+    }).catch(() => {
+      navigator.clipboard.writeText(code);
+    });
+  }
+
+  function renderLobbyUI() {
+    const isLobby = state.status === 'lobby';
+    const code = (local.roomCode || el.roomCodeInput.value.trim() || 'WOS-0000').toUpperCase();
+
+    if (el.quickRoomCode) el.quickRoomCode.textContent = code;
+    if (el.lobbyRoomCode) el.lobbyRoomCode.textContent = code;
+
+    if (isLobby) {
+      el.lobbyOverlay.hidden = false;
+      el.lobbyOverlay.style.display = 'flex';
+      el.lobbyOverlay.classList.remove('is-hidden');
+      if (el.btnTopGo) el.btnTopGo.hidden = !local.isHost;
+
+      const playerList = Object.values(state.players);
+      if (el.lobbyPlayersCount) el.lobbyPlayersCount.textContent = String(playerList.length);
+      if (el.lobbyPlayersTags) {
+        el.lobbyPlayersTags.innerHTML = playerList.map((p) => {
+          const isHostPlayer = p.id === local.myId ? local.isHost : false;
+          return `<span class="lobby-player-tag ${isHostPlayer ? 'is-host' : ''}">${escapeHtml(p.name)}${p.isBot ? ' 🤖' : ''}${isHostPlayer ? ' 👑 (Host)' : ''}</span>`;
+        }).join('');
+      }
+
+      if (local.isHost) {
+        if (el.btnStartGame) el.btnStartGame.hidden = false;
+        if (el.guestWaitingBox) el.guestWaitingBox.hidden = true;
+      } else {
+        if (el.btnStartGame) el.btnStartGame.hidden = true;
+        if (el.guestWaitingBox) el.guestWaitingBox.hidden = false;
+      }
+    } else {
+      el.lobbyOverlay.hidden = true;
+      el.lobbyOverlay.style.display = 'none';
+      el.lobbyOverlay.classList.add('is-hidden');
+      if (el.btnTopGo) el.btnTopGo.hidden = true;
+    }
+  }
+
   // Renderização
   function renderAll() {
+    renderLobbyUI();
     renderTopHUD();
     renderWordsGrid();
     renderWheel(false);
@@ -1387,8 +1507,7 @@
   // Multiplayer P2P (NBPRoom)
   function broadcastState() {
     if (!local.inRoom || !local.room || !local.isHost) return;
-    local.room.broadcast({
-      type: 'wos_state',
+    local.room.syncState({
       config,
       state: {
         level: state.level,
@@ -1418,7 +1537,7 @@
 
   function broadcastTimer() {
     if (!local.inRoom || !local.room || !local.isHost) return;
-    local.room.broadcast({
+    local.room.broadcastEvent({
       type: 'wos_timer',
       timeLeft: state.timeLeft
     });
@@ -1430,7 +1549,9 @@
       el.shuffleIntervalLabel.textContent = config.shuffleInterval + 's';
     }
     const prevStatus = state.status;
-    Object.assign(state, remoteState);
+    if (remoteState) {
+      Object.assign(state, remoteState);
+    }
     renderAll();
     if (state.status !== 'playing' && prevStatus === 'playing') {
       showRoundModal();
@@ -1439,109 +1560,152 @@
     }
   }
 
+  function initRoom() {
+    if (local.room) {
+      local.room.cleanup(true);
+      local.room = null;
+    }
+
+    local.room = new window.NBPRoom({
+      gameId: 'wos-nbp',
+      defaultPrefix: 'WOS',
+      onStatus(st) {
+        if (st.connecting) {
+          el.roomStatusText.textContent = st.isHost
+            ? `🟡 Abrindo Sala ${st.roomCode}...`
+            : `🟡 Conectando à sala ${st.roomCode}...`;
+        } else if (st.connected) {
+          local.inRoom = true;
+          local.isHost = st.isHost;
+          local.roomCode = st.roomCode;
+          local.myId = local.room.profile.id;
+
+          if (el.quickRoomCode) el.quickRoomCode.textContent = st.roomCode;
+          if (el.lobbyRoomCode) el.lobbyRoomCode.textContent = st.roomCode;
+          if (el.roomCodeInput) el.roomCodeInput.value = st.roomCode;
+
+          el.btnCopyRoom.hidden = false;
+          el.btnLeaveRoom.hidden = false;
+          el.btnCreateRoom.hidden = true;
+          el.btnJoinRoom.hidden = true;
+
+          el.roomStatusText.textContent = st.isHost
+            ? `🟢 Host Online · Sala ${st.roomCode}`
+            : `🟢 Conectado · Sala ${st.roomCode}`;
+
+          try {
+            const url = new URL(window.location.href);
+            url.searchParams.set('sala', st.roomCode);
+            window.history.replaceState({}, '', url.toString());
+          } catch (_) {}
+
+          if (st.isHost) {
+            delete state.players['local-player'];
+            ensureLocalPlayer();
+            prepareLobby(config.startLevel);
+          } else {
+            state.status = 'lobby';
+            renderLobbyUI();
+          }
+        } else if (st.error) {
+          el.roomStatusText.textContent = `⚠️ Erro: ${st.error}`;
+        }
+      },
+      onError(err) {
+        if (err && err.message) {
+          el.roomStatusText.textContent = `⚠️ ${err.message}`;
+        }
+      },
+      onStateSync(remotePayload) {
+        if (!remotePayload) return;
+        applyRemoteState(remotePayload.state, remotePayload.config);
+      },
+      onAction(action, senderProfile) {
+        if (!action) return;
+        if (local.isHost) {
+          if (action.type === 'wos_guess') {
+            const senderId = action.playerId || senderProfile?.id || 'anon';
+            const senderName = action.playerName || senderProfile?.name || 'Jogador';
+            handleGuessSubmission(senderId, senderName, action.word);
+          } else if (action.type === 'JOIN_REQUEST' || action.type === 'HEARTBEAT' || action.type === 'PEER_CONNECTED') {
+            const profile = action.profile || senderProfile;
+            if (profile && profile.id) {
+              if (!state.players[profile.id]) {
+                state.players[profile.id] = {
+                  id: profile.id,
+                  name: profile.name || 'Jogador',
+                  score: 0,
+                  turnScore: 0,
+                  wordsFound: 0,
+                  turnWords: 0,
+                  isBot: false
+                };
+                pushFeed(`👋 ${profile.name || 'Jogador'} entrou na sala!`, 'system');
+              } else {
+                state.players[profile.id].name = profile.name || state.players[profile.id].name;
+              }
+              broadcastState();
+              renderPlayers();
+              renderLobbyUI();
+            }
+          } else if (action.type === 'PLAYER_LEFT') {
+            const pid = action.playerId;
+            if (pid && state.players[pid] && !state.players[pid].isBot) {
+              const pName = state.players[pid].name;
+              delete state.players[pid];
+              pushFeed(`🚪 ${pName} saiu da sala.`, 'system');
+              broadcastState();
+              renderPlayers();
+              renderLobbyUI();
+            }
+          }
+        } else {
+          if (action.type === 'HOST_LEFT') {
+            pushFeed(`🚪 O Host saiu da sala.`, 'system');
+            renderFeed();
+          } else if (action.type === 'wos_timer') {
+            state.timeLeft = action.timeLeft;
+            renderTopHUD();
+          }
+        }
+      }
+    });
+  }
+
   function setupMultiplayer(mode) {
     const rawName = el.playerNameInput.value.trim();
     if (rawName) {
       local.myName = rawName;
       localStorage.setItem('wos_nbp_name', rawName);
+      if (local.room) local.room.setPlayerName(rawName);
     }
 
-    if (local.room) {
-      local.room.destroy();
-      local.room = null;
-    }
+    initRoom();
 
     const code = mode === 'create'
-      ? (el.roomCodeInput.value.trim() || NBPRoom.generateCode('WOS'))
-      : el.roomCodeInput.value.trim();
+      ? (el.roomCodeInput.value.trim() || randomRoomCode()).toUpperCase()
+      : el.roomCodeInput.value.trim().toUpperCase();
 
     if (!code) {
       el.roomStatusText.textContent = '⚠️ Digite o código da sala para entrar.';
       return;
     }
 
+    local.roomCode = code;
     el.roomCodeInput.value = code;
-    el.roomStatusText.textContent = '⏳ Conectando à sala P2P...';
+    if (el.quickRoomCode) el.quickRoomCode.textContent = code;
+    if (el.lobbyRoomCode) el.lobbyRoomCode.textContent = code;
 
-    const room = NBPRoom.create({
-      gameSlug: 'wos-nbp',
-      code,
-      name: local.myName,
-      onStatus: (st, msg) => {
-        el.roomStatusText.textContent = msg;
-        if (st === 'hosting' || st === 'connected') {
-          local.inRoom = true;
-          local.isHost = room.isHost;
-          local.myId = room.myPeerId || 'local-player';
-          local.roomCode = room.roomCode;
-          el.btnCopyRoom.hidden = false;
-          el.btnLeaveRoom.hidden = false;
-          el.btnCreateRoom.hidden = true;
-          el.btnJoinRoom.hidden = true;
-
-          if (local.isHost) {
-            delete state.players['local-player'];
-            ensureLocalPlayer();
-            startLevel(config.startLevel, true);
-          }
-        } else if (st === 'error' || st === 'closed') {
-          leaveRoomToSolo(msg);
-        }
-      },
-      onPlayers: (roster) => {
-        if (!local.isHost) return;
-        const activeIds = new Set(roster.map((r) => r.peerId));
-        Object.keys(state.players).forEach((pid) => {
-          if (!state.players[pid].isBot && !activeIds.has(pid)) {
-            delete state.players[pid];
-          }
-        });
-        roster.forEach((r) => {
-          if (!state.players[r.peerId]) {
-            state.players[r.peerId] = {
-              id: r.peerId,
-              name: r.name,
-              score: 0,
-              turnScore: 0,
-              wordsFound: 0,
-              turnWords: 0,
-              isBot: false
-            };
-          } else {
-            state.players[r.peerId].name = r.name;
-          }
-        });
-        broadcastState();
-        renderPlayers();
-      },
-      onMessage: (data, fromPeerId) => {
-        if (!data || typeof data !== 'object') return;
-        if (local.isHost) {
-          if (data.type === 'wos_guess') {
-            handleGuessSubmission(fromPeerId, data.name, data.word);
-          }
-        } else {
-          if (data.type === 'wos_state' && data.state) {
-            applyRemoteState(data.state, data.config);
-          } else if (data.type === 'wos_timer') {
-            state.timeLeft = data.timeLeft;
-            renderTopHUD();
-          }
-        }
-      }
-    });
-
-    local.room = room;
     if (mode === 'create') {
-      room.host();
+      local.room.hostRoom(code);
     } else {
-      room.join();
+      local.room.joinRoom(code);
     }
   }
 
   function leaveRoomToSolo(customMsg) {
     if (local.room) {
-      local.room.destroy();
+      local.room.cleanup(true);
       local.room = null;
     }
     local.inRoom = false;
@@ -1556,7 +1720,7 @@
     el.btnJoinRoom.hidden = false;
     el.roomStatusText.textContent = customMsg || 'Modo Solo / Local ativo.';
 
-    startLevel(config.startLevel, true);
+    prepareLobby(config.startLevel);
   }
 
   // Eventos de UI
@@ -1581,10 +1745,33 @@
         local.myName = val;
         localStorage.setItem('wos_nbp_name', val);
         ensureLocalPlayer();
-        if (local.room) local.room.setName(val);
+        if (local.room) local.room.setPlayerName(val);
         renderPlayers();
       }
     });
+
+    // Código da sala - sincronização em tempo real nos textos da UI
+    el.roomCodeInput.addEventListener('input', () => {
+      const code = el.roomCodeInput.value.trim().toUpperCase();
+      if (el.quickRoomCode) el.quickRoomCode.textContent = code || '----';
+      if (el.lobbyRoomCode) el.lobbyRoomCode.textContent = code || '----';
+    });
+
+    // Botões de Iniciar Partida (Host GO)
+    const onStartGo = () => {
+      if (!local.isHost) return;
+      readHostOptions();
+      startLevel(config.startLevel, true);
+      pushFeed('🚀 Partida iniciada pelo Host! Boa sorte!', 'system');
+      renderFeed();
+    };
+    el.btnStartGame?.addEventListener('click', onStartGo);
+    el.btnTopGo?.addEventListener('click', onStartGo);
+
+    // Botões de Copiar Link da Sala
+    el.btnQuickRoomCopy?.addEventListener('click', () => copyRoomShareLink());
+    el.btnCopyLinkRoom?.addEventListener('click', () => copyRoomShareLink());
+    el.btnLobbyCopyLink?.addEventListener('click', () => copyRoomShareLink());
 
     el.btnCreateRoom.addEventListener('click', () => setupMultiplayer('create'));
     el.btnJoinRoom.addEventListener('click', () => setupMultiplayer('join'));
@@ -1620,7 +1807,8 @@
       } else if (local.room) {
         local.room.sendToHost({
           type: 'wos_guess',
-          name: local.myName,
+          playerId: local.myId,
+          playerName: local.myName,
           word
         });
       }
@@ -1645,6 +1833,7 @@
       broadcastState();
       renderPlayers();
       renderFeed();
+      renderLobbyUI();
     });
 
     el.btnRestartMatch.addEventListener('click', () => {
@@ -1678,7 +1867,23 @@
     ensureLocalPlayer();
     await loadDictionary();
     readHostOptions();
-    startLevel(config.startLevel, true);
+
+    // Código da sala predefinido (via query string ?sala= ou ?room=, ou gerado automaticamente)
+    const params = new URLSearchParams(window.location.search);
+    const urlRoom = (params.get('sala') || params.get('room') || '').trim().toUpperCase();
+
+    const defaultCode = urlRoom || randomRoomCode();
+    local.roomCode = defaultCode;
+    if (el.roomCodeInput) el.roomCodeInput.value = defaultCode;
+    if (el.quickRoomCode) el.quickRoomCode.textContent = defaultCode;
+    if (el.lobbyRoomCode) el.lobbyRoomCode.textContent = defaultCode;
+
+    // Se veio pela URL com sala definida, entra automaticamente na sala
+    if (urlRoom) {
+      setupMultiplayer('join');
+    } else {
+      setupMultiplayer('create');
+    }
   }
 
   init();

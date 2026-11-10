@@ -56,6 +56,12 @@
       </div>
 
       <div class="top-actions">
+        <button type="button" class="room-pill-quick" id="btn-quick-room-copy" title="Clique para copiar o link da sala">
+          🌐 <strong id="quick-room-code">WOS-0000</strong> 📋
+        </button>
+        <button type="button" class="btn btn-primary btn-sm btn-top-go" id="btn-top-go">
+          ▶ DAR GO!
+        </button>
         <button type="button" class="btn-sound" id="btn-sound-toggle" title="Ativar/Desativar Efeitos Sonoros">
           🔊
         </button>
@@ -77,7 +83,8 @@
           <div class="btn-row">
             <button type="button" class="btn btn-primary" id="btn-create-room">Criar Sala</button>
             <button type="button" class="btn btn-secondary" id="btn-join-room">Entrar</button>
-            <button type="button" class="btn btn-ghost" id="btn-copy-room" hidden>📋 Copiar Código</button>
+            <button type="button" class="btn btn-ghost" id="btn-copy-room" hidden>📋 Código</button>
+            <button type="button" class="btn btn-ghost" id="btn-copy-link-room" hidden>🔗 Copiar Link</button>
             <button type="button" class="btn btn-danger" id="btn-leave-room" hidden>Sair</button>
           </div>
           <p class="room-status" id="room-status-text">Modo Solo / Local ativo — crie uma sala para jogar com amigos em tempo real!</p>
@@ -156,6 +163,36 @@
     <main class="stage">
       <!-- Left / Center: Words Board + Anagram Stage -->
       <section class="board-panel" id="board-panel">
+        <!-- Lobby / Waiting for Players & Host GO Overlay -->
+        <div class="lobby-overlay" id="lobby-overlay">
+          <div class="lobby-card">
+            <span class="lobby-badge">SALA MULTIPLAYER</span>
+            <h2>Palavras na Sala</h2>
+            <p class="lobby-desc">Compartilhe o código ou o link com seus amigos. Quando todos entrarem, o host dá <strong>GO</strong>!</p>
+
+            <div class="lobby-room-info">
+              <span class="lobby-room-label">CÓDIGO DA SALA:</span>
+              <strong class="lobby-room-code" id="lobby-room-code">WOS-0000</strong>
+              <button type="button" class="btn btn-sm btn-ghost" id="btn-lobby-copy-link">📋 Copiar Link</button>
+            </div>
+
+            <div class="lobby-roster-box">
+              <h4>Jogadores na sala (<span id="lobby-players-count">1</span>):</h4>
+              <div class="lobby-players-tags" id="lobby-players-tags"></div>
+            </div>
+
+            <div class="lobby-actions">
+              <button type="button" class="btn btn-primary btn-lg btn-go-pulse" id="btn-start-game">
+                ▶ INICIAR PARTIDA (GO!)
+              </button>
+              <div class="guest-waiting-box" id="guest-waiting-box" hidden>
+                <div class="spinner-dot"></div>
+                <p>Aguardando o <strong>Host</strong> dar GO para começar...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Timer Bar with Official WOS Lock Checkpoints -->
         <div class="timer-bar-container">
           <div class="timer-track">
