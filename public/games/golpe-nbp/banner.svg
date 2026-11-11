@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#181124" />
+      <stop offset="50%" stop-color="#0e0a16" />
+      <stop offset="100%" stop-color="#06040a" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fce99f" />
+      <stop offset="50%" stop-color="#dfa938" />
+      <stop offset="100%" stop-color="#9a6e16" />
+    </linearGradient>
+    <radialGradient id="glow" cx="950" cy="200" r="350" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#dfa938" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#dfa938" stop-opacity="0" />
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="400" fill="url(#bg)" />
+  <circle cx="950" cy="200" r="350" fill="url(#glow)" />
+
+  <!-- Typography -->
+  <text x="80" y="100" fill="#dfa938" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="800" font-size="16" letter-spacing="4">NBP GAMES · JOGO DE BLEFE E DEDUÇÃO</text>
+  <text x="75" y="195" fill="#ffffff" font-family="'Cinzel', 'Times New Roman', serif" font-weight="900" font-size="82" letter-spacing="3">GOLPE DE ESTADO</text>
+  <text x="80" y="245" fill="#a59bb5" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="500" font-size="20">
+    Seja o último líder da corte com influência. Blefe, desconfie, golpeie e elimine seus rivais.
+  </text>
+
+  <!-- Badges -->
+  <g transform="translate(80, 280)">
+    <rect width="180" height="44" rx="22" fill="url(#gold)" />
+    <text x="90" y="28" fill="#140f1e" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="15" text-anchor="middle">
+      MULTIPLAYER 2-6
+    </text>
+  </g>
+  <g transform="translate(280, 280)">
+    <rect width="170" height="44" rx="22" fill="none" stroke="url(#gold)" stroke-width="2" />
+    <text x="85" y="28" fill="#dfa938" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="15" text-anchor="middle">
+      COM BOTS DE IA
+    </text>
+  </g>
+
+  <!-- Right side decorative emblem -->
+  <g transform="translate(950, 200)" filter="url(#shadow)">
+    <!-- Shield / Crown / Crossed swords -->
+    <circle cx="0" cy="0" r="100" fill="#140f1e" stroke="url(#gold)" stroke-width="3" />
+    <circle cx="0" cy="0" r="88" fill="none" stroke="url(#gold)" stroke-width="1" stroke-dasharray="6 4" stroke-opacity="0.5" />
+    <!-- Crown inside -->
+    <path d="M-40 25 L-30 -15 L-10 5 L0 -30 L10 5 L30 -15 L40 25 Z" fill="url(#gold)" />
+    <rect x="-42" y="23" width="84" height="10" rx="3" fill="url(#gold)" />
+    <circle cx="0" cy="28" r="3" fill="#e63946" />
+  </g>
+</svg>

@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#181124" />
+      <stop offset="50%" stop-color="#0e0a16" />
+      <stop offset="100%" stop-color="#06040a" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fce99f" />
+      <stop offset="50%" stop-color="#dfa938" />
+      <stop offset="100%" stop-color="#9a6e16" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a2238" />
+      <stop offset="100%" stop-color="#140f1e" />
+    </linearGradient>
+    <radialGradient id="glow" cx="680" cy="270" r="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#dfa938" stop-opacity="0.32" />
+      <stop offset="100%" stop-color="#dfa938" stop-opacity="0" />
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000" flood-opacity="0.7" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="540" fill="url(#bg)" />
+  <circle cx="680" cy="270" r="380" fill="url(#glow)" />
+  <path d="M0 480 Q 320 380 600 540 L 0 540 Z" fill="#241433" opacity="0.45" />
+
+  <!-- Background ornamental lines -->
+  <g opacity="0.15" stroke="url(#gold)" stroke-width="1.5" fill="none">
+    <circle cx="680" cy="270" r="180" />
+    <circle cx="680" cy="270" r="230" stroke-dasharray="6 6" />
+    <circle cx="680" cy="270" r="280" />
+  </g>
+
+  <!-- Left Content -->
+  <text x="70" y="120" fill="#dfa938" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="800" font-size="16" letter-spacing="4">NBP GAMES APRESENTA</text>
+  <text x="65" y="240" fill="#ffffff" font-family="'Cinzel', 'Times New Roman', serif" font-weight="900" font-size="94" letter-spacing="2">GOLPE</text>
+  <text x="70" y="295" fill="#fce99f" font-family="'Cinzel', 'Times New Roman', serif" font-weight="700" font-size="34" letter-spacing="4">DE ESTADO</text>
+  
+  <text x="70" y="348" fill="#a59bb5" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="500" font-size="20">
+    Blefe, dedução social e intrigas da corte imperial
+  </text>
+
+  <!-- Badge 2 a 6 Jogadores / P2P -->
+  <g transform="translate(70, 395)">
+    <rect width="210" height="46" rx="23" fill="url(#gold)" />
+    <text x="105" y="29" fill="#140f1e" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="800" font-size="16" text-anchor="middle" letter-spacing="1">
+      2 A 6 JOGADORES
+    </text>
+  </g>
+  <g transform="translate(295, 395)">
+    <rect width="170" height="46" rx="23" fill="none" stroke="url(#gold)" stroke-width="2" />
+    <text x="85" y="29" fill="#dfa938" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="700" font-size="15" text-anchor="middle" letter-spacing="1">
+      ESTILO COUP
+    </text>
+  </g>
+
+  <!-- Graphic Cards on the Right -->
+  <!-- Card 1: Duke (Left tilted) -->
+  <g transform="translate(580, 260) rotate(-16) translate(-90, -135)" filter="url(#shadow)">
+    <rect width="180" height="270" rx="16" fill="url(#cardGrad)" stroke="url(#gold)" stroke-width="2.5" />
+    <rect x="8" y="8" width="164" height="254" rx="12" fill="none" stroke="url(#gold)" stroke-width="1" stroke-opacity="0.3" />
+    <!-- Crown icon -->
+    <path d="M50 140 L60 95 L80 115 L90 80 L100 115 L120 95 L130 140 Z" fill="url(#gold)" />
+    <rect x="48" y="138" width="84" height="12" rx="4" fill="url(#gold)" />
+    <text x="90" y="195" font-family="'Cinzel', serif" font-weight="800" font-size="20" fill="#fce99f" text-anchor="middle" letter-spacing="2">DUQUE</text>
+    <text x="90" y="220" font-family="'Plus Jakarta Sans', sans-serif" font-weight="600" font-size="12" fill="#dfa938" text-anchor="middle">TAXA +3</text>
+  </g>
+
+  <!-- Card 2: Assassin (Center / Front) -->
+  <g transform="translate(710, 250) rotate(10) translate(-90, -135)" filter="url(#shadow)">
+    <rect width="180" height="270" rx="16" fill="#140f1e" stroke="#e63946" stroke-width="2.5" />
+    <rect x="8" y="8" width="164" height="254" rx="12" fill="none" stroke="#e63946" stroke-width="1" stroke-opacity="0.4" />
+    <!-- Dagger icon -->
+    <g transform="translate(90, 115) scale(1.1)">
+      <path d="M0 -45 L7 15 L0 25 L-7 15 Z" fill="#e2e8f0" stroke="#94a3b8" />
+      <path d="M0 -45 L0 25 L-7 15 Z" fill="#94a3b8" />
+      <rect x="-18" y="25" width="36" height="6" rx="2" fill="url(#gold)" />
+      <rect x="-4" y="31" width="8" height="22" rx="2" fill="#332211" />
+      <circle cx="0" cy="56" r="6" fill="url(#gold)" />
+    </g>
+    <text x="90" y="195" font-family="'Cinzel', serif" font-weight="800" font-size="20" fill="#ff7582" text-anchor="middle" letter-spacing="2">ASSASSINO</text>
+    <text x="90" y="220" font-family="'Plus Jakarta Sans', sans-serif" font-weight="600" font-size="12" fill="#ff99a4" text-anchor="middle">ELIMINA -1</text>
+  </g>
+
+  <!-- Gold coins floating around -->
+  <g filter="url(#shadow)">
+    <circle cx="510" cy="380" r="28" fill="url(#gold)" />
+    <circle cx="510" cy="380" r="23" fill="none" stroke="#7a550c" stroke-width="2" />
+    <text x="510" y="388" font-family="'Cinzel', serif" font-weight="900" font-size="22" fill="#583c07" text-anchor="middle">$</text>
+  </g>
+  <g filter="url(#shadow)">
+    <circle cx="830" cy="160" r="22" fill="url(#gold)" />
+    <circle cx="830" cy="160" r="18" fill="none" stroke="#7a550c" stroke-width="1.8" />
+    <text x="830" y="166" font-family="'Cinzel', serif" font-weight="900" font-size="18" fill="#583c07" text-anchor="middle">$</text>
+  </g>
+</svg>

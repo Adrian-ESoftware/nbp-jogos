@@ -16,6 +16,8 @@
     "validate:datasets": "node scripts/validate-datasets.mjs",
     "test:catalog": "node --test tests/catalog.test.mjs",
     "test:datasets": "node --test tests/datasets.test.mjs",
+    "test:golpe": "node --test tests/golpe.test.mjs",
+    "test": "npm run test:catalog && npm run test:datasets && npm run test:golpe",
     "preview": "vite preview"
   },
   "dependencies": {

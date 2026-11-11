@@ -143,6 +143,32 @@
         "icon": "/games/nem-a-pato/icon.svg"
       },
       "entry": "/games/nem-a-pato/index.html"
+    },
+    {
+      "id": "golpe-nbp",
+      "title": "Golpe de Estado",
+      "description": "Jogo de dedução social, blefe e eliminação baseado integralmente nas mecânicas de Coup! De 2 a 6 jogadores: declare ações e bloqueios de Duque, Assassino, Capitão e Embaixador, blefe com maestria, desafie as mentiras dos adversários e seja o último líder com influência ativa na Corte Imperial.",
+      "developer": "NBP Games",
+      "genres": [
+        "Cartas",
+        "Blefe",
+        "Dedução",
+        "Multiplayer",
+        "Estratégia"
+      ],
+      "modes": [
+        "singleplayer",
+        "multiplayer"
+      ],
+      "status": "published",
+      "featured": true,
+      "engine": "html5",
+      "assets": {
+        "cover": "/games/golpe-nbp/cover.svg",
+        "banner": "/games/golpe-nbp/banner.svg",
+        "icon": "/games/golpe-nbp/icon.svg"
+      },
+      "entry": "/games/golpe-nbp/index.html"
     }
   ]
 }
