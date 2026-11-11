@@ -450,7 +450,6 @@
       })
       .catch(() => {});
   }
-  }
 
   function countChars(word) {
     const counts = {};
