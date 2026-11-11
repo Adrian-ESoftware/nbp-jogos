@@ -1726,7 +1726,11 @@
         againBtn.style.display = room.isHost ? 'inline-flex' : 'none'
         againBtn.onclick = () => {
           modal.hidden = true
-          sendAction({ type: 'PLAY_AGAIN' })
+          if (room.isHost) {
+            startGame()
+          } else {
+            sendAction({ type: 'PLAY_AGAIN' })
+          }
         }
       }
     } else {
@@ -1818,6 +1822,11 @@
       },
     ]
     state.phase = 'lobby'
+    state.winner = null
+    state.pendingAction = null
+    state.loseInfluenceRequest = null
+    state.exchangeRequest = null
+    state.deck = []
     syncState()
     return code
   }

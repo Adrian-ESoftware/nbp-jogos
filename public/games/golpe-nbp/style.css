@@ -40,6 +40,16 @@
   padding: 0;
 }
 
+/* Regra absoluta para ocultar elementos com atributo hidden */
+[hidden],
+.modal-overlay[hidden],
+.table-layout[hidden],
+.reaction-bar[hidden],
+.drawer[hidden],
+.lobby-panel[hidden] {
+  display: none !important;
+}
+
 html, body {
   width: 100%;
   height: 100%;
@@ -193,6 +203,10 @@ body {
   border-bottom: 1px solid var(--border-gold);
   padding: 16px;
   animation: slideDown 0.2s ease-out;
+}
+
+.drawer[hidden] {
+  display: none !important;
 }
 
 @keyframes slideDown {
@@ -978,6 +992,10 @@ body {
   z-index: 100;
   padding: 16px;
   animation: fadeIn 0.2s ease-out;
+}
+
+.modal-overlay[hidden] {
+  display: none !important;
 }
 
 @keyframes fadeIn {
