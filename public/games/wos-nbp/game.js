@@ -91,6 +91,9 @@
           this.tone(330, 0.06, 'sine', 0.06, 0);
           this.tone(392, 0.07, 'sine', 0.06, 0.05);
           break;
+        case 'tap':
+          this.tone(740 + Math.random() * 60, 0.035, 'triangle', 0.08, 0);
+          break;
         case 'reveal':
           this.tone(311.13, 0.14, 'sawtooth', 0.09, 0);
           this.tone(277.18, 0.22, 'sawtooth', 0.09, 0.11);
@@ -1417,6 +1420,7 @@
       btn.addEventListener('click', () => {
         if (tile.isFake && tile.fakeRevealed) return;
         if (tile.displayChar.startsWith('?')) return;
+        SoundFX.play('tap');
         if (el.guessInput.value.length < 12) {
           el.guessInput.value += tile.displayChar;
           el.guessInput.focus();

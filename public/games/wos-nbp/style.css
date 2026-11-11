@@ -715,94 +715,103 @@ html, body {
 }
 
 .word-slot {
-  background: rgba(20, 10, 42, 0.75);
-  border: 1px solid rgba(168, 85, 247, 0.24);
-  border-radius: 10px;
-  padding: 5px 8px;
+  background: rgba(18, 9, 36, 0.82);
+  border: 1px solid rgba(168, 85, 247, 0.28);
+  border-radius: 11px;
+  padding: 6px 9px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.4, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .word-slot.hitmax-slot {
-  border-color: rgba(56, 189, 248, 0.48);
-  background: linear-gradient(135deg, rgba(14, 42, 74, 0.55), rgba(30, 15, 64, 0.8));
+  border-color: rgba(56, 189, 248, 0.55);
+  background: linear-gradient(135deg, rgba(14, 42, 74, 0.65), rgba(30, 15, 64, 0.85));
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
 }
 
 .word-slot.solved {
-  background: linear-gradient(135deg, rgba(88, 28, 135, 0.65), rgba(49, 16, 94, 0.88));
-  border-color: rgba(251, 191, 36, 0.6);
-  animation: popSlot 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.72), rgba(49, 16, 94, 0.92));
+  border-color: rgba(251, 191, 36, 0.65);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
+  animation: popSlot 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .word-slot.solved.hitmax-slot {
-  background: linear-gradient(135deg, rgba(3, 105, 161, 0.75), rgba(59, 7, 100, 0.9));
+  background: linear-gradient(135deg, rgba(3, 105, 161, 0.82), rgba(59, 7, 100, 0.95));
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
 }
 
 .word-slot.expired-slot {
-  background: rgba(30, 15, 50, 0.55);
-  border-color: rgba(244, 63, 94, 0.45);
-  opacity: 0.82;
+  background: rgba(30, 15, 50, 0.6);
+  border-color: rgba(244, 63, 94, 0.48);
+  opacity: 0.85;
 }
 
 @keyframes popSlot {
-  0% { transform: scale(0.93); }
-  60% { transform: scale(1.04); }
+  0% { transform: scale(0.92); }
+  60% { transform: scale(1.05); }
   100% { transform: scale(1); }
 }
 
 .slot-boxes {
   display: flex;
-  gap: 3px;
+  gap: 3.5px;
 }
 
 .slot-char {
-  width: 22px;
-  height: 25px;
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  width: 23px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   color: transparent;
   user-select: none;
+  transition: transform 0.18s ease, background 0.18s ease;
 }
 
 .word-slot.hitmax-slot .slot-char {
-  border-color: rgba(56, 189, 248, 0.38);
+  border-color: rgba(56, 189, 248, 0.4);
 }
 
 .slot-char.hint-revealed {
   color: var(--accent-cyan);
-  border-color: rgba(56, 189, 248, 0.55);
-  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(56, 189, 248, 0.65);
+  background: rgba(56, 189, 248, 0.16);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
 }
 
 .word-slot.solved .slot-char {
-  background: linear-gradient(180deg, #f59e0b, #d97706);
-  border-color: #fde68a;
+  background: linear-gradient(180deg, #fef08a 0%, #f59e0b 55%, #d97706 100%);
+  border-color: #fef9c3;
   color: #1e1b4b;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 2px 5px rgba(0, 0, 0, 0.35);
 }
 
 .word-slot.solved.hitmax-slot .slot-char {
-  background: linear-gradient(180deg, #38bdf8, #0284c7);
-  border-color: #bae6fd;
+  background: linear-gradient(180deg, #7dd3fc 0%, #38bdf8 45%, #0284c7 100%);
+  border-color: #e0f2fe;
   color: #082f49;
+  text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 10px rgba(56, 189, 248, 0.4);
 }
 
 .word-slot.expired-slot .slot-char {
-  background: rgba(244, 63, 94, 0.2);
-  border-color: rgba(244, 63, 94, 0.45);
-  color: #fda4af;
+  background: rgba(244, 63, 94, 0.22);
+  border-color: rgba(244, 63, 94, 0.5);
+  color: #fecdd3;
 }
 
 .slot-finder {
@@ -919,84 +928,103 @@ html, body {
 
 .letter-tile {
   position: relative;
-  width: 52px;
-  height: 58px;
-  border-radius: 13px;
-  background: linear-gradient(180deg, #ffffff 0%, #ede9fe 100%);
+  width: 54px;
+  height: 60px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #faf8ff 45%, #ede9fe 100%);
   border: 2px solid #c4b5fd;
-  box-shadow: 0 4px 0 #5b21b6, 0 6px 12px rgba(0, 0, 0, 0.38);
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.95), 0 4px 0 #5b21b6, 0 8px 18px rgba(0, 0, 0, 0.4);
   color: #2e1065;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.55rem;
   font-weight: 700;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   user-select: none;
-  transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.25s;
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.4, 1), box-shadow 0.12s cubic-bezier(0.2, 0.8, 0.4, 1), background 0.2s ease;
+  will-change: transform;
 }
 
 .letter-tile:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: inset 0 1.5px 0 #ffffff, 0 7px 0 #5b21b6, 0 12px 22px rgba(91, 33, 182, 0.35);
 }
+
 .letter-tile:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #5b21b6;
+  transform: translateY(2px) scale(0.98);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 0 #5b21b6, 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .letter-tile.shuffle-flip {
-  animation: tileSlotFlip 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  perspective: 800px;
+  transform-style: preserve-3d;
+  animation: tileSlotFlip 0.44s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes tileSlotFlip {
   0% { transform: translateY(0) rotateX(0deg) scale(1); }
-  45% { transform: translateY(-8px) rotateX(85deg) scale(0.92); }
+  45% { transform: translateY(-10px) rotateX(85deg) scale(0.92); }
   100% { transform: translateY(0) rotateX(0deg) scale(1); }
 }
 
 .tile-points {
   position: absolute;
-  bottom: 3px;
-  right: 5px;
-  font-size: 0.62rem;
+  bottom: 3.5px;
+  right: 5.5px;
+  font-size: 0.64rem;
   font-weight: 800;
   color: #6d28d9;
   line-height: 1;
+  text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.8);
+  pointer-events: none;
 }
 
 /* Mystery / Hidden Letter (?1, ?2) */
 .letter-tile.mystery-tile {
-  background: linear-gradient(180deg, #fef08a 0%, #f59e0b 100%);
-  border-color: #fde047;
-  box-shadow: 0 4px 0 #b45309, 0 0 14px rgba(251, 191, 36, 0.4);
+  background: linear-gradient(180deg, #fef9c3 0%, #fde047 40%, #f59e0b 100%);
+  border-color: #fef08a;
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.9), 0 4px 0 #b45309, 0 0 18px rgba(251, 191, 36, 0.45);
   color: #451a03;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.letter-tile.mystery-tile:hover {
+  box-shadow: inset 0 1.5px 0 #ffffff, 0 7px 0 #b45309, 0 0 24px rgba(251, 191, 36, 0.6);
+}
+.letter-tile.mystery-tile:active {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 0 #b45309;
 }
 .letter-tile.mystery-tile .tile-points {
   color: #78350f;
+  text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.6);
 }
 
 /* Revealed Fake Letter (Red X Invalid) */
 .letter-tile.fake-revealed {
-  background: linear-gradient(180deg, #fecdd3 0%, #f43f5e 100%);
+  background: linear-gradient(180deg, #ffe4e6 0%, #f43f5e 100%);
   border-color: #fda4af;
-  box-shadow: 0 3px 0 #9f1239;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 3px 0 #9f1239, 0 4px 10px rgba(159, 18, 57, 0.35);
   color: #fff;
-  opacity: 0.72;
+  opacity: 0.78;
   text-decoration: line-through;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 .letter-tile.fake-revealed::after {
   content: 'FALSA';
   position: absolute;
-  top: -7px;
+  top: -8px;
   right: -6px;
   background: #be123c;
   color: #fff;
-  font-size: 0.5rem;
+  font-size: 0.52rem;
   font-weight: 800;
-  padding: 1px 4px;
-  border-radius: 4px;
-  letter-spacing: 0.04em;
+  padding: 1.5px 5px;
+  border-radius: 5px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .anagram-subbar {
@@ -1048,31 +1076,41 @@ html, body {
 
 .guess-input {
   flex: 1;
-  background: rgba(13, 6, 28, 0.9);
+  background: rgba(13, 6, 28, 0.92);
   border: 2px solid rgba(168, 85, 247, 0.45);
   border-radius: 12px;
-  padding: 10px 14px;
+  padding: 11px 16px;
   color: #fff;
   font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 .guess-input:focus {
   outline: none;
   border-color: var(--accent-gold);
-  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.25), 0 0 18px rgba(251, 191, 36, 0.2);
 }
 
 .btn-clear-input {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #fff;
-  border-radius: 10px;
-  padding: 10px 12px;
+  color: #cbd5e1;
+  border-radius: 11px;
+  padding: 10px 14px;
   font-size: 1rem;
   cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease, color 0.15s ease;
+}
+.btn-clear-input:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.btn-clear-input:active {
+  transform: translateY(1.5px);
 }
 
 .btn-submit-guess {
@@ -1081,11 +1119,23 @@ html, body {
   color: #fff;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.92rem;
-  padding: 10px 18px;
+  font-size: 0.94rem;
+  letter-spacing: 0.02em;
+  padding: 11px 20px;
   border-radius: 12px;
   cursor: pointer;
   white-space: nowrap;
+  box-shadow: 0 3px 0 #7e22ce, 0 6px 14px rgba(168, 85, 247, 0.3);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+}
+.btn-submit-guess:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 #7e22ce, 0 8px 18px rgba(168, 85, 247, 0.4);
+}
+.btn-submit-guess:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #7e22ce, 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .guess-feedback-toast {
