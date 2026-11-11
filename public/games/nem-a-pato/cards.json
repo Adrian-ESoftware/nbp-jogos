@@ -668,11 +668,11 @@
   {
     "id": 75,
     "category": "Curiosidades & Cotidiano",
-    "question": "Quantas teclas de atalho 'F' (F1 a F12) ficam no topo de um teclado comum de computador?",
+    "question": "Quantas teclas de função 'F' ficam alinhadas no topo de um teclado comum de computador?",
     "answer": 12,
     "unit": "teclas",
     "ducks": 1,
-    "fact": "Geralmente F1 abre a ajuda, e F5 atualiza a página ou documento."
+    "fact": "Vão da tecla F1 até a F12 em teclados padrão IBM/PC."
   },
   {
     "id": 76,
@@ -713,11 +713,11 @@
   {
     "id": 80,
     "category": "Curiosidades & Jogos",
-    "question": "Quantas faces tem o dado de RPG mais famoso do mundo, o clássico D20?",
+    "question": "Quantas faces tem o dado de RPG mais famoso do mundo, o icosaedro clássico usado para ataques em D&D?",
     "answer": 20,
     "unit": "faces",
     "ducks": 1,
-    "fact": "Possui o formato geométrico de um icosaedro regular."
+    "fact": "O clássico D20 possui o formato geométrico de um icosaedro regular com 20 faces triangulares."
   },
   {
     "id": 81,
@@ -1631,9 +1631,9 @@
   {
     "id": 182,
     "category": "Esportes",
-    "question": "Quantos metros de altura fica a cesta de basquete em relação ao chão nas regras da FIBA e NBA?",
+    "question": "Quantos metros inteiros de altura fica a cesta de basquete em relação ao chão nas regras da FIBA e NBA?",
     "answer": 3,
-    "unit": "metros (3,05 m)",
+    "unit": "metros",
     "ducks": 1,
     "fact": "Exatamente 10 pés de altura, o que equivale a 3,05 metros!"
   },
@@ -1784,9 +1784,9 @@
   {
     "id": 199,
     "category": "Curiosidades & Cotidiano",
-    "question": "Quantas calorias (kcal) tem aproximadamente uma colher de sopa de azeite de oliva puro?",
+    "question": "Quantas calorias tem aproximadamente uma colher de sopa de azeite de oliva puro?",
     "answer": 119,
-    "unit": "calorias (kcal)",
+    "unit": "calorias",
     "ducks": 2,
     "fact": "O azeite de oliva é 100% lipídio benéfico e fornece cerca de 119 a 120 calorias por porção de 13 ml."
   },
@@ -1874,9 +1874,9 @@
   {
     "id": 209,
     "category": "Curiosidades & Cotidiano",
-    "question": "Quantas casas decimais do número Pi (π) costumam ser ensinadas para cálculos escolares básicos (3,...)?",
+    "question": "Quantas casas decimais após a vírgula do número Pi (π) costumam ser ensinadas para cálculos escolares básicos?",
     "answer": 2,
-    "unit": "casas decimais (3,14)",
+    "unit": "casas decimais",
     "ducks": 1,
     "fact": "A aproximação 3,14 usa 2 casas decimais, embora o número irracional tenha infinitos decimais."
   },
@@ -1912,7 +1912,7 @@
     "category": "Curiosidades & Cotidiano",
     "question": "Quantos lados tem a moeda brasileira de 25 centavos em seu formato poligonal?",
     "answer": 7,
-    "unit": "lados (heptágono)",
+    "unit": "lados",
     "ducks": 2,
     "fact": "A moeda de 25 centavos da segunda família do Real possui borda heptagonal com 7 lados para identificação tátil!"
   },
@@ -1930,7 +1930,7 @@
     "category": "Ciência & Natureza",
     "question": "Em que temperatura (em graus Celsius negativos) ocorre o Zero Absoluto arredondado para inteiro?",
     "answer": 273,
-    "unit": "graus Celsius negativos (-273 °C)",
+    "unit": "°C negativos",
     "ducks": 3,
     "fact": "Equivale a 0 Kelvin ou aproximadamente -273,15 °C, onde toda agitação térmica molecular cessa teoricamente."
   },
@@ -1946,18 +1946,18 @@
   {
     "id": 217,
     "category": "Ciência & Natureza",
-    "question": "Quantos minutos leva para a luz da Lua refletida chegar até os olhos de quem a observa na Terra?",
+    "question": "Quantos segundos leva para a luz da Lua refletida chegar até os olhos de quem a observa na Terra?",
     "answer": 1,
-    "unit": "segundo (1,3 segundos)",
+    "unit": "segundos",
     "ducks": 1,
-    "fact": "A Lua está a cerca de 384.400 km de distância; à velocidade da luz de 300.000 km/s, leva pouco mais de 1 segundo!"
+    "fact": "A Lua está a cerca de 384.400 km de distância; à velocidade da luz de 300.000 km/s, leva pouco mais de 1,3 segundos!"
   },
   {
     "id": 218,
     "category": "Ciência & Natureza",
     "question": "Quantas patas tem uma centopeia comum na maioria das espécies reais (embora o nome sugira cem)?",
     "answer": 30,
-    "unit": "patas (15 pares)",
+    "unit": "patas",
     "ducks": 2,
     "fact": "A maioria das espécies tem cerca de 15 pares de patas (30 no total), e o número de pares é sempre ímpar!"
   },
@@ -1982,9 +1982,9 @@
   {
     "id": 221,
     "category": "Ciência & Natureza",
-    "question": "Quantos quilômetros tem a Maratona olímpica oficial?",
+    "question": "Quantos quilômetros inteiros tem a Maratona olímpica oficial?",
     "answer": 42,
-    "unit": "quilômetros (42,195 km)",
+    "unit": "quilômetros",
     "ducks": 1,
     "fact": "A distância oficial é de 42 km e 195 metros, padronizada nos Jogos de Londres em 1908."
   },
@@ -2216,11 +2216,11 @@
   {
     "id": 247,
     "category": "Curiosidades & Jogos",
-    "question": "Quantos lados tem um dado de RPG clássico usado para testes de dano de machado pesado (D12)?",
+    "question": "Quantas faces tem o dado de RPG clássico usado para testes de dano de machado de guerra pesado?",
     "answer": 12,
-    "unit": "faces (dodecaedro)",
+    "unit": "faces",
     "ducks": 1,
-    "fact": "O D12 possui 12 faces pentagonais regulares, sendo um dos 5 Sólidos Platônicos da geometria."
+    "fact": "O dado D12 possui 12 faces pentagonais regulares, sendo um dos 5 Sólidos Platônicos da geometria."
   },
   {
     "id": 248,
@@ -2245,7 +2245,7 @@
     "category": "Games & Tecnologia",
     "question": "Quantos Megabytes (MB) tem 1 Gigabyte (GB) na convenção binária de informática (base 2)?",
     "answer": 1024,
-    "unit": "Megabytes (MB)",
+    "unit": "Megabytes",
     "ducks": 2,
     "fact": "Como a memória de computadores opera na base binária, 1 GB equivale a 2 elevado a 10 = 1.024 MB!"
   },
@@ -2360,11 +2360,11 @@
   {
     "id": 263,
     "category": "Curiosidades & Cotidiano",
-    "question": "Quantos cilindros tem o potente motor do hipercarro Bugatti Chiron (motor em W)?",
+    "question": "Quantos cilindros tem o potente motor do hipercarro Bugatti Chiron?",
     "answer": 16,
-    "unit": "cilindros (W16)",
+    "unit": "cilindros",
     "ducks": 2,
-    "fact": "O lendário motor quadriturbo W16 de 8.0 litros gera mais de 1.500 cavalos de potência!"
+    "fact": "O lendário motor quadriturbo W16 de 8.0 litros gera mais de 1.500 cavalos de potência com 16 cilindros!"
   },
   {
     "id": 264,
@@ -2506,9 +2506,9 @@
     "category": "Curiosidades & Cotidiano",
     "question": "Quantos centímetros media o homem mais alto de toda a história documentada pela medicina (Robert Wadlow)?",
     "answer": 272,
-    "unit": "centímetros (2,72 m)",
+    "unit": "centímetros",
     "ducks": 2,
-    "fact": "Robert Wadlow, dos EUA, media incríveis 2,72 metros e pesava 199 kg devido a hipertrofia da hipófise!"
+    "fact": "Robert Wadlow, dos EUA, media incríveis 272 centímetros (2,72 metros) e pesava 199 kg devido a hipertrofia da hipófise!"
   },
   {
     "id": 280,
@@ -2560,9 +2560,9 @@
     "category": "Curiosidades & Cotidiano",
     "question": "Quantas horas tem um dia no planeta Júpiter (o planeta com rotação mais rápida do Sistema Solar)?",
     "answer": 10,
-    "unit": "horas (9h55m)",
+    "unit": "horas",
     "ducks": 2,
-    "fact": "Apesar de ser o maior planeta, Júpiter completa um giro sobre seu próprio eixo em menos de 10 horas!"
+    "fact": "Apesar de ser o maior planeta, Júpiter completa um giro sobre seu próprio eixo em menos de 10 horas (9h55m)!"
   },
   {
     "id": 286,
@@ -2648,7 +2648,7 @@
   {
     "id": 295,
     "category": "Curiosidades & Jogos",
-    "question": "Quantos blocos de altura pode medir um portal do Nether tradicional em Minecraft (formato mínimo de 4x5)?",
+    "question": "Quantos blocos de altura mede a moldura externa de um portal do Nether tradicional em tamanho mínimo no Minecraft?",
     "answer": 5,
     "unit": "blocos de altura",
     "ducks": 1,
@@ -2666,11 +2666,11 @@
   {
     "id": 297,
     "category": "Curiosidades & Jogos",
-    "question": "Quantas vidas extras (Up) o jogador ganha ao coletar 100 moedas douradas em Super Mario Bros?",
+    "question": "Quantas vidas extras o jogador ganha ao coletar 100 moedas douradas em Super Mario Bros?",
     "answer": 1,
-    "unit": "vida extra (1-Up)",
+    "unit": "vidas",
     "ducks": 1,
-    "fact": "Ao tocar na 100ª moeda toca o clássico sino de 1-Up e o contador zera novamente."
+    "fact": "Ao tocar na 100ª moeda toca o clássico sino de 1-Up e ganha 1 vida extra!"
   },
   {
     "id": 298,
@@ -2731,7 +2731,7 @@
     "category": "Cultura Pop & Cinema",
     "question": "Quantas pílulas de cores diferentes Morpheus oferece a Neo na cena icônica de Matrix (1999)?",
     "answer": 2,
-    "unit": "pílulas (azul e vermelha)",
+    "unit": "pílulas",
     "ducks": 1,
     "fact": "Tome a pílula azul e a história acaba; tome a pílula vermelha e você fica no País das Maravilhas!"
   },
@@ -2810,9 +2810,9 @@
   {
     "id": 313,
     "category": "Esportes",
-    "question": "Quantas casas de penalidade (metros) fica a marca do pênalti da linha do gol no futebol?",
+    "question": "A quantos metros de distância fica a marca do pênalti da linha do gol no futebol de campo?",
     "answer": 11,
-    "unit": "metros (11 metros)",
+    "unit": "metros",
     "ducks": 1,
     "fact": "São 12 jardas na regra inglesa original, o que equivale exatamente a 11 metros de distância."
   },
@@ -3152,11 +3152,11 @@
   {
     "id": 351,
     "category": "Cultura Pop & Cinema",
-    "question": "Quantas transformações de Super Saiyajin numeradas Goku alcança no anime original Dragon Ball Z (SSJ 1 até...)?",
+    "question": "Quantas transformações numeradas de Super Saiyajin Goku alcança no anime original Dragon Ball Z?",
     "answer": 3,
-    "unit": "níveis (SSJ1, SSJ2, SSJ3)",
+    "unit": "transformações",
     "ducks": 1,
-    "fact": "O Super Saiyajin 1 contra Freeza, o 2 contra Cell/Majin Vegeta e o 3 de cabelos longos contra Majin Boo!"
+    "fact": "Goku atinge 3 níveis em DBZ: o Super Saiyajin 1 contra Freeza, o 2 contra Cell/Majin Vegeta e o 3 contra Majin Boo!"
   },
   {
     "id": 352,
@@ -3197,9 +3197,9 @@
   {
     "id": 356,
     "category": "Ciência & Natureza",
-    "question": "Quantos corações tem uma minhoca comum da terra?",
+    "question": "Quantos pares de arcos aórticos (que atuam como corações) tem uma minhoca comum da terra?",
     "answer": 5,
-    "unit": "arcos aórticos (corações)",
+    "unit": "pares de corações",
     "ducks": 2,
     "fact": "Minhocas têm 5 pares de arcos aórticos que funcionam como corações primitivos bombeando sangue."
   },
@@ -3208,9 +3208,9 @@
     "category": "Ciência & Natureza",
     "question": "Quantas semanas leva em média para o ovo de uma galinha chocar após o início do choco?",
     "answer": 3,
-    "unit": "semanas (21 dias)",
+    "unit": "semanas",
     "ducks": 1,
-    "fact": "O período de incubação dura exatamente 21 dias mantidos a cerca de 37,5°C."
+    "fact": "O período de incubação dura exatamente 3 semanas (21 dias) mantidos a cerca de 37,5°C."
   },
   {
     "id": 358,
@@ -3253,18 +3253,18 @@
     "category": "Ciência & Natureza",
     "question": "Quantos graus Celsius abaixo de zero pode atingir a temperatura na Antártida durante o inverno profundo?",
     "answer": 89,
-    "unit": "graus negativos (-89 °C)",
+    "unit": "°C negativos",
     "ducks": 3,
     "fact": "O recorde terrestre na Estação Vostok registrou -89,2 °C em julho de 1983!"
   },
   {
     "id": 363,
     "category": "Ciência & Natureza",
-    "question": "Quantas listras tem a bandeira oficial dos Estados Unidos (as 13 colônias originais)?",
+    "question": "Quantas listras horizontais tem a bandeira oficial dos Estados Unidos?",
     "answer": 13,
     "unit": "listras",
     "ducks": 1,
-    "fact": "7 listras vermelhas e 6 listras brancas alternadas representando as colônias fundadoras."
+    "fact": "7 listras vermelhas e 6 listras brancas alternadas representando as 13 colônias originais fundadoras."
   },
   {
     "id": 364,
@@ -3298,9 +3298,9 @@
     "category": "Corpo Humano & Saúde",
     "question": "Quantos por cento do cérebro humano é composto por água em média?",
     "answer": 75,
-    "unit": "por cento (%)",
+    "unit": "%",
     "ducks": 2,
-    "fact": "Cerca de 73% a 75% do peso do cérebro é água pura, sendo altamente sensível à desidratação!"
+    "fact": "Cerca de 75% do peso do cérebro é água pura, sendo altamente sensível à desidratação!"
   },
   {
     "id": 368,
@@ -3559,9 +3559,9 @@
     "category": "Curiosidades & Cotidiano",
     "question": "Quantos anos dura o ciclo do zodíaco chinês completo antes de reiniciar no mesmo animal?",
     "answer": 12,
-    "unit": "anos (12 animais)",
+    "unit": "anos",
     "ducks": 1,
-    "fact": "Rato, Boi, Tigre, Coelho, Dragão, Serpente, Cavalo, Cabra, Macaco, Galo, Cão e Porco!"
+    "fact": "São 12 anos: Rato, Boi, Tigre, Coelho, Dragão, Serpente, Cavalo, Cabra, Macaco, Galo, Cão e Porco!"
   },
   {
     "id": 397,
@@ -3575,11 +3575,11 @@
   {
     "id": 398,
     "category": "Curiosidades & Cotidiano",
-    "question": "Quantas semanas dura o período de quarentena sanitária tradicional histórica?",
+    "question": "Quantas semanas dura aproximadamente o período de quarentena sanitária tradicional de 40 dias?",
     "answer": 6,
-    "unit": "semanas (40 dias)",
+    "unit": "semanas",
     "ducks": 2,
-    "fact": "O termo surgiu em Veneza no século XIV: navios que chegavam deviam esperar 40 dias ('quaranta giorni') para evitar peste."
+    "fact": "O termo surgiu em Veneza no século XIV: navios deviam esperar 40 dias ('quaranta giorni'), cerca de 6 semanas."
   },
   {
     "id": 399,
