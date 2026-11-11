@@ -324,6 +324,9 @@
           connElem.style.color = 'var(--gold-400)'
         }
       }
+      if (status.connected && !room.isHost) {
+        room.sendToHost({ type: 'JOIN_REQUEST', profile: room.profile })
+      }
     },
     onError: (err) => {
       addLog(`Erro de rede: ${err.message}`)
@@ -1778,8 +1781,51 @@
     if (room.isHost) {
       handleHostAction(actionData, room.profile)
     } else {
-      room.sendAction(actionData)
+      room.sendToHost(actionData)
     }
+  }
+
+  // --- GERENCIAMENTO DE SALA HOST & CLIENTE ---
+  function initHostRoom(customCode = '') {
+    const code = (customCode || `GOL-${Math.floor(1000 + Math.random() * 9000)}`).toUpperCase()
+    room.hostRoom(code)
+    state.players = [
+      {
+        id: room.profile.id,
+        name: room.profile.name || 'Você',
+        isBot: false,
+        coins: 2,
+        cards: [],
+        eliminated: false,
+      },
+      {
+        id: 'bot_1',
+        name: 'Conselheiro 1',
+        isBot: true,
+        difficulty: 'normal',
+        coins: 2,
+        cards: [],
+        eliminated: false,
+      },
+      {
+        id: 'bot_2',
+        name: 'Conselheiro 2',
+        isBot: true,
+        difficulty: 'normal',
+        coins: 2,
+        cards: [],
+        eliminated: false,
+      },
+    ]
+    state.phase = 'lobby'
+    syncState()
+    return code
+  }
+
+  function joinExistingRoom(code) {
+    if (!code) return
+    room.joinRoom(code)
+    room.sendToHost({ type: 'JOIN_REQUEST', profile: room.profile })
   }
 
   // --- COPIAR LINK DA SALA ---
@@ -1857,7 +1903,15 @@
     if (nicknameInput) {
       nicknameInput.value = room.profile.name || 'Você'
       nicknameInput.onchange = () => {
-        room.updateProfile({ name: nicknameInput.value.trim() || 'Nobre' })
+        const cleanName = nicknameInput.value.trim() || 'Nobre'
+        room.setPlayerName(cleanName)
+        if (!room.isHost) {
+          room.sendToHost({ type: 'JOIN_REQUEST', profile: room.profile })
+        } else {
+          const me = state.players.find((p) => p.id === room.profile.id)
+          if (me) me.name = cleanName
+          syncState()
+        }
       }
     }
 
@@ -1867,7 +1921,7 @@
       joinBtn.onclick = () => {
         const code = roomCodeInput.value.trim().toUpperCase()
         if (code) {
-          room.joinRoom(code)
+          joinExistingRoom(code)
           if (drawer) drawer.hidden = true
         }
       }
@@ -1876,7 +1930,7 @@
     const createBtn = document.getElementById('btn-create-room')
     if (createBtn) {
       createBtn.onclick = () => {
-        room.createRoom()
+        initHostRoom()
         if (drawer) drawer.hidden = true
       }
     }
@@ -1923,44 +1977,13 @@
     const nicknameParam = params.get('nick') || params.get('nome')
 
     if (nicknameParam) {
-      room.updateProfile({ name: nicknameParam })
+      room.setPlayerName(nicknameParam)
     }
 
     if (roomParam) {
-      room.joinRoom(roomParam.trim().toUpperCase())
+      joinExistingRoom(roomParam.trim().toUpperCase())
     } else {
-      // Inicia como Host de uma nova sala por padrão
-      room.createRoom()
-      // Adiciona o jogador local ao lobby
-      state.players.push({
-        id: room.profile.id,
-        name: room.profile.name || 'Você',
-        isBot: false,
-        coins: 2,
-        cards: [],
-        eliminated: false,
-      })
-      // Adiciona 2 bots por padrão para permitir jogo imediato com 3 jogadores
-      state.players.push(
-        {
-          id: `bot_1`,
-          name: 'Conselheiro 1',
-          isBot: true,
-          difficulty: 'normal',
-          coins: 2,
-          cards: [],
-          eliminated: false,
-        },
-        {
-          id: `bot_2`,
-          name: 'Conselheiro 2',
-          isBot: true,
-          difficulty: 'normal',
-          coins: 2,
-          cards: [],
-          eliminated: false,
-        }
-      )
+      initHostRoom()
     }
 
     render()
