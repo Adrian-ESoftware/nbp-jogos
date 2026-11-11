@@ -623,7 +623,14 @@
   // Multiplayer P2P (NBPRoom)
   function broadcastState() {
     if (!local.inRoom || !local.room || !local.isHost) return;
-    local.room.syncState({
+    const broadcaster = (typeof local.room.broadcastState === 'function') 
+      ? local.room.broadcastState.bind(local.room)
+      : (typeof local.room.syncState === 'function')
+        ? local.room.syncState.bind(local.room)
+        : null;
+    if (!broadcaster) return;
+
+    broadcaster({
       config,
       state: {
         status: state.status,

@@ -738,6 +738,10 @@
       }
     }
 
+    syncState(state) {
+      return this.broadcastState(state)
+    }
+
     broadcastEvent(payload) {
       if (!this.isHost) return
       const packet = {
