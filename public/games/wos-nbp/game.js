@@ -173,16 +173,27 @@
     'CUIABÁ', 'FLORIANOPOLIS', 'PARIS', 'LONDRES', 'ROMA', 'MADRID', 'MADRI', 'LISBOA',
     'BERLIM', 'TOQUIO', 'TÓQUIO', 'PEQUIM', 'MOSCOU', 'WASHINGTON', 'HAVANA', 'LUANDA',
 
-    // Estrangeirismos e anglicismos não nativos
-    'BLOG', 'SITE', 'POST', 'MAIL', 'GAME', 'STAR', 'GRID', 'LINE', 'LIVE', 'BEST', 'TOUR',
-    'JAVA', 'ZOOM', 'BLUE', 'HALL', 'OPEN', 'SURF', 'PART', 'JAZZ', 'CHAT', 'CHIP', 'MISS',
-    'AIDS', 'COCA', 'GIRL', 'CHEF', 'SOUL', 'FLASH', 'COVER', 'LOGIN', 'LASER', 'LIGHT',
-    'SHOW', 'LINK', 'ONLINE', 'FEED', 'CHECK', 'CLICK', 'PRINT', 'MOUSE', 'DRIVE', 'RESET',
-    'SHARE', 'LEVEL', 'PLAYER', 'ROOM', 'LOBBY', 'STATUS', 'TREND', 'MATCH', 'PIXEL', 'ROUND',
-    'STREAM', 'WORDS', 'MAKER', 'CLEAN', 'STAFF', 'DESIGN', 'LAYOUT', 'BANNER', 'RANKING',
-    'SCORE', 'VERSUS', 'SINGLE', 'MULTI', 'CARD', 'PACK', 'DECK', 'PLAY', 'FAST', 'SPEED',
-    'TEST', 'DEMO', 'STOP', 'SPAM', 'FLAT', 'OVER', 'CLIP', 'HOST', 'SELF', 'COOL', 'NERD',
-    'BULL',
+    // Estrangeirismos e anglicismos não nativos (cores, termos de internet, etc.)
+    'GREEN', 'BLUE', 'RED', 'BLACK', 'WHITE', 'BROWN', 'YELLOW', 'ORANGE', 'PURPLE', 'PINK',
+    'GRAY', 'GREY', 'GOLD', 'DARK', 'LIGHT', 'FLASH', 'DRIVE', 'CLEAN', 'CLEAR', 'PAPER',
+    'ROUND', 'SUGAR', 'TRAIN', 'TRUCK', 'QUEEN', 'KING', 'PRINCE', 'LORD', 'LADY', 'STAND',
+    'SHORT', 'COVER', 'FRONT', 'SMART', 'FRESH', 'HEAVY', 'MAGIC', 'BRAIN', 'CRAZY', 'LUCKY',
+    'STORM', 'FORCE', 'FIGHT', 'SPEED', 'FAST', 'SLOW', 'START', 'READY', 'PARTY', 'MONEY',
+    'HAPPY', 'TODAY', 'SHARE', 'STORE', 'CROSS', 'CHECK', 'LEVEL', 'HOUSE', 'WATER', 'WORLD',
+    'NIGHT', 'POINT', 'RIGHT', 'PLACE', 'GROUP', 'THING', 'ABOUT', 'AFTER', 'AGAIN', 'SWEET',
+    'HEART', 'STONE', 'BLOOD', 'EARTH', 'MUSIC', 'RIVER', 'SMILE', 'SPACE', 'STATE', 'STORY',
+    'TABLE', 'VOICE', 'WATCH', 'BOARD', 'DRINK', 'DREAM', 'SLEEP', 'BREAK', 'BREAD', 'FRUIT',
+    'APPLE', 'BEACH', 'CLOCK', 'DRESS', 'FLOOR', 'GRASS', 'HORSE', 'KNIFE', 'MOUTH', 'PLANT',
+    'PLATE', 'SHIRT', 'SHOES', 'SPOON', 'WOMEN', 'SMOKE', 'TRACK', 'PEACE', 'POWER', 'TOWER',
+    'UNCLE', 'WHEEL', 'MOUSE', 'LASER', 'CLICK', 'PRINT', 'RESET', 'SCORE', 'VERSUS', 'SINGLE',
+    'MULTI', 'CARD', 'PACK', 'DECK', 'PLAY', 'DEMO', 'STOP', 'SPAM', 'FLAT', 'OVER', 'CLIP',
+    'HOST', 'SELF', 'COOL', 'NERD', 'BULL', 'BEST', 'TOUR', 'ZOOM', 'HALL', 'OPEN', 'SURF',
+    'PART', 'JAZZ', 'CHAT', 'CHIP', 'MISS', 'AIDS', 'COCA', 'GIRL', 'CHEF', 'SOUL', 'LOGIN',
+    'SHOW', 'LINK', 'ONLINE', 'FEED', 'TREND', 'MATCH', 'PIXEL', 'STREAM', 'WORDS', 'MAKER',
+    'STAFF', 'DESIGN', 'LAYOUT', 'BANNER', 'RANKING', 'BUSH', 'JEAN', 'JEANS', 'CENTER',
+    'MASTER', 'INTER', 'SITE', 'BLOG', 'POST', 'MAIL', 'GAME', 'STAR', 'GRID', 'LINE', 'LIVE',
+    'TRAILER', 'FITNESS', 'MANAGER', 'CAMPING', 'SHOPPING', 'DESIGNER', 'REPORTER', 'REPÓRTER',
+    'COACHING', 'TEEN', 'ROCK', 'PUNK', 'FUNK', 'FOLK', 'RAP', 'POP',
 
     // Palavras arcaicas, truncadas, abreviações ou gírias incoerentes no tabuleiro
     'SADA', 'SOBA', 'LADA', 'AARU', 'AATA', 'ABAI', 'ABAL', 'ABAO', 'ABAR', 'ABAS', 'ABAX',
@@ -354,7 +365,24 @@
     return sum * 10;
   }
 
-  // Carrega o banco de palavras em português com flexões femininas e plurais
+  // Filtra rigorosamente palavras para os slots do quadro principal (sem estrangeirismos ou deformações)
+  function isAuthenticPortugueseTarget(norm) {
+    if (!norm || norm.length < 4 || norm.length > 8) return false;
+    if (OBSCURE_TARGET_BLOCKLIST.has(norm)) return false;
+
+    // Bloqueia repetições anômalas no final que não existem em português (ex: SERAA, BALAA, etc.)
+    if (/(AA|EE|II|OO|UU)$/.test(norm)) return false;
+
+    // Bloqueia consoantes dobradas não-nativas do português (apenas RR e SS são legítimos em PT)
+    if (/([^RS])\1/i.test(norm)) return false;
+
+    // Bloqueia dígrafos e sufixos típicos de línguas estrangeiras (inglês)
+    if (/(SH|TH|CK|IGHT|WH|PH|GH|ING$|ED$|TION$|SHIP$|MENT$|NESS$|LESS$)/i.test(norm)) return false;
+
+    return true;
+  }
+
+  // Carrega o banco de palavras em português
   async function loadDictionary() {
     for (let len = 4; len <= 10; len++) {
       dict.targetWordsByLen[len] = [];
@@ -367,11 +395,15 @@
         dict.accentMap.set(norm, String(raw).toUpperCase());
       }
       dict.allValidSet.add(norm);
-      if (isEasy && !OBSCURE_TARGET_BLOCKLIST.has(norm)) {
-        dict.easySet.add(norm);
-      }
-      if (isTarget && norm.length <= 8 && !OBSCURE_TARGET_BLOCKLIST.has(norm)) {
-        dict.targetWordsByLen[norm.length].push(norm);
+
+      // Apenas palavras autênticas e familiares entram como alvos do quadro principal!
+      if (isAuthenticPortugueseTarget(norm)) {
+        if (isEasy) {
+          dict.easySet.add(norm);
+        }
+        if (isTarget && norm.length <= 8) {
+          dict.targetWordsByLen[norm.length].push(norm);
+        }
       }
     };
 
@@ -397,40 +429,12 @@
       console.warn('[WOS-NBP] Usando vocabulário integrado de fallback:', err);
     }
 
-    // Gera dinamicamente flexões femininas (-a, -as) e plurais (-os, -s) regulares de adjetivos e palavras
-    const baseSnapshot = Array.from(dict.allValidSet);
-    baseSnapshot.forEach((norm) => {
-      if (norm.endsWith('O') && norm.length >= 4 && norm.length <= 8) {
-        const stem = norm.slice(0, -1);
-        const fem = stem + 'A';
-        const mascPl = stem + 'OS';
-        const femPl = stem + 'AS';
-        dict.allValidSet.add(fem);
-        dict.allValidSet.add(mascPl);
-        dict.allValidSet.add(femPl);
-
-        // Se a palavra de origem era fácil e conhecida (ex: NULO -> NULA), ela também pode ser alvo
-        if (dict.easySet.has(norm)) {
-          if (!OBSCURE_TARGET_BLOCKLIST.has(fem) && fem.length <= 8) {
-            dict.easySet.add(fem);
-            dict.targetWordsByLen[fem.length].push(fem);
-          }
-          if (!OBSCURE_TARGET_BLOCKLIST.has(mascPl) && mascPl.length <= 8) {
-            dict.targetWordsByLen[mascPl.length].push(mascPl);
-          }
-        }
-      }
-      if (/[AEIU]$/.test(norm) && norm.length >= 4 && norm.length <= 7) {
-        dict.allValidSet.add(norm + 'S');
-      }
-    });
-
     for (let len = 4; len <= 8; len++) {
       dict.targetWordsByLen[len] = Array.from(new Set(dict.targetWordsByLen[len]));
     }
     dict.loaded = true;
 
-    // Carrega o superdicionário de validação (+190.000 palavras) em segundo plano
+    // Carrega o superdicionário de validação (+600.000 palavras) em segundo plano para chutes válidos e bônus
     fetch('/data/pt-br/dicionario-validacao.json')
       .then((r) => (r.ok ? r.json() : null))
       .then((fullData) => {
@@ -443,6 +447,7 @@
         }
       })
       .catch(() => {});
+  }
   }
 
   function countChars(word) {
