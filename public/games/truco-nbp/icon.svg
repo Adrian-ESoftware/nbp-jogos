@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c2e1f" />
+      <stop offset="50%" stop-color="#061c13" />
+      <stop offset="100%" stop-color="#020a06" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fde68a" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <rect width="256" height="256" rx="56" fill="url(#bg)" />
+  <rect width="252" height="252" x="2" y="2" rx="54" fill="none" stroke="url(#gold)" stroke-width="2" stroke-opacity="0.3" />
+
+  <!-- Card 1: 7 de Copas (tilt left) -->
+  <g transform="translate(100, 125) rotate(-16) translate(-45, -65)" filter="url(#shadow)">
+    <rect width="90" height="130" rx="10" fill="#fffdfa" stroke="#d1d5db" stroke-width="1.5" />
+    <text x="14" y="28" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="22" fill="#dc2626">7</text>
+    <path d="M14 36 L17 40 L20 36 A2.5 2.5 0 0 0 17 33 A2.5 2.5 0 0 0 14 36 Z" fill="#dc2626" transform="translate(-2, 0) scale(1.2)" />
+    <!-- Center Heart -->
+    <path d="M45 75 L35 63 A8 8 0 0 1 45 52 A8 8 0 0 1 55 63 Z" fill="#dc2626" />
+  </g>
+
+  <!-- Card 2: 4 de Paus / Zap (tilt right) -->
+  <g transform="translate(156, 120) rotate(14) translate(-45, -65)" filter="url(#shadow)">
+    <rect width="90" height="130" rx="10" fill="#fffdfa" stroke="#f59e0b" stroke-width="2.5" />
+    <text x="14" y="28" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="22" fill="#1e293b">4</text>
+    <circle cx="17" cy="40" r="4" fill="#1e293b" />
+    <!-- Center Club (Zap) -->
+    <g transform="translate(45, 68) scale(1.6)">
+      <circle cx="0" cy="-6" r="5" fill="#1e293b" />
+      <circle cx="-5" cy="1" r="5" fill="#1e293b" />
+      <circle cx="5" cy="1" r="5" fill="#1e293b" />
+      <path d="M-2 2 L-3 9 L3 9 L2 2 Z" fill="#1e293b" />
+    </g>
+    <!-- Badge ZAP -->
+    <rect x="18" y="100" width="54" height="18" rx="6" fill="#f59e0b" />
+    <text x="45" y="113" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="10" fill="#000" text-anchor="middle">ZAP!</text>
+  </g>
+
+  <!-- Badge Truco Bottom -->
+  <g transform="translate(128, 212)" filter="url(#shadow)">
+    <rect x="-65" y="-14" width="130" height="28" rx="14" fill="url(#gold)" />
+    <text x="0" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="14" fill="#1a050b" text-anchor="middle" letter-spacing="1">
+      TRUCO!
+    </text>
+  </g>
+</svg>

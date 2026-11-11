@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Truco Goiano · Baralho Real · NBP Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Cinzel:wght@700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css?v=20261111v1" />
+  </head>
+  <body>
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-crest">
+          <i data-lucide="spade"></i>
+        </div>
+        <div class="brand-info">
+          <h1>TRUCO GOIANO</h1>
+          <small>Baralho Real · 1v1 &amp; Duplas</small>
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <button
+          type="button"
+          id="btn-copy-room"
+          class="room-chip"
+          title="Clique para copiar link de convite"
+        >
+          <i data-lucide="copy" class="inline-icon"></i>
+          <span id="room-code-display">TRU-0000</span>
+        </button>
+      </div>
+
+      <div class="topbar-actions">
+        <button type="button" id="btn-rules" class="btn-subtle" title="Regras do Truco Goiano">
+          <i data-lucide="book-open"></i> Regras
+        </button>
+        <button type="button" id="btn-toggle-drawer" class="btn-subtle" title="Configurar sala">
+          <i data-lucide="settings-2"></i> Sala
+        </button>
+        <button type="button" id="btn-sound" class="btn-icon" aria-pressed="true" title="Ativar/Desativar som">
+          <i data-lucide="volume-2"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- DRAWER: SALAS E JOGADORES -->
+    <aside id="room-drawer" class="drawer" hidden>
+      <div class="drawer-grid">
+        <div class="drawer-item">
+          <label for="input-nickname">Seu Apelido:</label>
+          <input id="input-nickname" type="text" maxlength="16" class="input-styled" placeholder="Seu nome" />
+        </div>
+
+        <div class="drawer-item">
+          <label for="input-room-code">Código da Sala:</label>
+          <div class="drawer-input-row">
+            <input id="input-room-code" type="text" maxlength="14" class="input-styled" placeholder="TRU-1234" />
+            <button type="button" id="btn-join-room" class="btn-subtle">Entrar</button>
+            <button type="button" id="btn-create-room" class="btn-primary">Nova Sala</button>
+          </div>
+        </div>
+
+        <div class="drawer-item">
+          <label>Status:</label>
+          <p id="connection-status" style="font-size:0.8rem; color:#34d399;">Pronto para jogar</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ARENA PRINCIPAL -->
+    <main class="arena">
+      <!-- PAINEL DE LOBBY -->
+      <section id="lobby-panel" class="lobby-panel">
+        <h2>Roda de Truco Goiano</h2>
+        <p class="lobby-desc">
+          Escolha o formato da partida, chame seus parceiros ou jogue com bots trucadores.
+        </p>
+
+        <!-- SELETOR DE MODO (1v1 ou 2v2) -->
+        <div class="mode-selector-box">
+          <button type="button" class="btn-mode active" id="btn-mode-1v1" data-mode="1v1">
+            <i data-lucide="user"></i> Mano a Mano (1v1)
+          </button>
+          <button type="button" class="btn-mode" id="btn-mode-2v2" data-mode="2v2">
+            <i data-lucide="users"></i> Em Duplas (2v2)
+          </button>
+        </div>
+
+        <div id="lobby-player-list" class="lobby-player-list">
+          <!-- Jogadores listados dinamicamente -->
+        </div>
+
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+          <button type="button" id="btn-add-bot" class="btn-subtle">
+            <i data-lucide="bot"></i> + Adicionar Bot
+          </button>
+          <button type="button" id="btn-start-game" class="btn-primary">
+            <i data-lucide="play"></i> Embaralhar &amp; Jogar
+          </button>
+        </div>
+      </section>
+
+      <!-- PAINEL DA MESA REAL DE TRUCO -->
+      <section id="game-table" class="table-layout" hidden>
+        <div class="truco-table-wrap">
+          <div class="truco-table-felt">
+            <!-- PLACAR DE TENTOS (NÓS VS ELES) -->
+            <div class="truco-scoreboard">
+              <div class="score-team">
+                <span class="score-team-label">NÓS</span>
+                <span class="score-team-points" id="score-us">0</span>
+              </div>
+              <span class="score-divider">×</span>
+              <div class="score-team">
+                <span class="score-team-label">ELES</span>
+                <span class="score-team-points" id="score-them">0</span>
+              </div>
+              <div class="stake-badge" id="stake-badge">
+                VALE 1 TENTO
+              </div>
+            </div>
+
+            <!-- OPONENTES NA MESA -->
+            <div id="opponents-ring" class="opponents-row-truco">
+              <!-- Renderizado dinamicamente -->
+            </div>
+
+            <!-- CENTRO DA MESA: O VIRA, RASTREADOR DE VAZAS E CARTAS BATIDAS -->
+            <div class="table-center-truco">
+              <!-- O VIRA -->
+              <div class="vira-box" id="vira-container">
+                <div class="vira-label-tag" id="manilha-hint">VIRA</div>
+                <div class="vira-card-wrapper" id="vira-card-slot">
+                  <!-- Carta do Vira gerada pelo real-deck -->
+                </div>
+              </div>
+
+              <!-- DISPUTA DAS VAZAS -->
+              <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+                <!-- Rastreamento de quedas (melhor de 3) -->
+                <div class="round-tricks-tracker">
+                  <div class="trick-dot" id="trick-dot-1" title="1ª Vaza"></div>
+                  <div class="trick-dot" id="trick-dot-2" title="2ª Vaza"></div>
+                  <div class="trick-dot" id="trick-dot-3" title="3ª Vaza"></div>
+                </div>
+
+                <!-- Arena de cartas jogadas -->
+                <div class="trick-cards-arena" id="trick-cards-arena">
+                  <span style="font-size:0.8rem; color:#6ee7b7; opacity:0.7;">Aguardando jogada...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- BANNER DE TRUCO / APOSTA -->
+            <div id="truco-challenge-banner" class="truco-challenge-banner" hidden>
+              <div class="challenge-title" id="challenge-banner-title">
+                🚨 GRITARAM TRUCO!
+              </div>
+              <div class="challenge-actions" id="challenge-banner-actions">
+                <!-- Botões Aceitar / Aumentar / Correr -->
+              </div>
+            </div>
+
+            <!-- MÃO DO JOGADOR LOCAL -->
+            <div class="player-local-hand-area">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span id="turn-indicator" style="font-size:0.82rem; font-weight:800; color:#fde68a;">
+                  Sua vez de jogar!
+                </span>
+              </div>
+
+              <!-- Cartas da Mão -->
+              <div class="hand-cards-row" id="local-hand-cards">
+                <!-- Cartas reais renderizadas pelo NBPDeck -->
+              </div>
+
+              <!-- Ações de Grito e Opções -->
+              <div class="truco-actions-tray">
+                <button type="button" class="btn-truco-shout" id="btn-shout-truco">
+                  <i data-lucide="flame"></i> TRUCO!
+                </button>
+                <button type="button" class="btn-covered-card" id="btn-toggle-covered">
+                  <i data-lucide="eye-off"></i> Jogar Carta Coberta (Cega)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- MODAL DE REGRAS DO TRUCO GOIANO -->
+    <div id="modal-rules" class="modal-overlay" hidden>
+      <div class="modal-dialog">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(16,185,129,0.3); padding-bottom:10px;">
+          <h3 style="color:#fde68a; font-size:1.3rem;"><i data-lucide="book-open"></i> Regras do Truco Goiano</h3>
+          <button type="button" id="btn-close-rules" class="btn-icon"><i data-lucide="x"></i></button>
+        </div>
+        <div style="font-size:0.85rem; line-height:1.55; color:#a7f3d0; display:flex; flex-direction:column; gap:10px;">
+          <p>
+            O <strong>Truco Goiano</strong> é disputado até <strong>12 pontos (tentos)</strong>. Cada mão é uma disputa de melhor de 3 vazas.
+          </p>
+          <p>
+            👑 <strong>O Vira e as Manilhas:</strong> Uma carta é virada na mesa. As 4 cartas de valor imediatamente superior tornam-se as <strong>Manilhas</strong> (as mais fortes do jogo), respeitando a ordem de naipes:
+          </p>
+          <div style="background:rgba(0,0,0,0.4); padding:10px; border-radius:10px; border:1px solid #f59e0b; color:#fff;">
+            <strong>1. ♣ Paus (Zap / Gato)</strong> — A maior carta do jogo!<br/>
+            <strong>2. ♥ Copas (Copeta)</strong><br/>
+            <strong>3. ♠ Espadas (Espadilha)</strong><br/>
+            <strong>4. ♦ Ouros (Pica-fumo / Moleque)</strong>
+          </div>
+          <p>
+            🃏 <strong>Ordem das cartas normais:</strong> 3 > 2 > A > K > J > Q > 7 > 6 > 5 > 4.
+          </p>
+          <p>
+            🔥 <strong>Gritos de Tento:</strong> A mão começa valendo 1 tento. O Truco sobe para 3, depois 6, 9 e 12 tentos!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE VITÓRIA / FIM DE PARTIDA -->
+    <div id="modal-game-over" class="modal-overlay" hidden>
+      <div class="modal-dialog" style="text-align:center;">
+        <div style="font-size:3rem; color:#f59e0b; margin:0 auto;">
+          <i data-lucide="trophy" style="width:64px; height:64px;"></i>
+        </div>
+        <h2 id="winner-title" style="color:#fde68a; font-size:1.8rem; margin:10px 0;">
+          Vitória na Mesa!
+        </h2>
+        <p id="winner-desc" style="color:#a7f3d0; font-size:0.95rem; margin-bottom:18px;">
+          A partida foi encerrada com maestria nos 12 tentos.
+        </p>
+        <button type="button" id="btn-play-again" class="btn-primary" style="margin:0 auto;">
+          <i data-lucide="rotate-ccw"></i> Jogar Novamente
+        </button>
+      </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../../vendor/lucide.min.js"></script>
+    <script src="../../vendor/peerjs.min.js"></script>
+    <script src="../../vendor/nbp-p2p.js"></script>
+    <script src="../../vendor/real-deck.js"></script>
+    <script src="game.js?v=20261111v1"></script>
+  </body>
+</html>

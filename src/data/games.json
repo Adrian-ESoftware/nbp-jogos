@@ -169,6 +169,31 @@
         "icon": "/games/golpe-nbp/icon.svg"
       },
       "entry": "/games/golpe-nbp/index.html"
+    },
+    {
+      "id": "truco-nbp",
+      "title": "Truco Goiano",
+      "description": "O clássico Truco com baralho real, vira e manilhas! Jogue no Mano a Mano (1v1) ou em Duplas (2v2): peça Truco, Seis, Nove e Doze, jogue carta coberta, blefe na hora certa e dispute cada tento até a glória dos 12 pontos!",
+      "developer": "NBP Games",
+      "genres": [
+        "Cartas",
+        "Blefe",
+        "Multiplayer",
+        "Clássico"
+      ],
+      "modes": [
+        "singleplayer",
+        "multiplayer"
+      ],
+      "status": "published",
+      "featured": true,
+      "engine": "html5",
+      "assets": {
+        "cover": "/games/truco-nbp/cover.svg",
+        "banner": "/games/truco-nbp/banner.svg",
+        "icon": "/games/truco-nbp/icon.svg"
+      },
+      "entry": "/games/truco-nbp/index.html"
     }
   ]
 }

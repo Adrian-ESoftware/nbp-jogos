@@ -17,7 +17,8 @@
     "test:catalog": "node --test tests/catalog.test.mjs",
     "test:datasets": "node --test tests/datasets.test.mjs",
     "test:golpe": "node --test tests/golpe.test.mjs",
-    "test": "npm run test:catalog && npm run test:datasets && npm run test:golpe",
+    "test:truco": "node --test tests/truco.test.mjs",
+    "test": "npm run test:catalog && npm run test:datasets && npm run test:golpe && npm run test:truco",
     "preview": "vite preview"
   },
   "dependencies": {

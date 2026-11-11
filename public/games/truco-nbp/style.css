@@ -1,0 +1,713 @@
+:root {
+  --bg-primary: #04120b;
+  --bg-table-felt: #0c3621;
+  --bg-table-edge: #051a10;
+  
+  --gold-300: #fde68a;
+  --gold-400: #fcd34d;
+  --gold-500: #f59e0b;
+  --gold-600: #d97706;
+
+  --red-suit: #dc2626;
+  --black-suit: #1e293b;
+
+  --font-serif: 'Cinzel', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+[hidden],
+.modal-overlay[hidden],
+.table-layout[hidden],
+.reaction-bar[hidden],
+.drawer[hidden],
+.lobby-panel[hidden] {
+  display: none !important;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-primary);
+  color: #fff;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+body {
+  background: 
+    radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.1) 0%, transparent 65%),
+    linear-gradient(180deg, #092116 0%, #030d08 100%);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: rgba(6, 26, 17, 0.9);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 12px;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-crest {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #f59e0b, #b45309);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #03100a;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.4);
+}
+
+.brand-info h1 {
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #fde68a;
+  line-height: 1.1;
+}
+
+.brand-info small {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: #6ee7b7;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(12, 54, 33, 0.8);
+  border: 1px solid #10b981;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.85rem;
+  color: #a7f3d0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.room-chip:hover {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #34d399;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(6, 26, 17, 0.8);
+  color: #a7f3d0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: rgba(16, 185, 129, 0.25);
+  color: #fff;
+}
+
+.btn-subtle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(6, 26, 17, 0.8);
+  color: #ecfdf5;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-subtle:hover {
+  background: rgba(16, 185, 129, 0.25);
+}
+
+/* DRAWER */
+.drawer {
+  background: #061c12;
+  border-bottom: 2px solid #10b981;
+  padding: 16px;
+}
+
+.drawer-grid {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  align-items: end;
+}
+
+.drawer-item label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #34d399;
+  margin-bottom: 4px;
+  font-weight: 800;
+}
+
+.drawer-input-row {
+  display: flex;
+  gap: 6px;
+}
+
+.input-styled {
+  background: #0c3621;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.88rem;
+  color: #fff;
+  width: 100%;
+}
+
+.input-styled:focus {
+  outline: none;
+  border-color: #34d399;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #03100a;
+  font-weight: 900;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.35);
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ARENA & LOBBY */
+.arena {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  max-width: 1300px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.lobby-panel {
+  background: linear-gradient(145deg, #0a2e1d 0%, #04160e 100%);
+  border: 2px solid #10b981;
+  border-radius: 24px;
+  padding: 30px;
+  text-align: center;
+  max-width: 680px;
+  margin: 30px auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  width: 100%;
+}
+
+.lobby-panel h2 {
+  color: #fde68a;
+  font-size: 1.9rem;
+  font-weight: 900;
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.lobby-desc {
+  color: #a7f3d0;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.mode-selector-box {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.btn-mode {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 2px solid rgba(16, 185, 129, 0.4);
+  background: rgba(6, 26, 17, 0.8);
+  color: #a7f3d0;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-mode.active {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fde68a;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.4);
+}
+
+.lobby-player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.lobby-player-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: rgba(12, 54, 33, 0.7);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+}
+
+/* ========================================================
+   MESA REAL DE TRUCO (FELTRO VERDE DE BAR/BOTECO)
+   ======================================================== */
+.truco-table-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 36px;
+  padding: 14px;
+  background: linear-gradient(145deg, #1f1209, #0a0502);
+  box-shadow: 
+    0 30px 80px rgba(0, 0, 0, 0.9),
+    0 0 0 6px #120904,
+    0 0 0 9px #854d0e,
+    inset 0 2px 14px rgba(0,0,0,0.8);
+}
+
+.truco-table-felt {
+  position: relative;
+  background: radial-gradient(ellipse at 50% 50%, var(--bg-table-felt) 0%, #082416 60%, var(--bg-table-edge) 100%);
+  border: 3px solid rgba(245, 158, 11, 0.45);
+  border-radius: 28px;
+  min-height: 560px;
+  box-shadow: inset 0 0 70px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 24px;
+  isolation: isolate;
+}
+
+/* PLACAR DE TENTOS (NÓS VS ELES) */
+.truco-scoreboard {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  z-index: 10;
+  background: rgba(4, 20, 13, 0.9);
+  border: 2px solid rgba(245, 158, 11, 0.5);
+  border-radius: 16px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+}
+
+.score-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.score-team-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #6ee7b7;
+}
+
+.score-team-points {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fde68a;
+}
+
+.score-divider {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #f59e0b;
+}
+
+.stake-badge {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  border: 1px solid #f87171;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* OPONENTES NA MESA */
+.opponents-row-truco {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  z-index: 2;
+  margin-top: 10px;
+}
+
+.player-spot {
+  background: rgba(5, 23, 15, 0.85);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  border-radius: 16px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s;
+}
+
+.player-spot.active-turn {
+  border-color: #f59e0b;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+  transform: scale(1.04);
+}
+
+.player-spot-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.player-spot-cards {
+  display: flex;
+  gap: 5px;
+}
+
+.spot-mini-card {
+  width: 36px;
+  height: 52px;
+  border-radius: 5px;
+  border: 1px solid #fff;
+  background: #1e3a8a;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+}
+
+/* CENTRO DA MESA: O VIRA & CARTAS JOGADAS */
+.table-center-truco {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  min-height: 180px;
+  margin: 12px 0;
+}
+
+/* O VIRA E AS MANILHAS */
+.vira-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.vira-card-wrapper {
+  position: relative;
+  transform: rotate(-10deg);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.8));
+}
+
+.vira-label-tag {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  padding: 2px 10px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #fde68a;
+  text-transform: uppercase;
+}
+
+/* ÁREA DE DISPUTA DAS CARTAS NA MESA (BATIDA) */
+.trick-cards-arena {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  min-width: 280px;
+  min-height: 160px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px dashed rgba(245, 158, 11, 0.3);
+  border-radius: 20px;
+  padding: 14px;
+}
+
+.played-trick-card {
+  animation: slamCard 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.7));
+}
+
+@keyframes slamCard {
+  0% { transform: translateY(-50px) scale(1.2) rotate(-15deg); opacity: 0; }
+  100% { transform: translateY(0) scale(1) rotate(var(--rot, 0deg)); opacity: 1; }
+}
+
+/* PLACAR DAS VAZAS DA QUEDA (MELHOR DE 3) */
+.round-tricks-tracker {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.trick-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #10b981;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.trick-dot.team-us {
+  background: #3b82f6;
+  border-color: #60a5fa;
+  box-shadow: 0 0 8px #3b82f6;
+}
+
+.trick-dot.team-them {
+  background: #ef4444;
+  border-color: #f87171;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+.trick-dot.tied {
+  background: #f59e0b;
+  border-color: #fbbf24;
+}
+
+/* MÃO DO JOGADOR LOCAL */
+.player-local-hand-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 5;
+}
+
+.hand-cards-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  perspective: 800px;
+}
+
+.hand-card-interactive {
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.2, 1.4, 0.4, 1), filter 0.2s;
+  transform: rotate(var(--fan, 0deg));
+}
+
+.hand-card-interactive:hover {
+  transform: translateY(-28px) rotate(0deg) scale(1.1);
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.8));
+}
+
+.hand-card-interactive:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+/* BANDEJA DE AÇÕES DE TRUCO (GRITOS) */
+.truco-actions-tray {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 780px;
+}
+
+.btn-truco-shout {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #fff;
+  border: 2px solid #f87171;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.5);
+  transition: all 0.2s;
+}
+
+.btn-truco-shout:hover:not(:disabled) {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+}
+
+.btn-covered-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 2px solid #64748b;
+  color: #cbd5e1;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-covered-card.active {
+  background: #334155;
+  border-color: #f59e0b;
+  color: #fde68a;
+}
+
+/* BANNER DE DESAFIO DE TRUCO ("TRUCO!", "SEIS!", ETC.) */
+.truco-challenge-banner {
+  background: linear-gradient(90deg, #b91c1c, #7f1d1d);
+  border: 2px solid #fca5a5;
+  border-radius: 16px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 10px 30px rgba(185, 28, 28, 0.6);
+  animation: challengePulse 1.2s infinite alternate;
+  z-index: 20;
+}
+
+@keyframes challengePulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.02); box-shadow: 0 10px 40px rgba(220, 38, 38, 0.9); }
+}
+
+.challenge-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fef08a;
+  letter-spacing: 0.06em;
+}
+
+.challenge-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-accept {
+  background: linear-gradient(135deg, #10b981, #047857);
+  color: #fff;
+  border: none;
+  font-weight: 900;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-raise {
+  background: linear-gradient(135deg, #f59e0b, #b45309);
+  color: #03100a;
+  font-weight: 900;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-fold {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* MODAL DE REGRAS E FIM DE JOGO */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(3, 16, 10, 0.88);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal-dialog {
+  background: linear-gradient(145deg, #092e1c, #04160d);
+  border: 2px solid #10b981;
+  border-radius: 20px;
+  max-width: 560px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+}
