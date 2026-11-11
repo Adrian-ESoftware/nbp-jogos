@@ -1287,7 +1287,7 @@
   function renderGameTable() {
     if (state.phase === 'lobby') return
 
-    // 1. Oponentes
+    // 1. Oponentes na Borda da Mesa Imperial
     const opponentsRow = document.getElementById('opponents-row')
     if (opponentsRow) {
       const opponents = state.players.filter((p) => p.id !== room.profile.id)
@@ -1296,33 +1296,32 @@
           const isActive = state.players[state.turn]?.id === p.id
           const isEliminated = p.eliminated
           return `
-            <div class="opponent-card ${isActive ? 'active-turn' : ''} ${isEliminated ? 'eliminated' : ''}">
-              <div class="opponent-header">
-                <span class="opponent-name" title="${p.name}">
+            <div class="opponent-seat ${isActive ? 'active-turn' : ''} ${isEliminated ? 'eliminated' : ''}">
+              <div class="opponent-seat-header">
+                <span class="opponent-seat-name" title="${p.name}">
                   ${p.isBot ? '<i data-lucide="bot" style="width:14px;height:14px;"></i>' : '<i data-lucide="user" style="width:14px;height:14px;"></i>'}
                   ${p.name}
                 </span>
-                <span class="opponent-coins">
+                <span class="opponent-seat-coins">
                   <i data-lucide="coins" style="width:13px;height:13px;"></i>
                   ${p.coins}
                 </span>
               </div>
-              <div class="opponent-cards-row">
+              <div class="opponent-cards-fan">
                 ${p.cards
-                  .map((card) => {
+                  .map((card, cIdx) => {
                     if (card.revealed) {
                       const char = CHARACTERS[card.character]
                       return `
-                        <div class="mini-card revealed-card" title="Revelada (Morta)">
+                        <div class="mini-court-card revealed" title="Eliminada: ${char.name}">
                           <i data-lucide="${char.icon}" style="width:16px;height:16px;"></i>
-                          <span class="mini-card-name">${char.name}</span>
                         </div>
                       `
                     }
+                    const fanDeg = cIdx === 0 ? '-6deg' : '6deg'
                     return `
-                      <div class="mini-card hidden-card" title="Influência Ativa">
+                      <div class="mini-court-card back" style="transform: rotate(${fanDeg});" title="Influência Oculta da Corte">
                         <i data-lucide="shield" style="width:16px;height:16px;"></i>
-                        <span class="mini-card-name">Oculta</span>
                       </div>
                     `
                   })
@@ -1334,10 +1333,10 @@
         .join('')
     }
 
-    // 2. Stats Centrais & Log
+    // 2. Stats Centrais & Log da Corte
     const treasuryElem = document.getElementById('treasury-count')
     const deckElem = document.getElementById('deck-count')
-    if (treasuryElem) treasuryElem.textContent = `${state.treasury} Moedas`
+    if (treasuryElem) treasuryElem.textContent = state.treasury
     if (deckElem) deckElem.textContent = `${state.deck.length} Cartas`
 
     const feedElem = document.getElementById('court-log-feed')
@@ -1352,6 +1351,7 @@
 
     // 4. Jogador Local
     renderLocalPlayer()
+    initTableCanvas()
   }
 
   function renderReactionBar() {
@@ -1520,44 +1520,65 @@
     const isMyTurn = state.players[state.turn]?.id === myId && !me.eliminated
     if (turnBadge) {
       if (me.eliminated) {
-        turnBadge.className = 'turn-indicator-badge waiting-turn'
+        turnBadge.className = 'turn-pill waiting'
         turnBadge.textContent = 'Você foi eliminado'
-        turnBadge.style.color = 'var(--crimson-400)'
+        turnBadge.style.color = '#ef4444'
       } else if (isMyTurn) {
-        turnBadge.className = 'turn-indicator-badge your-turn'
-        turnBadge.textContent = 'SEU TURNO! Escolha uma ação'
+        turnBadge.className = 'turn-pill your-turn'
+        turnBadge.textContent = 'SEU TURNO! Escolha sua ação'
+        turnBadge.style.color = 'var(--gold-300)'
       } else {
-        turnBadge.className = 'turn-indicator-badge waiting-turn'
+        turnBadge.className = 'turn-pill waiting'
         turnBadge.textContent = `Aguardando ${state.players[state.turn]?.name || 'oponente'}`
+        turnBadge.style.color = '#94a3b8'
       }
     }
 
-    // Cartas do jogador
+    // Cartas de Baralho de Luxo do Jogador
     const cardsRow = document.getElementById('player-cards-row')
     if (cardsRow) {
       cardsRow.innerHTML = me.cards
-        .map((card) => {
+        .map((card, idx) => {
           const char = CHARACTERS[card.character]
+          const fanAngle = idx === 0 ? '-5deg' : '5deg'
           if (card.revealed) {
             return `
-              <div class="hero-card dead">
-                <div class="card-character-emblem">
-                  <i data-lucide="${char.icon}"></i>
+              <div class="luxury-card card-${char.id} dead" style="--fan: ${fanAngle};">
+                <div class="card-corner-index top-left">
+                  <span>${char.name.charAt(0)}</span>
+                  <i data-lucide="${char.icon}" style="width:12px;height:12px;margin-top:2px;"></i>
                 </div>
-                <div class="card-title">${char.name}</div>
-                <div class="card-action-hint">${char.hint}</div>
-                <span class="card-badge-status" style="color:var(--crimson-400)">Morta</span>
+                <div class="card-emblem-wrap">
+                  <i data-lucide="${char.icon}" style="width:36px;height:36px;"></i>
+                </div>
+                <div>
+                  <div class="card-title-banner">${char.name}</div>
+                  <div class="card-power-text">${char.hint}</div>
+                </div>
+                <div class="card-corner-index bottom-right">
+                  <span>${char.name.charAt(0)}</span>
+                  <i data-lucide="${char.icon}" style="width:12px;height:12px;margin-top:2px;"></i>
+                </div>
               </div>
             `
           }
           return `
-            <div class="hero-card">
-              <div class="card-character-emblem">
-                <i data-lucide="${char.icon}"></i>
+            <div class="luxury-card card-${char.id}" style="--fan: ${fanAngle};">
+              <div class="card-corner-index top-left">
+                <span>${char.name.charAt(0)}</span>
+                <i data-lucide="${char.icon}" style="width:12px;height:12px;margin-top:2px;"></i>
               </div>
-              <div class="card-title">${char.name}</div>
-              <div class="card-action-hint">${char.hint}</div>
-              <span class="card-badge-status">Influência Ativa</span>
+              <div class="card-emblem-wrap">
+                <i data-lucide="${char.icon}" style="width:36px;height:36px;"></i>
+              </div>
+              <div>
+                <div class="card-title-banner">${char.name}</div>
+                <div class="card-power-text">${char.hint}</div>
+              </div>
+              <div class="card-corner-index bottom-right">
+                <span>${char.name.charAt(0)}</span>
+                <i data-lucide="${char.icon}" style="width:12px;height:12px;margin-top:2px;"></i>
+              </div>
             </div>
           `
         })
@@ -1611,14 +1632,20 @@
           .map((card) => {
             const char = CHARACTERS[card.character]
             return `
-              <div class="hero-card selectable" data-lose-card-id="${card.id}">
-                <div class="card-character-emblem">
-                  <i data-lucide="${char.icon}"></i>
+              <div class="luxury-card card-${char.id} selectable" data-lose-card-id="${card.id}" style="margin: 0 auto;">
+                <div class="card-corner-index top-left">
+                  <span>${char.name.charAt(0)}</span>
+                  <i data-lucide="${char.icon}" style="width:12px;height:12px;margin-top:2px;"></i>
                 </div>
-                <div class="card-title">${char.name}</div>
-                <div class="card-action-hint">${char.hint}</div>
-                <button type="button" class="btn-challenge" style="margin-top:10px; width:100%;">
-                  Revelar (Eliminar)
+                <div class="card-emblem-wrap">
+                  <i data-lucide="${char.icon}" style="width:36px;height:36px;"></i>
+                </div>
+                <div>
+                  <div class="card-title-banner">${char.name}</div>
+                  <div class="card-power-text">${char.hint}</div>
+                </div>
+                <button type="button" class="btn-challenge" style="margin-top:8px; width:100%; font-size:0.75rem;">
+                  Eliminar Carta
                 </button>
               </div>
             `
@@ -1856,6 +1883,67 @@
     } else {
       showToast(`Código da sala: ${code}`)
     }
+  }
+
+  // --- ILUMINAÇÃO & PARTÍCULAS NO FELTRO DA MESA ---
+  let canvasInitialized = false
+  function initTableCanvas() {
+    const canvas = document.getElementById('table-felt-canvas')
+    if (!canvas || canvasInitialized) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    canvasInitialized = true
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect()
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      canvas.width = rect.width * dpr
+      canvas.height = rect.height * dpr
+      ctx.scale(dpr, dpr)
+    }
+    resize()
+    window.addEventListener('resize', resize)
+
+    const particles = []
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: Math.random() * 800,
+        y: Math.random() * 500,
+        radius: Math.random() * 1.8 + 0.6,
+        alpha: Math.random() * 0.45 + 0.15,
+        dx: (Math.random() - 0.5) * 0.35,
+        dy: (Math.random() - 0.5) * 0.35,
+        pulse: Math.random() * Math.PI,
+      })
+    }
+
+    function animate() {
+      const rect = canvas.getBoundingClientRect()
+      if (!rect.width || !rect.height) {
+        requestAnimationFrame(animate)
+        return
+      }
+      ctx.clearRect(0, 0, rect.width, rect.height)
+
+      particles.forEach((p) => {
+        p.x += p.dx
+        p.y += p.dy
+        p.pulse += 0.025
+        if (p.x < 0) p.x = rect.width
+        if (p.x > rect.width) p.x = 0
+        if (p.y < 0) p.y = rect.height
+        if (p.y > rect.height) p.y = 0
+
+        const currentAlpha = p.alpha + Math.sin(p.pulse) * 0.12
+        ctx.fillStyle = `rgba(245, 158, 11, ${Math.max(0, currentAlpha)})`
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
+        ctx.fill()
+      })
+
+      requestAnimationFrame(animate)
+    }
+    animate()
   }
 
   // --- CONFIGURAÇÃO DE EVENTOS DE DOM ---

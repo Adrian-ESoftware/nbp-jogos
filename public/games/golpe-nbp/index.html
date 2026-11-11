@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css?v=20261111v2" />
+    <link rel="stylesheet" href="style.css?v=20261111v3" />
   </head>
   <body>
     <!-- TOPBAR -->
@@ -134,138 +134,137 @@
         </div>
       </section>
 
-      <!-- PAINEL DO JOGO ATIVO -->
+      <!-- PAINEL DO JOGO ATIVO: A MESA REAL DA CORTE -->
       <section id="game-table" class="table-layout" hidden>
-        <!-- LINHA DE OPONENTES -->
-        <div id="opponents-row" class="opponents-row">
-          <!-- Oponentes injetados via JS -->
-        </div>
+        <div class="poker-table-wrap">
+          <div class="poker-table-felt">
+            <canvas id="table-felt-canvas"></canvas>
 
-        <!-- MESA CENTRAL: TESOURO, MONTE DA CORTE E FEED DE EVENTOS -->
-        <div class="center-board">
-          <div class="court-stats">
-            <div class="stat-box">
-              <div class="stat-icon">
-                <i data-lucide="coins"></i>
+            <!-- OPONENTES NA BORDA DA MESA -->
+            <div id="opponents-row" class="opponents-ring">
+              <!-- Oponentes injetados via JS -->
+            </div>
+
+            <!-- CENTRO DA MESA: MONTE 3D, CRÔNICAS E TESOURO -->
+            <div class="table-center-stage">
+              <div class="court-deck-3d" title="Baralho da Corte Imperial">
+                <div class="deck-pile-cards">
+                  <i data-lucide="layers" style="width:30px;height:30px;"></i>
+                </div>
+                <span class="deck-label" id="deck-count">11 Cartas</span>
               </div>
-              <div class="stat-info">
-                <small>Tesouro Central</small>
-                <strong id="treasury-count">50 Moedas</strong>
+
+              <div class="court-chronicles-box">
+                <div class="chronicles-header">
+                  <i data-lucide="scroll"></i> Crônicas da Corte
+                </div>
+                <div id="court-log-feed" class="chronicles-feed">
+                  <div class="log-entry">A conspiração começou. O trono está em disputa!</div>
+                </div>
+              </div>
+
+              <div class="royal-treasury-3d" title="Tesouro Central da Corte">
+                <div class="treasury-coin-stack">
+                  <div class="gold-coin-token">
+                    <i data-lucide="coins" style="width:24px;height:24px;"></i>
+                  </div>
+                  <span class="treasury-count-number" id="treasury-count">50</span>
+                </div>
+                <span class="deck-label">Tesouro Real</span>
               </div>
             </div>
 
-            <div class="stat-box">
-              <div class="stat-icon">
-                <i data-lucide="layers"></i>
+            <!-- BANNER DE REAÇÃO DRAMÁTICA (DESAFIO / BLOQUEIO) -->
+            <div id="reaction-bar" class="reaction-bar" hidden>
+              <div class="reaction-text">
+                <i data-lucide="alert-triangle" style="color:var(--gold-400)"></i>
+                <span id="reaction-message">Aguardando reações...</span>
               </div>
-              <div class="stat-info">
-                <small>Baralho da Corte</small>
-                <strong id="deck-count">11 Cartas</strong>
-              </div>
-            </div>
-          </div>
 
-          <div class="court-log-wrap">
-            <div class="court-log-header">
-              <i data-lucide="scroll"></i> Crônicas da Corte
-            </div>
-            <div id="court-log-feed" class="court-log-feed">
-              <div class="log-entry">A conspiração começou. O trono está em disputa!</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- BANNER DE REAÇÃO DRAMÁTICA (DESAFIO / BLOQUEIO) -->
-        <div id="reaction-bar" class="reaction-bar" hidden>
-          <div class="reaction-text">
-            <i data-lucide="alert-triangle" style="color:var(--gold-400)"></i>
-            <span id="reaction-message">Aguardando reações...</span>
-          </div>
-
-          <div class="reaction-timer-wrap">
-            <div id="reaction-countdown" class="reaction-countdown">8</div>
-            <div id="reaction-actions" class="reaction-actions">
-              <!-- Botões injetados dinamicamente dependendo da elegibilidade -->
-            </div>
-          </div>
-        </div>
-
-        <!-- DASHBOARD DO JOGADOR LOCAL -->
-        <div class="player-dashboard">
-          <div class="player-dash-header">
-            <div class="player-profile">
-              <div class="player-avatar" id="local-avatar">V</div>
-              <div class="player-details">
-                <h3 id="local-player-name">Você</h3>
-                <div class="player-coins-badge">
-                  <i data-lucide="coins"></i>
-                  <span id="local-coins-count">2</span> moedas
+              <div class="reaction-timer-wrap">
+                <div id="reaction-countdown" class="reaction-countdown">8</div>
+                <div id="reaction-actions" class="reaction-actions">
+                  <!-- Botões de Desafio e Bloqueio -->
                 </div>
               </div>
             </div>
 
-            <div>
-              <span id="turn-status-badge" class="turn-indicator-badge waiting-turn">
-                Aguardando seu turno
-              </span>
+            <!-- MÃO DO JOGADOR LOCAL NO FELTRO -->
+            <div class="player-hand-felt">
+              <div class="player-status-strip">
+                <div class="player-profile-tag">
+                  <div class="player-avatar-badge" id="local-avatar">V</div>
+                  <span class="player-name-bold" id="local-player-name">Você</span>
+                  <div class="player-coins-pill">
+                    <i data-lucide="coins" style="width:15px;height:15px;"></i>
+                    <span id="local-coins-count">2</span> moedas
+                  </div>
+                </div>
+
+                <div>
+                  <span id="turn-status-badge" class="turn-pill waiting">
+                    Aguardando seu turno
+                  </span>
+                </div>
+              </div>
+
+              <!-- SUAS CARTAS DE INFLUÊNCIA EM LEQUE -->
+              <div id="player-cards-row" class="hand-fan">
+                <!-- Suas cartas físicas de tarô/luxo geradas pelo JS -->
+              </div>
             </div>
           </div>
+        </div>
 
-          <!-- SUAS CARTAS DE INFLUÊNCIA -->
-          <div id="player-cards-row" class="player-cards-row">
-            <!-- Suas 2 cartas geradas pelo JS -->
+        <!-- BANDEJA DE AÇÕES DO SEU TURNO -->
+        <div class="actions-tray">
+          <div class="actions-tray-title">
+            <i data-lucide="play-circle"></i> Escolha sua ação de turno:
           </div>
+          <div class="actions-grid">
+            <!-- Ações Gerais -->
+            <button type="button" class="action-btn" data-action="income" id="btn-action-income">
+              <i data-lucide="plus-circle" class="action-btn-icon"></i>
+              <span class="action-btn-name">Renda</span>
+              <span class="action-btn-cost">+1 moeda · Livre</span>
+            </button>
 
-          <!-- BARRA DE AÇÕES DO SEU TURNO -->
-          <div class="actions-section">
-            <div class="actions-section-title">
-              <i data-lucide="play-circle"></i> Escolha sua ação de turno:
-            </div>
-            <div class="actions-grid">
-              <!-- Ações Gerais -->
-              <button type="button" class="action-btn" data-action="income" id="btn-action-income">
-                <i data-lucide="plus-circle" class="action-btn-icon"></i>
-                <span class="action-btn-name">Renda</span>
-                <span class="action-btn-cost">+1 moeda · Livre</span>
-              </button>
+            <button type="button" class="action-btn" data-action="foreign_aid" id="btn-action-foreign-aid">
+              <i data-lucide="hand-metal" class="action-btn-icon"></i>
+              <span class="action-btn-name">Ajuda Externa</span>
+              <span class="action-btn-cost">+2 moedas · Duque bloqueia</span>
+            </button>
 
-              <button type="button" class="action-btn" data-action="foreign_aid" id="btn-action-foreign-aid">
-                <i data-lucide="hand-metal" class="action-btn-icon"></i>
-                <span class="action-btn-name">Ajuda Externa</span>
-                <span class="action-btn-cost">+2 moedas · Duque bloqueia</span>
-              </button>
+            <button type="button" class="action-btn btn-coup" data-action="coup" id="btn-action-coup">
+              <i data-lucide="swords" class="action-btn-icon"></i>
+              <span class="action-btn-name">Golpe de Estado</span>
+              <span class="action-btn-cost">-7 moedas · Inevitável</span>
+            </button>
 
-              <button type="button" class="action-btn btn-coup" data-action="coup" id="btn-action-coup">
-                <i data-lucide="swords" class="action-btn-icon"></i>
-                <span class="action-btn-name">Golpe de Estado</span>
-                <span class="action-btn-cost">-7 moedas · Inevitável</span>
-              </button>
+            <!-- Ações de Personagem (Blefe) -->
+            <button type="button" class="action-btn" data-action="tax" id="btn-action-tax">
+              <i data-lucide="crown" class="action-btn-icon"></i>
+              <span class="action-btn-name">Taxar (Duque)</span>
+              <span class="action-btn-cost">+3 moedas · Desafiável</span>
+            </button>
 
-              <!-- Ações de Personagem (Blefe) -->
-              <button type="button" class="action-btn" data-action="tax" id="btn-action-tax">
-                <i data-lucide="crown" class="action-btn-icon"></i>
-                <span class="action-btn-name">Taxar (Duque)</span>
-                <span class="action-btn-cost">+3 moedas · Desafiável</span>
-              </button>
+            <button type="button" class="action-btn" data-action="assassinate" id="btn-action-assassinate">
+              <i data-lucide="skull" class="action-btn-icon"></i>
+              <span class="action-btn-name">Assassinar</span>
+              <span class="action-btn-cost">-3 moedas · Condessa bloqueia</span>
+            </button>
 
-              <button type="button" class="action-btn" data-action="assassinate" id="btn-action-assassinate">
-                <i data-lucide="skull" class="action-btn-icon"></i>
-                <span class="action-btn-name">Assassinar</span>
-                <span class="action-btn-cost">-3 moedas · Condessa bloqueia</span>
-              </button>
+            <button type="button" class="action-btn" data-action="steal" id="btn-action-steal">
+              <i data-lucide="anchor" class="action-btn-icon"></i>
+              <span class="action-btn-name">Extorquir (Capitão)</span>
+              <span class="action-btn-cost">Rouba 2 · Cap/Emb bloqueia</span>
+            </button>
 
-              <button type="button" class="action-btn" data-action="steal" id="btn-action-steal">
-                <i data-lucide="anchor" class="action-btn-icon"></i>
-                <span class="action-btn-name">Extorquir (Capitão)</span>
-                <span class="action-btn-cost">Rouba 2 · Cap/Emb bloqueia</span>
-              </button>
-
-              <button type="button" class="action-btn" data-action="exchange" id="btn-action-exchange">
-                <i data-lucide="scale" class="action-btn-icon"></i>
-                <span class="action-btn-name">Trocar (Embaixador)</span>
-                <span class="action-btn-cost">Compra 2 e devolve 2</span>
-              </button>
-            </div>
+            <button type="button" class="action-btn" data-action="exchange" id="btn-action-exchange">
+              <i data-lucide="scale" class="action-btn-icon"></i>
+              <span class="action-btn-name">Trocar (Embaixador)</span>
+              <span class="action-btn-cost">Compra 2 e devolve 2</span>
+            </button>
           </div>
         </div>
       </section>
@@ -430,6 +429,6 @@
     <script src="../../vendor/lucide.min.js"></script>
     <script src="../../vendor/peerjs.min.js"></script>
     <script src="../../vendor/nbp-p2p.js"></script>
-    <script src="game.js?v=20261111v2"></script>
+    <script src="game.js?v=20261111v3"></script>
   </body>
 </html>
