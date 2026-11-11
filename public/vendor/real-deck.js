@@ -36,6 +36,85 @@
     },
   }
 
+  // Configurações anatômicas exatas de pips para baralho real clássico (Copag / Bicycle)
+  const PIP_CONFIGS = {
+    '2': [
+      { x: 0.50, y: 0.22 },
+      { x: 0.50, y: 0.78, invert: true },
+    ],
+    '3': [
+      { x: 0.50, y: 0.22 },
+      { x: 0.50, y: 0.50 },
+      { x: 0.50, y: 0.78, invert: true },
+    ],
+    '4': [
+      { x: 0.28, y: 0.22 },
+      { x: 0.72, y: 0.22 },
+      { x: 0.28, y: 0.78, invert: true },
+      { x: 0.72, y: 0.78, invert: true },
+    ],
+    '5': [
+      { x: 0.28, y: 0.22 },
+      { x: 0.72, y: 0.22 },
+      { x: 0.50, y: 0.50 },
+      { x: 0.28, y: 0.78, invert: true },
+      { x: 0.72, y: 0.78, invert: true },
+    ],
+    '6': [
+      { x: 0.28, y: 0.22 },
+      { x: 0.72, y: 0.22 },
+      { x: 0.28, y: 0.50 },
+      { x: 0.72, y: 0.50 },
+      { x: 0.28, y: 0.78, invert: true },
+      { x: 0.72, y: 0.78, invert: true },
+    ],
+    '7': [
+      { x: 0.28, y: 0.22 },
+      { x: 0.72, y: 0.22 },
+      { x: 0.50, y: 0.36 },
+      { x: 0.28, y: 0.50 },
+      { x: 0.72, y: 0.50 },
+      { x: 0.28, y: 0.78, invert: true },
+      { x: 0.72, y: 0.78, invert: true },
+    ],
+    '8': [
+      { x: 0.28, y: 0.20 },
+      { x: 0.72, y: 0.20 },
+      { x: 0.50, y: 0.35 },
+      { x: 0.28, y: 0.50 },
+      { x: 0.72, y: 0.50 },
+      { x: 0.50, y: 0.65, invert: true },
+      { x: 0.28, y: 0.80, invert: true },
+      { x: 0.72, y: 0.80, invert: true },
+    ],
+    '9': [
+      { x: 0.28, y: 0.18 },
+      { x: 0.72, y: 0.18 },
+      { x: 0.28, y: 0.38 },
+      { x: 0.72, y: 0.38 },
+      { x: 0.50, y: 0.50 },
+      { x: 0.28, y: 0.62, invert: true },
+      { x: 0.72, y: 0.62, invert: true },
+      { x: 0.28, y: 0.82, invert: true },
+      { x: 0.72, y: 0.82, invert: true },
+    ],
+    '10': [
+      // 4 na esquerda
+      { x: 0.28, y: 0.18 },
+      { x: 0.28, y: 0.38 },
+      { x: 0.28, y: 0.62, invert: true },
+      { x: 0.28, y: 0.82, invert: true },
+      // 2 no centro (superior e inferior)
+      { x: 0.50, y: 0.28 },
+      { x: 0.50, y: 0.72, invert: true },
+      // 4 na direita
+      { x: 0.72, y: 0.18 },
+      { x: 0.72, y: 0.38 },
+      { x: 0.72, y: 0.62, invert: true },
+      { x: 0.72, y: 0.82, invert: true },
+    ],
+  }
+
   function getSuitSvg(suitId, size = 18, color = null) {
     const s = SUITS[suitId] || SUITS.spades
     const fill = color || s.color
@@ -95,11 +174,25 @@
         </div>
       `
     } else {
-      // Cartas numéricas (2, 3, 4, 5, 6, 7, etc.) com grade de pips
-      const num = parseInt(val, 10) || 1
-      const pipSvg = `<div class="card-pip">${getSuitSvg(suit, 24)}</div>`
-      const pips = Array(num).fill(pipSvg).join('')
-      centerContent = `<div class="card-pips-grid pips-${num}">${pips}</div>`
+      // Cartas numéricas (5, 6, 7, 8, 9, 10, etc.) com posicionamento clássico internacional
+      const pipsList = PIP_CONFIGS[val]
+      if (pipsList && pipsList.length > 0) {
+        const pipsHtml = pipsList
+          .map(
+            (p) => `
+          <div class="card-pip-precise" style="position:absolute; left:${p.x * 100}%; top:${p.y * 100}%; transform:translate(-50%, -50%) ${p.invert ? 'rotate(180deg)' : ''};">
+            ${getSuitSvg(suit, 20)}
+          </div>
+        `
+          )
+          .join('')
+        centerContent = `<div class="card-pips-canvas" style="position:relative; width:100%; height:100%;">${pipsHtml}</div>`
+      } else {
+        const num = parseInt(val, 10) || 1
+        const pipSvg = `<div class="card-pip">${getSuitSvg(suit, 22)}</div>`
+        const pips = Array(num).fill(pipSvg).join('')
+        centerContent = `<div class="card-pips-grid pips-${num}">${pips}</div>`
+      }
     }
 
     return `

@@ -1,5 +1,69 @@
 import * as THREE from '../../vendor/three.module.js'
 
+// Posições dos pips anatômicos reais de baralho internacional (Bicycle/Copag)
+const PIP_CONFIGS = {
+  '5': [
+    { x: 0.28, y: 0.24 },
+    { x: 0.72, y: 0.24 },
+    { x: 0.50, y: 0.50 },
+    { x: 0.28, y: 0.76, invert: true },
+    { x: 0.72, y: 0.76, invert: true },
+  ],
+  '6': [
+    { x: 0.28, y: 0.24 },
+    { x: 0.72, y: 0.24 },
+    { x: 0.28, y: 0.50 },
+    { x: 0.72, y: 0.50 },
+    { x: 0.28, y: 0.76, invert: true },
+    { x: 0.72, y: 0.76, invert: true },
+  ],
+  '7': [
+    { x: 0.28, y: 0.24 },
+    { x: 0.72, y: 0.24 },
+    { x: 0.50, y: 0.37 },
+    { x: 0.28, y: 0.50 },
+    { x: 0.72, y: 0.50 },
+    { x: 0.28, y: 0.76, invert: true },
+    { x: 0.72, y: 0.76, invert: true },
+  ],
+  '8': [
+    { x: 0.28, y: 0.22 },
+    { x: 0.72, y: 0.22 },
+    { x: 0.50, y: 0.36 },
+    { x: 0.28, y: 0.50 },
+    { x: 0.72, y: 0.50 },
+    { x: 0.50, y: 0.64, invert: true },
+    { x: 0.28, y: 0.78, invert: true },
+    { x: 0.72, y: 0.78, invert: true },
+  ],
+  '9': [
+    { x: 0.28, y: 0.20 },
+    { x: 0.72, y: 0.20 },
+    { x: 0.28, y: 0.40 },
+    { x: 0.72, y: 0.40 },
+    { x: 0.50, y: 0.50 },
+    { x: 0.28, y: 0.60, invert: true },
+    { x: 0.72, y: 0.60, invert: true },
+    { x: 0.28, y: 0.80, invert: true },
+    { x: 0.72, y: 0.80, invert: true },
+  ],
+  '10': [
+    // 4 na coluna da esquerda
+    { x: 0.28, y: 0.20 },
+    { x: 0.28, y: 0.40 },
+    { x: 0.28, y: 0.60, invert: true },
+    { x: 0.28, y: 0.80, invert: true },
+    // 2 na coluna do centro
+    { x: 0.50, y: 0.30 },
+    { x: 0.50, y: 0.70, invert: true },
+    // 4 na coluna da direita
+    { x: 0.72, y: 0.20 },
+    { x: 0.72, y: 0.40 },
+    { x: 0.72, y: 0.60, invert: true },
+    { x: 0.72, y: 0.80, invert: true },
+  ],
+}
+
 /**
  * Mesa 3D do Truco Goiano (Three.js)
  * Feltro verde de alta densidade, aros dourados/mogno, iluminação suave e sombras dinâmicas.
@@ -224,16 +288,23 @@ export function createTrucoTable(canvas) {
     ctx.fillText(suitSymbol, 19, 58)
     ctx.restore()
 
-    // Centro
+    // Centro: Pips reais posicionados exatamente como em baralho de cartas real
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    if (['J', 'Q', 'K'].includes(card.value)) {
-      ctx.font = '900 72px sans-serif'
-      ctx.fillText(card.value, w / 2, h / 2 - 10)
-      ctx.font = '48px sans-serif'
-      ctx.fillText(suitSymbol, w / 2, h / 2 + 50)
+    const pipsList = PIP_CONFIGS[card.value]
+    if (pipsList && pipsList.length > 0) {
+      ctx.font = '32px sans-serif'
+      pipsList.forEach((p) => {
+        ctx.save()
+        const px = p.x * w
+        const py = p.y * h
+        ctx.translate(px, py)
+        if (p.invert) ctx.rotate(Math.PI)
+        ctx.fillText(suitSymbol, 0, 0)
+        ctx.restore()
+      })
     } else {
-      ctx.font = '96px sans-serif'
+      ctx.font = '48px sans-serif'
       ctx.fillText(suitSymbol, w / 2, h / 2)
     }
   }

@@ -8,8 +8,11 @@
 
 import { createTrucoTable } from './table3d.js'
 
-// Ordem de valores do Truco Goiano (5 a 3)
-const TRUCO_CARD_VALUES = ['5', '6', '7', '8', '9', '10', 'Q', 'J', 'K', 'A', '2', '3']
+// Ordem de valores do Truco Goiano: APENAS do 5 ao 10, com Manilhas Fixas nos 10
+// Cartas normais: 5 < 6 < 7 (sem 7♥ e sem 7♦) < 8 < 9
+// Manilhas Fixas: 10♦ (Ouros) < 10♠ (Espadas) < 10♥ (Copas) < 10♣ (Paus / Zap)
+const TRUCO_CARD_VALUES = ['5', '6', '7', '8', '9', '10']
+const FIXED_MANILHA = '10'
 const SUIT_ORDER = ['diamonds', 'spades', 'hearts', 'clubs'] // Ouros (pica-fumo), Espadas (espadilha), Copas (copeta), Paus (zap)
 
 let table3d = null
@@ -112,26 +115,25 @@ let table3d = null
     return shuffle(deck)
   }
 
-  // Descobre a Manilha com base no Vira
-  function getManilhaValue(viraVal) {
-    const idx = TRUCO_CARD_VALUES.indexOf(String(viraVal).toUpperCase())
-    if (idx < 0) return '5'
-    return TRUCO_CARD_VALUES[(idx + 1) % TRUCO_CARD_VALUES.length]
+  // No Truco Goiano as manilhas são FIXAS: é SEMPRE os 10!
+  function getManilhaValue() {
+    return FIXED_MANILHA
   }
 
-  // Força de uma carta no Truco Goiano
-  function getCardPower(card, manilhaVal) {
+  // Força de uma carta no Truco Goiano (5 a 9 normais, e os 10 são as Manilhas Fixas)
+  function getCardPower(card) {
     if (!card || card.covered) return 0 // Coberta perde sempre
 
-    const isManilha = card.value === manilhaVal
+    const isManilha = card.value === FIXED_MANILHA
     if (isManilha) {
-      // 100 + ordem de naipe: Paus(3) > Copas(2) > Espadas(1) > Ouros(0)
+      // Manilhas Fixas nos 10: Paus(3) > Copas(2) > Espadas(1) > Ouros(0)
       const suitPower = SUIT_ORDER.indexOf(card.suit)
       return 100 + suitPower
     }
 
-    // Cartas normais (1 a 12): 5(1) < 6(2) < 7(3) < 8(4) < 9(5) < 10(6) < Q(7) < J(8) < K(9) < A(10) < 2(11) < 3(12)
-    return TRUCO_CARD_VALUES.indexOf(card.value) + 1
+    // Cartas normais (5 a 9): 5(1) < 6(2) < 7(3 - apenas ♠ e ♣) < 8(4) < 9(5)
+    const normalIndex = ['5', '6', '7', '8', '9'].indexOf(card.value)
+    return normalIndex >= 0 ? normalIndex + 1 : 0
   }
 
   function getManilhaName(suit) {
@@ -270,9 +272,9 @@ let table3d = null
       p.hand = [state.deck.pop(), state.deck.pop(), state.deck.pop()]
     })
 
-    // Vira
-    state.vira = state.deck.pop()
-    state.manilha = getManilhaValue(state.vira.value)
+    // No Truco Goiano as manilhas são FIXAS: é SEMPRE os 10!
+    state.manilha = FIXED_MANILHA
+    state.vira = { id: '10_clubs', value: '10', suit: 'clubs' }
 
     state.phase = 'playing'
     state.dealerIdx = (state.dealerIdx + 1) % state.players.length
@@ -354,6 +356,15 @@ let table3d = null
       const myTeam = player.team
       if (state.lastRaiseTeam === myTeam) return // Não pode aumentar sobre si mesmo
 
+      // REGRA DE 11 PONTOS: Quem tem 11 pontos NÃO pode trucar! Se trucar perde a partida!
+      const myTeamScore = myTeam === 'us' ? state.scoreTeamUs : state.scoreTeamThem
+      if (myTeamScore >= 11) {
+        const opponentTeam = myTeam === 'us' ? 'them' : 'us'
+        sound.playWin()
+        awardHandToTeam(opponentTeam, 12)
+        return
+      }
+
       const nextLevel = getNextBetLevel(state.stake)
       if (!nextLevel) return
 
@@ -391,6 +402,16 @@ let table3d = null
     // 5. Responder Aposta: Aumentar (Truco -> Seis -> Nove -> Doze)
     if (action.type === 'RAISE_BET') {
       if (!state.pendingBet || state.pendingBet.challengerTeam === player.team) return
+
+      // Quem tem 11 pontos NÃO pode aumentar nem trucar!
+      const myTeamScore = player.team === 'us' ? state.scoreTeamUs : state.scoreTeamThem
+      if (myTeamScore >= 11) {
+        const opponentTeam = player.team === 'us' ? 'them' : 'us'
+        sound.playWin()
+        awardHandToTeam(opponentTeam, 12)
+        return
+      }
+
       const nextLevel = getNextBetLevel(state.pendingBet.level)
       if (!nextLevel) return
 
@@ -560,20 +581,23 @@ let table3d = null
   }
 
   function decideBotBetResponse(bot) {
+    const botTeamScore = bot.team === 'us' ? state.scoreTeamUs : state.scoreTeamThem
+    const canRaise = botTeamScore < 11 && state.pendingBet.level < 12
+
     // Avalia força da mão do bot
-    const handPowers = bot.hand.map((c) => getCardPower(c, state.manilha))
+    const handPowers = bot.hand.map((c) => getCardPower(c))
     const maxPower = Math.max(...handPowers, 0)
-    const hasZap = bot.hand.some((c) => c.value === state.manilha && c.suit === 'clubs')
+    const hasZap = bot.hand.some((c) => c.value === '10' && c.suit === 'clubs')
 
     if (hasZap || maxPower >= 100) {
-      // Tem manilha forte: aceita ou aumenta
-      if (Math.random() < 0.35 && state.pendingBet.level < 12) {
+      // Tem manilha forte (algum 10): aceita ou aumenta (se não estiver com 11)
+      if (canRaise && Math.random() < 0.35) {
         handleHostAction({ type: 'RAISE_BET' }, { id: bot.id })
       } else {
         handleHostAction({ type: 'ACCEPT_BET' }, { id: bot.id })
       }
-    } else if (maxPower >= 7) {
-      // Tem 3 ou 2 ou Ás: 70% de aceitar
+    } else if (maxPower >= 4) {
+      // Tem 8 ou 9: 70% de aceitar
       if (Math.random() < 0.7) {
         handleHostAction({ type: 'ACCEPT_BET' }, { id: bot.id })
       } else {
@@ -590,9 +614,10 @@ let table3d = null
   }
 
   function decideBotCardPlay(bot) {
-    // Pode pedir Truco antes de jogar?
-    if (state.stake === 1 && state.lastRaiseTeam !== bot.team && Math.random() < 0.25) {
-      const hasManilha = bot.hand.some((c) => c.value === state.manilha)
+    const botTeamScore = bot.team === 'us' ? state.scoreTeamUs : state.scoreTeamThem
+    // Na mão de 11 o bot JAMAIS pode pedir truco!
+    if (botTeamScore < 11 && state.stake === 1 && state.lastRaiseTeam !== bot.team && Math.random() < 0.25) {
+      const hasManilha = bot.hand.some((c) => c.value === '10')
       if (hasManilha || Math.random() < 0.2) {
         handleHostAction({ type: 'SHOUT_TRUCO' }, { id: bot.id })
         return
@@ -600,7 +625,7 @@ let table3d = null
     }
 
     // Escolhe a melhor carta
-    const sorted = [...bot.hand].sort((a, b) => getCardPower(a, state.manilha) - getCardPower(b, state.manilha))
+    const sorted = [...bot.hand].sort((a, b) => getCardPower(a) - getCardPower(b))
     // 1ª rodada: joga a intermediária ou mais alta; 3ª rodada: a maior
     const cardToPlay = state.currentTrick === 0 && sorted.length === 3 ? sorted[1] : sorted[sorted.length - 1]
 
@@ -679,14 +704,17 @@ let table3d = null
     if (themElem) themElem.textContent = state.scoreTeamThem
     if (stakeElem) stakeElem.textContent = `VALE ${state.stake} ${state.stake === 1 ? 'TENTO' : 'TENTOS'}`
 
-    // Vira e Manilha
+    // Manilhas Fixas
     const viraSlot = document.getElementById('vira-card-slot')
     const manilhaHint = document.getElementById('manilha-hint')
-    if (viraSlot && state.vira && window.NBPDeck) {
-      viraSlot.innerHTML = window.NBPDeck.renderCard(state.vira.value, state.vira.suit)
+    if (viraSlot && window.NBPDeck) {
+      viraSlot.innerHTML = window.NBPDeck.renderCard('10', 'clubs', {
+        isManilha: true,
+        manilhaLabel: 'ZAP (10♣)',
+      })
     }
-    if (manilhaHint && state.manilha) {
-      manilhaHint.textContent = `MANILHA: ${state.manilha}`
+    if (manilhaHint) {
+      manilhaHint.innerHTML = `<strong>MANILHAS FIXAS: OS 10</strong><br/><span style="font-size:0.68rem; color:#6ee7b7;">Zap ♣ &gt; Copeta ♥ &gt; Espadilha ♠ &gt; Pica-fumo ♦</span>`
     }
 
     // Vazas (Melhor de 3)
@@ -776,16 +804,18 @@ let table3d = null
       if (title) title.textContent = `🚨 ${challenger?.name || 'Alguém'} gritou ${labels[state.pendingBet.level]}!`
 
       if (isMyTeamChallenged && actions) {
+        const myTeamScore = myTeam === 'us' ? state.scoreTeamUs : state.scoreTeamThem
         const nextLevel = getNextBetLevel(state.pendingBet.level)
+        const canRaise = myTeamScore < 11 && nextLevel
         const foldPts = getFoldPoints(state.pendingBet.level)
         actions.innerHTML = `
           <button type="button" class="btn-accept" id="btn-accept-bet">Aceitar (${state.pendingBet.level} Tentos)</button>
-          ${nextLevel ? `<button type="button" class="btn-raise" id="btn-raise-bet">Pedir ${nextLevel}!</button>` : ''}
+          ${canRaise ? `<button type="button" class="btn-raise" id="btn-raise-bet">Pedir ${nextLevel}!</button>` : ''}
           <button type="button" class="btn-fold" id="btn-fold-bet">Correr (Dá ${foldPts} ${foldPts === 1 ? 'Tento' : 'Tentos'})</button>
         `
 
         document.getElementById('btn-accept-bet').onclick = () => sendAction({ type: 'ACCEPT_BET' })
-        if (nextLevel) {
+        if (canRaise) {
           document.getElementById('btn-raise-bet').onclick = () => sendAction({ type: 'RAISE_BET' })
         }
         document.getElementById('btn-fold-bet').onclick = () => sendAction({ type: 'FOLD_BET' })
@@ -844,9 +874,17 @@ let table3d = null
     }
 
     if (trucoBtn) {
-      const nextLevel = getNextBetLevel(state.stake)
-      trucoBtn.disabled = !nextLevel || state.lastRaiseTeam === me.team || state.pendingBet !== null
-      trucoBtn.innerHTML = `<i data-lucide="flame"></i> ${nextLevel ? (nextLevel === 3 ? 'TRUCO!' : `PEDIR ${nextLevel}!`) : 'DOZE MÁXIMO'}`
+      const myTeamScore = me.team === 'us' ? state.scoreTeamUs : state.scoreTeamThem
+      if (myTeamScore >= 11) {
+        trucoBtn.disabled = true
+        trucoBtn.title = 'Sua equipe está com 11 pontos e não pode trucar! Se trucar, perde o jogo.'
+        trucoBtn.innerHTML = `<i data-lucide="shield-alert"></i> MÃO DE 11: NÃO PODE TRUCAR`
+      } else {
+        const nextLevel = getNextBetLevel(state.stake)
+        trucoBtn.disabled = !nextLevel || state.lastRaiseTeam === me.team || state.pendingBet !== null
+        trucoBtn.title = 'Pedir Truco / Aumentar aposta'
+        trucoBtn.innerHTML = `<i data-lucide="flame"></i> ${nextLevel ? (nextLevel === 3 ? 'TRUCO!' : `PEDIR ${nextLevel}!`) : 'DOZE MÁXIMO'}`
+      }
     }
 
     if (coveredBtn) {
