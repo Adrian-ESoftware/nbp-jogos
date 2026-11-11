@@ -67,7 +67,7 @@ export function NemAPatoGame() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
 
-  const bidsEndRef = useRef<HTMLDivElement>(null)
+  const bidsContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Load 400 questions on mount
@@ -80,9 +80,11 @@ export function NemAPatoGame() {
     })
   }, [])
 
-  // Auto-scroll bids timeline
+  // Auto-scroll ONLY the internal bids container (without scrolling the page or question)
   useEffect(() => {
-    bidsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (bidsContainerRef.current) {
+      bidsContainerRef.current.scrollTop = bidsContainerRef.current.scrollHeight
+    }
   }, [bids])
 
   const showToast = useCallback((msg: string) => {
@@ -464,11 +466,11 @@ export function NemAPatoGame() {
 
       {/* Main Body Layout */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-        {/* Left/Center Area: Arena */}
-        <main className="flex-1 flex flex-col p-4 overflow-y-auto relative z-0">
+        {/* Left/Center Area: Arena (Always overflow-hidden to prevent outer scrolling) */}
+        <main className="flex-1 flex flex-col p-3 sm:p-4 overflow-hidden relative z-0 min-h-0">
           {/* LOBBY VIEW */}
           {phase === 'lobby' && (
-            <div className="flex-1 flex items-center justify-center p-4">
+            <div className="flex-1 flex items-center justify-center p-4 overflow-y-auto">
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -537,214 +539,223 @@ export function NemAPatoGame() {
             </div>
           )}
 
-          {/* ACTIVE GAMEPLAY VIEW */}
+          {/* ACTIVE GAMEPLAY VIEW (Zero Outer Scroll, Fixed Layout) */}
           {phase === 'playing' && (
-            <div className="flex-1 flex flex-col gap-4 max-w-4xl mx-auto w-full">
-              {/* Question Theme Card */}
+            <div className="flex-1 flex flex-col gap-3 max-w-5xl mx-auto w-full min-h-0 overflow-hidden">
+              {/* Pinned Question Theme Card (Fixed at the top, ALWAYS visible) */}
               <motion.div
                 key={activeCard.id}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'spring', damping: 20 }}
-                className="bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: 'spring', damping: 22 }}
+                className="flex-shrink-0 bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-900 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-lg relative"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wider uppercase bg-sky-500/10 text-sky-400 border border-sky-500/20">
-                    {activeCard.category}
-                  </span>
-                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-300">
-                    <span>Penalidade:</span>
-                    <span>{'🦆'.repeat(penaltyMode === 'ducks' ? activeCard.ducks : 1)}</span>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                      {activeCard.category}
+                    </span>
+                    <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
+                      Rodada {round}/{totalRounds}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-300">
+                      <span className="text-[10px] text-amber-400 uppercase hidden sm:inline">Penalidade:</span>
+                      <span>{'🦆'.repeat(penaltyMode === 'ducks' ? activeCard.ducks : 1)}</span>
+                    </div>
+                    <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-xs">
+                      <span className="text-[10px] text-slate-400 uppercase font-semibold">Em:</span>
+                      <strong className="text-amber-300 font-mono uppercase">{activeCard.unit}</strong>
+                    </div>
                   </div>
                 </div>
 
-                <h3 className="text-lg sm:text-xl font-bold text-white leading-snug mb-3">
+                <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
                   {activeCard.question}
                 </h3>
-
-                <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800/80">
-                  <span>RESPOSTA EM:</span>
-                  <span className="font-bold text-amber-300 font-mono text-sm uppercase">
-                    {activeCard.unit}
-                  </span>
-                </div>
               </motion.div>
 
-              {/* Bids Escalada Timeline Track */}
-              <div className="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-4 flex flex-col flex-1 min-h-[160px] max-h-[220px]">
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-400 mb-2">
-                  <span className="flex items-center gap-1.5">
-                    <ArrowUp className="w-3.5 h-3.5 text-amber-400" />
-                    ESCALADA DE CHUTES:
-                  </span>
-                  <span className="font-mono text-slate-400">{bids.length} palpite(s)</span>
-                </div>
-
-                <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-                  {bids.length === 0 ? (
-                    <div className="h-full flex items-center justify-center text-xs text-slate-500 italic p-4 text-center">
-                      Nenhum palpite ainda nesta rodada. O primeiro jogador pode chutar qualquer valor positivo!
-                    </div>
-                  ) : (
-                    bids.map((bid, idx) => (
-                      <motion.div
-                        key={bid.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className={`flex items-center justify-between p-2.5 rounded-xl border text-xs ${
-                          bid.isDouble
-                            ? 'bg-rose-950/30 border-rose-500/40 text-rose-200'
-                            : idx === bids.length - 1
-                            ? 'bg-amber-500/10 border-amber-500/30 text-amber-100'
-                            : 'bg-slate-800/40 border-slate-700/50 text-slate-300'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{bid.playerAvatar}</span>
-                          <span className="font-semibold">{bid.playerName}</span>
-                          {bid.isDouble && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 flex items-center gap-1">
-                              <Flame className="w-3 h-3 text-rose-400" /> DOBREI!
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 font-mono">
-                          <span className="text-slate-400 text-[11px]">(+{bid.delta.toLocaleString('pt-BR')})</span>
-                          <strong className="text-base font-bold text-white">
-                            {bid.value.toLocaleString('pt-BR')}
-                          </strong>
-                          <span className="text-slate-400 text-xs">{activeCard.unit}</span>
-                        </div>
-                      </motion.div>
-                    ))
-                  )}
-                  <div ref={bidsEndRef} />
-                </div>
-              </div>
-
-              {/* Turn Banner & Target */}
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700/80 shadow-lg">
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <span className="text-2xl">{currentPlayer.avatar}</span>
-                    <span className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-slate-900 animate-pulse" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                      {isMyTurn ? 'SUA VEZ DE JOGAR!' : `VEZ DE:`}
+              {/* Arena Grid: Left = Bids Feed, Right = Controls & Status */}
+              <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 gap-3 overflow-hidden">
+                {/* Left: Bids Escalada Timeline (Scrolls internally without moving the page) */}
+                <div className="md:col-span-5 flex flex-col bg-slate-900/70 border border-slate-800/80 rounded-2xl p-3 min-h-0 overflow-hidden">
+                  <div className="flex items-center justify-between text-xs font-semibold text-slate-400 mb-2 flex-shrink-0">
+                    <span className="flex items-center gap-1.5">
+                      <ArrowUp className="w-3.5 h-3.5 text-amber-400" />
+                      ESCALADA DE CHUTES:
                     </span>
-                    <strong className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5">
-                      {currentPlayer.name}
-                      {botThinking && (
-                        <span className="text-xs font-normal text-amber-400 animate-pulse flex items-center gap-1">
-                          (calculando blefe...)
-                        </span>
-                      )}
-                    </strong>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <span className="text-[10px] text-slate-400 font-semibold block uppercase">
-                      PALPITE ATUAL
-                    </span>
-                    <strong className="text-lg font-mono text-amber-300">
-                      {currentBidValue > 0 ? `${currentBidValue.toLocaleString('pt-BR')} ${activeCard.unit}` : '—'}
-                    </strong>
+                    <span className="font-mono text-slate-400">{bids.length} chute(s)</span>
                   </div>
 
-                  {turnDuration > 0 && (
-                    <div className={`flex items-center gap-1 px-3 py-1.5 rounded-xl border font-mono font-bold text-xs ${
-                      timeLeft <= 5
-                        ? 'bg-rose-500/20 border-rose-500 text-rose-300 animate-bounce'
-                        : timeLeft <= 10
-                        ? 'bg-amber-500/20 border-amber-500 text-amber-300'
-                        : 'bg-slate-800 border-slate-700 text-slate-300'
-                    }`}>
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>{timeLeft}s</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Controls Area */}
-              <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl">
-                {isMyTurn ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-xs text-amber-400 font-semibold">
-                      <span>Diga um número MAIOR ou duvide com NEM A PATO!</span>
-                      <span className="text-slate-400 hidden sm:inline">Dica: Aperte Enter para chutar</span>
-                    </div>
-
-                    {/* Numeric Input & Submit */}
-                    <form onSubmit={handleManualBidSubmit} className="flex gap-2">
-                      <input
-                        ref={inputRef}
-                        type="number"
-                        inputMode="numeric"
-                        min={currentBidValue + 1}
-                        placeholder={currentBidValue > 0 ? `Maior que ${currentBidValue}...` : 'Digite o palpite inicial...'}
-                        value={bidInput}
-                        onChange={(e) => setBidInput(e.target.value)}
-                        className="flex-1 px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-base focus:outline-none focus:border-amber-400 transition-colors"
-                      />
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        type="submit"
-                        className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm flex items-center gap-1.5 shadow-md shadow-amber-500/20"
-                      >
-                        Chutar ↵
-                      </motion.button>
-                    </form>
-
-                    {/* Quick Helper Chips */}
-                    <div className="flex flex-wrap items-center gap-2 pt-1">
-                      {[1, 5, 10, 50, 100].map((inc) => (
-                        <button
-                          key={inc}
-                          type="button"
-                          onClick={() => handleHelperAdd(inc)}
-                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold font-mono transition-colors"
+                  <div ref={bidsContainerRef} className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0 scroll-smooth">
+                    {bids.length === 0 ? (
+                      <div className="h-full flex items-center justify-center text-xs text-slate-500 italic p-3 text-center">
+                        Nenhum palpite ainda. O primeiro jogador pode chutar qualquer número inteiro positivo!
+                      </div>
+                    ) : (
+                      bids.map((bid, idx) => (
+                        <motion.div
+                          key={bid.id}
+                          initial={{ opacity: 0, x: -6 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className={`flex items-center justify-between p-2 rounded-xl border text-xs ${
+                            bid.isDouble
+                              ? 'bg-rose-950/30 border-rose-500/40 text-rose-200'
+                              : idx === bids.length - 1
+                              ? 'bg-amber-500/10 border-amber-500/30 text-amber-100'
+                              : 'bg-slate-800/40 border-slate-700/50 text-slate-300'
+                          }`}
                         >
-                          +{inc}
-                        </button>
-                      ))}
-
-                      {bids.length > 0 && (
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          type="button"
-                          onClick={handleDouble}
-                          className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-orange-600 to-rose-600 hover:from-orange-500 hover:to-rose-500 text-white text-xs font-extrabold flex items-center gap-1 shadow-md shadow-rose-600/30 ml-auto"
-                        >
-                          <Flame className="w-3.5 h-3.5" /> DOBREI! (2x)
-                        </motion.button>
-                      )}
-                    </div>
-
-                    {/* THE BIG "NEM A PATO!" BUTTON */}
-                    {bids.length > 0 && (
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.96 }}
-                        type="button"
-                        onClick={() => handleChallenge(currentPlayer.id)}
-                        className="w-full mt-2 py-4 px-6 rounded-2xl bg-gradient-to-r from-rose-600 via-red-500 to-rose-600 hover:from-rose-500 hover:to-red-400 text-white font-extrabold text-lg tracking-wider uppercase flex items-center justify-center gap-3 shadow-xl shadow-rose-600/30 border border-rose-400/40"
-                      >
-                        <span className="text-2xl">🦆🚨</span>
-                        <span>NEM A PATO! (DUVIDO!)</span>
-                      </motion.button>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="text-base flex-shrink-0">{bid.playerAvatar}</span>
+                            <span className="font-semibold truncate">{bid.playerName}</span>
+                            {bid.isDouble && (
+                              <span className="px-1 py-0.2 rounded text-[9px] font-bold bg-rose-500/20 text-rose-300 flex items-center gap-0.5 flex-shrink-0">
+                                <Flame className="w-2.5 h-2.5 text-rose-400" /> 2x
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5 font-mono flex-shrink-0">
+                            <span className="text-slate-400 text-[10px]">(+{bid.delta.toLocaleString('pt-BR')})</span>
+                            <strong className="text-sm font-bold text-white">
+                              {bid.value.toLocaleString('pt-BR')}
+                            </strong>
+                            <span className="text-slate-400 text-[11px]">{activeCard.unit}</span>
+                          </div>
+                        </motion.div>
+                      ))
                     )}
                   </div>
-                ) : (
-                  <div className="py-6 text-center text-sm text-slate-400">
-                    Aguardando a jogada de <strong className="text-white">{currentPlayer.name}</strong>...
+                </div>
+
+                {/* Right: Turn Status & Action Controls (Always anchored in place) */}
+                <div className="md:col-span-7 flex flex-col justify-between gap-3 min-h-0 overflow-y-auto pr-0.5">
+                  {/* Turn Status & Current Target */}
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700/80 shadow-md flex-shrink-0">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="relative flex-shrink-0">
+                        <span className="text-2xl">{currentPlayer.avatar}</span>
+                        <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-slate-900 animate-pulse" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                          {isMyTurn ? 'SUA VEZ DE JOGAR!' : 'VEZ DE:'}
+                        </span>
+                        <strong className="text-sm font-bold text-white truncate block">
+                          {currentPlayer.name}
+                          {botThinking && (
+                            <span className="text-xs font-normal text-amber-400 animate-pulse ml-1">
+                              (pensando...)
+                            </span>
+                          )}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className="text-right">
+                        <span className="text-[9px] text-slate-400 font-semibold block uppercase">
+                          A SUPERAR
+                        </span>
+                        <strong className="text-base font-mono text-amber-300">
+                          {currentBidValue > 0 ? `${currentBidValue.toLocaleString('pt-BR')} ${activeCard.unit}` : '—'}
+                        </strong>
+                      </div>
+
+                      {turnDuration > 0 && (
+                        <div className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border font-mono font-bold text-xs ${
+                          timeLeft <= 5
+                            ? 'bg-rose-500/20 border-rose-500 text-rose-300 animate-bounce'
+                            : timeLeft <= 10
+                            ? 'bg-amber-500/20 border-amber-500 text-amber-300'
+                            : 'bg-slate-800 border-slate-700 text-slate-300'
+                        }`}>
+                          <Clock className="w-3 h-3" />
+                          <span>{timeLeft}s</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
+
+                  {/* Action Controls Card */}
+                  <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xl flex flex-col gap-2.5 flex-shrink-0">
+                    {isMyTurn ? (
+                      <div className="space-y-2.5">
+                        <div className="flex items-center justify-between text-xs text-amber-400 font-semibold">
+                          <span>Diga um número MAIOR ou duvide:</span>
+                          <span className="text-slate-400 text-[11px] hidden sm:inline">Enter = chutar</span>
+                        </div>
+
+                        {/* Form Input + Submit */}
+                        <form onSubmit={handleManualBidSubmit} className="flex gap-2">
+                          <input
+                            ref={inputRef}
+                            type="number"
+                            inputMode="numeric"
+                            min={currentBidValue + 1}
+                            placeholder={currentBidValue > 0 ? `Maior que ${currentBidValue}...` : 'Digite o chute...'}
+                            value={bidInput}
+                            onChange={(e) => setBidInput(e.target.value)}
+                            className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-sm focus:outline-none focus:border-amber-400 transition-colors"
+                          />
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            type="submit"
+                            className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/20"
+                          >
+                            Chutar ↵
+                          </motion.button>
+                        </form>
+
+                        {/* Quick Helper Chips */}
+                        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                          {[1, 5, 10, 50, 100].map((inc) => (
+                            <button
+                              key={inc}
+                              type="button"
+                              onClick={() => handleHelperAdd(inc)}
+                              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold font-mono transition-colors"
+                            >
+                              +{inc}
+                            </button>
+                          ))}
+
+                          {bids.length > 0 && (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              type="button"
+                              onClick={handleDouble}
+                              className="px-3 py-1 rounded-lg bg-gradient-to-r from-orange-600 to-rose-600 hover:from-orange-500 hover:to-rose-500 text-white text-xs font-extrabold flex items-center gap-1 shadow-md shadow-rose-600/30 ml-auto"
+                            >
+                              <Flame className="w-3 h-3 text-rose-400" /> DOBREI! (2x)
+                            </motion.button>
+                          )}
+                        </div>
+
+                        {/* THE BIG "NEM A PATO!" BUTTON */}
+                        {bids.length > 0 && (
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.96 }}
+                            type="button"
+                            onClick={() => handleChallenge(currentPlayer.id)}
+                            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 via-red-500 to-rose-600 hover:from-rose-500 hover:to-red-400 text-white font-extrabold text-sm sm:text-base tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-rose-600/30 border border-rose-400/40"
+                          >
+                            <span className="text-xl">🦆🚨</span>
+                            <span>NEM A PATO! (DUVIDO!)</span>
+                          </motion.button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="py-4 text-center text-xs text-slate-400">
+                        Aguardando a jogada de <strong className="text-white">{currentPlayer.name}</strong>...
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}
