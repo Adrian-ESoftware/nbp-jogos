@@ -22,7 +22,17 @@ import {
   Crown,
   Share2,
   SlidersHorizontal,
-  X
+  X,
+  Bird,
+  Glasses,
+  Search,
+  Siren,
+  Medal,
+  Award,
+  TrendingUp,
+  Layers,
+  Flag,
+  RotateCcw
 } from 'lucide-react'
 import type { TriviaCard, Player, Bid, RevealInfo, HistoryItem, DuckAvatar } from './types'
 import { fetchCardsDatabase, FALLBACK_CARDS } from './cards'
@@ -30,6 +40,26 @@ import { decideBotTurn, BOT_NAMES } from './bot'
 import { sound } from './sound'
 
 const AVATARS: DuckAvatar[] = ['🦆', '🕶️', '🕵️', '🎩', '🤿', '👑', '🤖', '🤠']
+
+function renderAvatarIcon(avatar: DuckAvatar, className = 'w-5 h-5') {
+  switch (avatar) {
+    case '🕶️':
+      return <Glasses className={className} />
+    case '🕵️':
+      return <Search className={className} />
+    case '👑':
+      return <Crown className={className} />
+    case '🤖':
+      return <Bot className={className} />
+    case '🤠':
+      return <ShieldAlert className={className} />
+    case '🎩':
+    case '🤿':
+    case '🦆':
+    default:
+      return <Bird className={className} />
+  }
+}
 
 function generateRoomCode(): string {
   const num = Math.floor(1000 + Math.random() * 9000)
@@ -122,7 +152,7 @@ export function NemAPatoGame() {
   const handleTimeout = useCallback(() => {
     if (phase !== 'playing') return
     const timedOutPlayer = currentPlayer
-    showToast(`⏱️ O tempo de ${timedOutPlayer.name} esgotou!`)
+    showToast(`O tempo de ${timedOutPlayer.name} esgotou!`)
 
     if (bids.length > 0) {
       // Automatic Nem a Pato challenge
@@ -172,7 +202,7 @@ export function NemAPatoGame() {
     setCurrentTurnIndex(0)
     setTimeLeft(turnDuration)
     setPhase('playing')
-    addHistoryItem('info', `🏁 Partida iniciada com ${players.length} patos no lago!`)
+    addHistoryItem('info', `Partida iniciada com ${players.length} patos no lago!`)
   }
 
   // Next Round
@@ -195,7 +225,7 @@ export function NemAPatoGame() {
     // Turn passes to the player after the previous bidder or challenger
     const nextPlayerIndex = (currentTurnIndex + 1) % players.length
     setCurrentTurnIndex(nextPlayerIndex)
-    addHistoryItem('info', `🦆 Rodada ${round + 1} de ${totalRounds}: ${nextCard.category}`)
+    addHistoryItem('info', `Rodada ${round + 1} de ${totalRounds}: ${nextCard.category}`)
   }
 
   // Execute a Bid
@@ -231,8 +261,8 @@ export function NemAPatoGame() {
     setBidInput('')
 
     const actionText = isDouble
-      ? `🔥 ${player.name} DOBROU o palpite para ${value.toLocaleString('pt-BR')} ${activeCard.unit}!`
-      : `📈 ${player.name} chutou ${value.toLocaleString('pt-BR')} ${activeCard.unit} (+${delta.toLocaleString('pt-BR')})`
+      ? `${player.name} DOBROU o palpite para ${value.toLocaleString('pt-BR')} ${activeCard.unit}!`
+      : `${player.name} chutou ${value.toLocaleString('pt-BR')} ${activeCard.unit} (+${delta.toLocaleString('pt-BR')})`
 
     addHistoryItem(isDouble ? 'double' : 'bid', actionText)
 
@@ -284,8 +314,8 @@ export function NemAPatoGame() {
     })
 
     const challengeLog = exceeded
-      ? `🚨 NEM A PATO! ${bidder.name} EXAGEROU com ${bidValue.toLocaleString('pt-BR')} (Real: ${realAnswer.toLocaleString('pt-BR')})! Recebe +${penaltyDucks} patos!`
-      : `🚨 NEM A PATO! ${challenger.name} DUVIDOU ERRADO! O chute ${bidValue.toLocaleString('pt-BR')} não passou de ${realAnswer.toLocaleString('pt-BR')}. Recebe +${penaltyDucks} patos!`
+      ? `NEM A PATO! ${bidder.name} EXAGEROU com ${bidValue.toLocaleString('pt-BR')} (Real: ${realAnswer.toLocaleString('pt-BR')})! Recebe +${penaltyDucks} patos!`
+      : `NEM A PATO! ${challenger.name} DUVIDOU ERRADO! O chute ${bidValue.toLocaleString('pt-BR')} não passou de ${realAnswer.toLocaleString('pt-BR')}. Recebe +${penaltyDucks} patos!`
 
     addHistoryItem('challenge', challengeLog)
     setPhase('revealing')
@@ -322,7 +352,7 @@ export function NemAPatoGame() {
     }
     setPlayers((prev) => [...prev, newBot])
     sound.quack()
-    showToast(`🤖 ${pick.name} entrou no lago!`)
+    showToast(`${pick.name} entrou no lago!`)
   }
 
   function removePlayer(id: string) {
@@ -398,10 +428,10 @@ export function NemAPatoGame() {
             whileHover={{ scale: 1.1, rotate: 10 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => sound.quack()}
-            className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-2xl shadow-lg shadow-amber-500/20 cursor-pointer"
+            className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/20 cursor-pointer"
             title="Quack!"
           >
-            🦆
+            <Bird className="w-6 h-6 stroke-[2.5]" />
           </motion.div>
           <div>
             <div className="flex items-center gap-2">
@@ -476,8 +506,8 @@ export function NemAPatoGame() {
                 animate={{ opacity: 1, y: 0 }}
                 className="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col items-center text-center relative overflow-hidden"
               >
-                <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-3xl mb-4 shadow-inner">
-                  🦆
+                <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4 shadow-inner">
+                  <Bird className="w-9 h-9 stroke-[2.25]" />
                 </div>
                 <div className="inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 font-bold text-xs tracking-wider uppercase mb-2">
                   LAGO DOS PATOS
@@ -507,7 +537,7 @@ export function NemAPatoGame() {
                         key={p.id}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/90 border border-slate-700/70 text-xs text-slate-200"
                       >
-                        <span className="text-base">{p.avatar}</span>
+                        <span className="p-1 rounded-md bg-slate-700/60 text-amber-300">{renderAvatarIcon(p.avatar, 'w-4 h-4')}</span>
                         <span className="font-semibold">{p.name}</span>
                         {p.isBot && <Bot className="w-3 h-3 text-cyan-400" />}
                         {players.length > 2 && (
@@ -560,9 +590,13 @@ export function NemAPatoGame() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-300">
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-300">
                       <span className="text-[10px] text-amber-400 uppercase hidden sm:inline">Penalidade:</span>
-                      <span>{'🦆'.repeat(penaltyMode === 'ducks' ? activeCard.ducks : 1)}</span>
+                      <span className="flex items-center gap-0.5">
+                        {Array.from({ length: penaltyMode === 'ducks' ? activeCard.ducks : 1 }).map((_, i) => (
+                          <Bird key={i} className="w-3.5 h-3.5 fill-amber-400/30 text-amber-400 inline-block" />
+                        ))}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-xs">
                       <span className="text-[10px] text-slate-400 uppercase font-semibold">Em:</span>
@@ -608,7 +642,9 @@ export function NemAPatoGame() {
                           }`}
                         >
                           <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="text-base flex-shrink-0">{bid.playerAvatar}</span>
+                            <span className="p-1 rounded-md bg-slate-800/80 text-amber-300 flex-shrink-0">
+                              {renderAvatarIcon(bid.playerAvatar, 'w-3.5 h-3.5')}
+                            </span>
                             <span className="font-semibold truncate">{bid.playerName}</span>
                             {bid.isDouble && (
                               <span className="px-1 py-0.2 rounded text-[9px] font-bold bg-rose-500/20 text-rose-300 flex items-center gap-0.5 flex-shrink-0">
@@ -635,7 +671,9 @@ export function NemAPatoGame() {
                   <div className="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700/80 shadow-md flex-shrink-0">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="relative flex-shrink-0">
-                        <span className="text-2xl">{currentPlayer.avatar}</span>
+                        <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-300">
+                          {renderAvatarIcon(currentPlayer.avatar, 'w-5 h-5')}
+                        </div>
                         <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-slate-900 animate-pulse" />
                       </div>
                       <div className="min-w-0">
@@ -744,7 +782,7 @@ export function NemAPatoGame() {
                             onClick={() => handleChallenge(currentPlayer.id)}
                             className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 via-red-500 to-rose-600 hover:from-rose-500 hover:to-red-400 text-white font-extrabold text-sm sm:text-base tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-rose-600/30 border border-rose-400/40"
                           >
-                            <span className="text-xl">🦆🚨</span>
+                            <Siren className="w-5 h-5 text-amber-300 animate-pulse" />
                             <span>NEM A PATO! (DUVIDO!)</span>
                           </motion.button>
                         )}
@@ -800,7 +838,7 @@ export function NemAPatoGame() {
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-xl">{p.avatar}</span>
+                      <span className="p-1 rounded-lg bg-slate-800 text-amber-300">{renderAvatarIcon(p.avatar, 'w-4 h-4')}</span>
                       <div>
                         <div className="font-semibold flex items-center gap-1">
                           {p.name}
@@ -813,7 +851,7 @@ export function NemAPatoGame() {
                     </div>
                     <div className="flex items-center gap-1 font-mono font-bold text-amber-300">
                       <span>{p.ducksCount}</span>
-                      <span>🦆</span>
+                      <Bird className="w-3.5 h-3.5 fill-amber-400/30 text-amber-400" />
                     </div>
                   </div>
                 )
@@ -909,7 +947,7 @@ export function NemAPatoGame() {
                     <span>
                       {revealInfo.bidder.name} chutou {revealInfo.bidValue.toLocaleString('pt-BR')}, mas o valor real era {revealInfo.realAnswer.toLocaleString('pt-BR')}!
                       <br />
-                      <strong>{revealInfo.bidder.name}</strong> leva a penalidade (+{revealInfo.penaltyDucks} 🦆)!
+                      <strong>{revealInfo.bidder.name}</strong> leva a penalidade (+{revealInfo.penaltyDucks} patos)!
                     </span>
                   </div>
                 ) : (
@@ -920,7 +958,7 @@ export function NemAPatoGame() {
                     <span>
                       {revealInfo.challenger.name} duvidou errado! A resposta era {revealInfo.realAnswer.toLocaleString('pt-BR')}, então {revealInfo.bidValue.toLocaleString('pt-BR')} não estourou!
                       <br />
-                      <strong>{revealInfo.challenger.name}</strong> leva a penalidade (+{revealInfo.penaltyDucks} 🦆)!
+                      <strong>{revealInfo.challenger.name}</strong> leva a penalidade (+{revealInfo.penaltyDucks} patos)!
                     </span>
                   </div>
                 )}
@@ -932,7 +970,17 @@ export function NemAPatoGame() {
                 onClick={nextRound}
                 className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-base flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
               >
-                <span>{round >= totalRounds ? 'Ver Resultado Final 🏆' : 'Próxima Rodada ▶'}</span>
+                {round >= totalRounds ? (
+                  <>
+                    <Trophy className="w-5 h-5" />
+                    <span>Ver Resultado Final</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-5 h-5 fill-slate-950" />
+                    <span>Próxima Rodada</span>
+                  </>
+                )}
               </motion.button>
             </motion.div>
           </div>
@@ -949,8 +997,8 @@ export function NemAPatoGame() {
               exit={{ opacity: 0, scale: 0.9 }}
               className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 text-center shadow-2xl relative overflow-hidden"
             >
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-3xl mb-3">
-                🏆
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3">
+                <Trophy className="w-8 h-8" />
               </div>
               <h2 className="text-2xl font-extrabold text-white mb-1">FIM DA PARTIDA!</h2>
               <p className="text-xs text-slate-400 mb-6">
@@ -959,11 +1007,11 @@ export function NemAPatoGame() {
 
               {/* The Big Duck (Biggest Loser / Grande Pato) */}
               <div className="p-4 rounded-2xl bg-gradient-to-br from-rose-950/50 to-slate-950 border border-rose-500/30 mb-6">
-                <span className="text-xs text-rose-300 font-extrabold uppercase tracking-wider block mb-1">
-                  👑 O GRANDE PATO DA VEZ (PAGOU O PATO!):
+                <span className="text-xs text-rose-300 font-extrabold uppercase tracking-wider mb-1 flex items-center justify-center gap-1.5">
+                  <Crown className="w-4 h-4 text-amber-400 inline" /> O GRANDE PATO DA VEZ (PAGOU O PATO!):
                 </span>
                 <div className="text-xl font-extrabold text-white flex items-center justify-center gap-2">
-                  <span>{theBigDuck.avatar}</span>
+                  <span className="p-1 rounded-lg bg-slate-800 text-amber-400">{renderAvatarIcon(theBigDuck.avatar, 'w-5 h-5')}</span>
                   <span>{theBigDuck.name}</span>
                 </div>
                 <div className="text-xs font-mono text-rose-300 mt-1">
@@ -983,15 +1031,15 @@ export function NemAPatoGame() {
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="font-extrabold text-sm font-mono w-4">
-                        {rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : `#${rank + 1}`}
+                      <span className="font-extrabold text-sm font-mono w-5 flex items-center justify-center">
+                        {rank === 0 ? <Medal className="w-4 h-4 text-amber-400" /> : rank === 1 ? <Medal className="w-4 h-4 text-slate-300" /> : rank === 2 ? <Medal className="w-4 h-4 text-amber-600" /> : `#${rank + 1}`}
                       </span>
-                      <span className="text-base">{p.avatar}</span>
+                      <span className="p-1 rounded-md bg-slate-800/60 text-slate-300">{renderAvatarIcon(p.avatar, 'w-4 h-4')}</span>
                       <span className="font-bold">{p.name}</span>
                     </div>
-                    <div className="flex items-center gap-1 font-mono font-bold">
+                    <div className="flex items-center gap-1 font-mono font-bold text-amber-300">
                       <span>{p.ducksCount}</span>
-                      <span>🦆</span>
+                      <Bird className="w-3.5 h-3.5 fill-amber-400/30 text-amber-400" />
                     </div>
                   </div>
                 ))}
@@ -1076,8 +1124,8 @@ export function NemAPatoGame() {
                       onChange={(e) => setPenaltyMode(e.target.value as 'ducks' | 'cards')}
                       className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white font-medium"
                     >
-                      <option value="ducks">🦆 Patos das Cartas (1 a 3 patos)</option>
-                      <option value="cards">🃏 1 Carta = 1 Ponto</option>
+                      <option value="ducks">Patos das Cartas (1 a 3 patos)</option>
+                      <option value="cards">1 Carta = 1 Ponto</option>
                     </select>
                   </div>
 
