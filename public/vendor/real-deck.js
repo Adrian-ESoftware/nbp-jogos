@@ -268,6 +268,10 @@
     .card-pips-grid.pips-5 .card-pip:last-child { position: absolute; }
     .card-pips-grid.pips-6 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; }
     .card-pips-grid.pips-7 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; position: relative; }
+    .card-pips-grid.pips-8 { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 1fr); }
+    .card-pips-grid.pips-9 { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 1fr); position: relative; }
+    .card-pips-grid.pips-9 .card-pip:last-child { position: absolute; }
+    .card-pips-grid.pips-10 { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(5, 1fr); }
 
     /* Verso Real */
     .real-card-back {

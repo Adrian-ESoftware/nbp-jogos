@@ -1,0 +1,386 @@
+import * as THREE from '../../vendor/three.module.js'
+
+/**
+ * Mesa 3D do Truco Goiano (Three.js)
+ * Feltro verde de alta densidade, aros dourados/mogno, iluminação suave e sombras dinâmicas.
+ * Renderiza o Vira no centro, o monte do baralho e as cartas jogadas na vaza em 3D.
+ */
+export function createTrucoTable(canvas) {
+  if (!canvas) return { update: () => {}, destroy: () => {} }
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+  renderer.outputColorSpace = THREE.SRGBColorSpace
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+  const scene = new THREE.Scene()
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100)
+  camera.position.set(0, 6.2, 8.4)
+  camera.lookAt(0, 0.1, -0.45)
+  scene.add(camera)
+
+  // Iluminação ambiente e direcional de cassino
+  const ambientLight = new THREE.HemisphereLight(0xdcfce7, 0x052e16, 1.9)
+  scene.add(ambientLight)
+
+  const sunLight = new THREE.DirectionalLight(0xffedd5, 2.6)
+  sunLight.position.set(-3.5, 11, 5.5)
+  sunLight.castShadow = true
+  sunLight.shadow.mapSize.set(1024, 1024)
+  sunLight.shadow.camera.left = sunLight.shadow.camera.bottom = -7
+  sunLight.shadow.camera.right = sunLight.shadow.camera.top = 7
+  scene.add(sunLight)
+
+  // Mesa Oval: Base de Madeira Mogno Nobre
+  const tableBase = new THREE.Mesh(
+    new THREE.CylinderGeometry(5.2, 5.4, 0.45, 96),
+    new THREE.MeshStandardMaterial({
+      color: 0x1b130e,
+      roughness: 0.45,
+      metalness: 0.25,
+    })
+  )
+  tableBase.scale.z = 0.72
+  tableBase.position.y = -0.24
+  tableBase.receiveShadow = true
+  scene.add(tableBase)
+
+  // Feltro Verde Esmeralda Clássico
+  const felt = new THREE.Mesh(
+    new THREE.CylinderGeometry(4.85, 4.85, 0.08, 96),
+    new THREE.MeshStandardMaterial({
+      color: 0x064e3b, // Verde esmeralda profundo
+      roughness: 0.94,
+      metalness: 0.05,
+    })
+  )
+  felt.scale.z = 0.72
+  felt.position.y = 0.02
+  felt.receiveShadow = true
+  scene.add(felt)
+
+  // Aros da borda (dourado e couro)
+  const rims = [
+    [4.96, 0.065, 0xd97706, 0.65], // Aro Dourado externo
+    [4.65, 0.02, 0x10b981, 0.3],  // Friso esmeralda sutil
+    [4.5, 0.012, 0xf59e0b, 0.8],  // Friso dourado interno
+  ]
+  rims.forEach(([radius, tube, color, metal]) => {
+    const rim = new THREE.Mesh(
+      new THREE.TorusGeometry(radius, tube, 8, 128),
+      new THREE.MeshStandardMaterial({ color, metalness: metal, roughness: 0.35 })
+    )
+    rim.rotation.x = Math.PI / 2
+    rim.scale.y = 0.72
+    rim.position.y = 0.06
+    scene.add(rim)
+  })
+
+  // Partículas suspensas criando atmosfera aconchegante
+  const particleGeo = new THREE.BufferGeometry()
+  const pCoords = []
+  for (let i = 0; i < 90; i++) {
+    pCoords.push((Math.random() - 0.5) * 20, Math.random() * 4.5 + 0.1, (Math.random() - 0.5) * 14)
+  }
+  particleGeo.setAttribute('position', new THREE.Float32BufferAttribute(pCoords, 3))
+  const particles = new THREE.Points(
+    particleGeo,
+    new THREE.PointsMaterial({ color: 0xfde68a, size: 0.028, transparent: true, opacity: 0.45 })
+  )
+  scene.add(particles)
+
+  // Monte do Baralho virado para baixo no centro
+  const deckGroup = new THREE.Group()
+  const cardGeo = new THREE.PlaneGeometry(0.72, 1.05)
+  const cardBackTexture = createCardBackTexture()
+  const cardBackMat = new THREE.MeshStandardMaterial({
+    map: cardBackTexture,
+    roughness: 0.5,
+    metalness: 0.1,
+    side: THREE.DoubleSide,
+  })
+
+  // Pilha de cartas simulada
+  for (let i = 0; i < 10; i++) {
+    const layer = new THREE.Mesh(cardGeo, cardBackMat)
+    layer.rotation.x = -Math.PI / 2
+    layer.position.set(-0.95, 0.06 + i * 0.007, 0.05)
+    layer.rotation.z = 0.08 + (Math.random() - 0.5) * 0.03
+    layer.castShadow = true
+    layer.receiveShadow = true
+    deckGroup.add(layer)
+  }
+  scene.add(deckGroup)
+
+  // O Vira (carta revelada virada na mesa, ao lado do monte de compra)
+  let viraMesh = null
+  const texturesCache = new Map()
+
+  function getCardTexture(card, isCovered = false) {
+    const key = isCovered ? 'back' : `${card?.value}_${card?.suit}`
+    if (texturesCache.has(key)) return texturesCache.get(key)
+
+    const c = document.createElement('canvas')
+    c.width = 256
+    c.height = 384
+    const ctx = c.getContext('2d')
+
+    if (isCovered || !card) {
+      drawCanvasCardBack(ctx, 256, 384)
+    } else {
+      drawCanvasCardFace(ctx, 256, 384, card)
+    }
+
+    const tex = new THREE.CanvasTexture(c)
+    tex.colorSpace = THREE.SRGBColorSpace
+    texturesCache.set(key, tex)
+    return tex
+  }
+
+  function createCardBackTexture() {
+    const c = document.createElement('canvas')
+    c.width = 256
+    c.height = 384
+    const ctx = c.getContext('2d')
+    drawCanvasCardBack(ctx, 256, 384)
+    const tex = new THREE.CanvasTexture(c)
+    tex.colorSpace = THREE.SRGBColorSpace
+    return tex
+  }
+
+  function drawCanvasCardBack(ctx, w, h) {
+    ctx.fillStyle = '#ffffff'
+    ctx.beginPath()
+    ctx.roundRect(0, 0, w, h, 20)
+    ctx.fill()
+
+    ctx.fillStyle = '#1e3a8a'
+    ctx.beginPath()
+    ctx.roundRect(10, 10, w - 20, h - 20, 14)
+    ctx.fill()
+
+    // Padrão de losangos clássico
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)'
+    ctx.lineWidth = 1.5
+    for (let x = 16; x < w - 16; x += 16) {
+      ctx.beginPath()
+      ctx.moveTo(x, 14)
+      ctx.lineTo(x + 120, h - 14)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(x, 14)
+      ctx.lineTo(x - 120, h - 14)
+      ctx.stroke()
+    }
+
+    // Medalhão
+    ctx.fillStyle = '#0f172a'
+    ctx.beginPath()
+    ctx.arc(w / 2, h / 2, 42, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.strokeStyle = '#f59e0b'
+    ctx.lineWidth = 3
+    ctx.stroke()
+
+    ctx.fillStyle = '#fde68a'
+    ctx.font = '900 28px sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('NBP', w / 2, h / 2)
+  }
+
+  function drawCanvasCardFace(ctx, w, h, card) {
+    // Fundo branco
+    ctx.fillStyle = '#ffffff'
+    ctx.beginPath()
+    ctx.roundRect(0, 0, w, h, 20)
+    ctx.fill()
+
+    const isRed = card.suit === 'hearts' || card.suit === 'diamonds'
+    const color = isRed ? '#dc2626' : '#0f172a'
+    const suitSymbol =
+      card.suit === 'spades' ? '♠' : card.suit === 'hearts' ? '♥' : card.suit === 'diamonds' ? '♦' : '♣'
+
+    // Cantos (índice + naipe)
+    ctx.fillStyle = color
+    ctx.font = '900 38px sans-serif'
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'top'
+    ctx.fillText(card.value, 18, 16)
+
+    ctx.font = '32px sans-serif'
+    ctx.fillText(suitSymbol, 19, 58)
+
+    // Canto inferior invertido
+    ctx.save()
+    ctx.translate(w, h)
+    ctx.rotate(Math.PI)
+    ctx.font = '900 38px sans-serif'
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'top'
+    ctx.fillText(card.value, 18, 16)
+    ctx.font = '32px sans-serif'
+    ctx.fillText(suitSymbol, 19, 58)
+    ctx.restore()
+
+    // Centro
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    if (['J', 'Q', 'K'].includes(card.value)) {
+      ctx.font = '900 72px sans-serif'
+      ctx.fillText(card.value, w / 2, h / 2 - 10)
+      ctx.font = '48px sans-serif'
+      ctx.fillText(suitSymbol, w / 2, h / 2 + 50)
+    } else {
+      ctx.font = '96px sans-serif'
+      ctx.fillText(suitSymbol, w / 2, h / 2)
+    }
+  }
+
+  // Grupo de cartas jogadas no feltro 3D
+  const tableCardsGroup = new THREE.Group()
+  scene.add(tableCardsGroup)
+
+  // Grupo dos marcadores de jogadores 3D em torno da mesa
+  const playersGroup = new THREE.Group()
+  scene.add(playersGroup)
+
+  // Posições dos jogadores na mesa conforme quantidade (1v1 ou 2v2)
+  function getSeatCoords(seatIndex, totalSeats) {
+    if (totalSeats === 2) {
+      // 0 = Sul (Local), 1 = Norte (Oponente)
+      if (seatIndex === 0) return { x: 0, z: 2.1, rotY: 0, cardX: 0, cardZ: 0.65 }
+      return { x: 0, z: -2.1, rotY: Math.PI, cardX: 0, cardZ: -0.65 }
+    }
+    // 2v2: 0 = Sul (Nós), 1 = Leste (Eles), 2 = Norte (Nós parceiro), 3 = Oeste (Eles)
+    const angles = [0, -Math.PI / 2, Math.PI, Math.PI / 2]
+    const cardAngles = [0, -Math.PI / 2, Math.PI, Math.PI / 2]
+    const rad = 2.15
+    const cRad = 0.8
+    const a = angles[seatIndex % 4]
+    return {
+      x: Math.sin(a) * rad * 1.35,
+      z: Math.cos(a) * rad,
+      rotY: a,
+      cardX: Math.sin(cardAngles[seatIndex % 4]) * cRad * 1.3,
+      cardZ: Math.cos(cardAngles[seatIndex % 4]) * cRad,
+    }
+  }
+
+  let lastViraId = null
+  let lastPlayedSignature = ''
+
+  function update(state, localPlayerId) {
+    if (!state) return
+
+    // 1. Atualizar o VIRA na mesa
+    if (state.vira) {
+      const viraId = `${state.vira.value}_${state.vira.suit}`
+      if (viraId !== lastViraId || !viraMesh) {
+        lastViraId = viraId
+        if (viraMesh) scene.remove(viraMesh)
+
+        const viraTex = getCardTexture(state.vira, false)
+        const viraMat = new THREE.MeshStandardMaterial({
+          map: viraTex,
+          roughness: 0.45,
+          metalness: 0.1,
+          side: THREE.DoubleSide,
+        })
+        viraMesh = new THREE.Mesh(cardGeo, viraMat)
+        viraMesh.rotation.x = -Math.PI / 2
+        viraMesh.rotation.z = -0.35 // Inclinada sobre o feltro
+        viraMesh.position.set(-0.2, 0.05, 0.05)
+        viraMesh.castShadow = true
+        viraMesh.receiveShadow = true
+        scene.add(viraMesh)
+      }
+    } else if (viraMesh) {
+      scene.remove(viraMesh)
+      viraMesh = null
+      lastViraId = null
+    }
+
+    // 2. Atualizar cartas jogadas na vaza atual
+    const played = state.playedCardsInTrick || state.currentTrick?.cards || []
+    const sig = played.map((c) => `${c.playerId}:${c.card?.value}:${c.card?.suit}:${c.covered || c.card?.covered}`).join('|')
+    if (sig !== lastPlayedSignature) {
+      lastPlayedSignature = sig
+      tableCardsGroup.clear()
+
+      const totalPlayers = state.players?.length || 2
+      const myIdx = Math.max(0, state.players?.findIndex((p) => p.id === localPlayerId))
+
+      played.forEach((item, playIdx) => {
+        const pIdx = state.players?.findIndex((p) => p.id === item.playerId)
+        const relativeSeat = pIdx >= 0 ? (pIdx - myIdx + totalPlayers) % totalPlayers : playIdx
+        const coords = getSeatCoords(relativeSeat, totalPlayers)
+
+        const isCovered = item.covered || item.card?.covered
+        const tex = getCardTexture(item.card, isCovered)
+        const mat = new THREE.MeshStandardMaterial({
+          map: tex,
+          roughness: 0.45,
+          metalness: 0.1,
+          side: THREE.DoubleSide,
+        })
+        const mesh = new THREE.Mesh(cardGeo, mat)
+        mesh.rotation.x = -Math.PI / 2
+        mesh.rotation.z = (Math.random() - 0.5) * 0.25 - coords.rotY * 0.4
+        mesh.position.set(coords.cardX, 0.06 + playIdx * 0.008, coords.cardZ)
+        mesh.castShadow = true
+        mesh.receiveShadow = true
+        tableCardsGroup.add(mesh)
+      })
+    }
+
+    // 3. Atualizar marcadores 3D dos jogadores ao redor da mesa
+    playersGroup.clear()
+    const all = state.players || []
+    const myIndex = Math.max(0, all.findIndex((p) => p.id === localPlayerId))
+    const total = all.length || 2
+
+    all.forEach((player, idx) => {
+      const rel = (idx - myIndex + total) % total
+      const coords = getSeatCoords(rel, total)
+
+      const isUs = idx % 2 === myIndex % 2
+      const teamColor = isUs ? 0x10b981 : 0xf59e0b
+
+      // Anel no feltro onde o jogador está sentado
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(0.24, 0.28, 32),
+        new THREE.MeshBasicMaterial({ color: teamColor, side: THREE.DoubleSide, transparent: true, opacity: 0.6 })
+      )
+      ring.rotation.x = Math.PI / 2
+      ring.position.set(coords.x * 0.85, 0.04, coords.z * 0.85)
+      playersGroup.add(ring)
+    })
+  }
+
+  // Loop de Animação
+  let animId = null
+  function animate(t) {
+    const width = canvas.clientWidth
+    const height = canvas.clientHeight
+
+    if (canvas.width !== Math.floor(width * renderer.getPixelRatio()) || canvas.height !== Math.floor(height * renderer.getPixelRatio())) {
+      renderer.setSize(width, height, false)
+      camera.aspect = width / height
+      camera.updateProjectionMatrix()
+    }
+
+    particles.rotation.y = t * 0.00008
+    renderer.render(scene, camera)
+    animId = requestAnimationFrame(animate)
+  }
+  animId = requestAnimationFrame(animate)
+
+  function destroy() {
+    if (animId) cancelAnimationFrame(animId)
+    renderer.dispose()
+  }
+
+  return { update, destroy }
+}

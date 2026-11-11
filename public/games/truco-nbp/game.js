@@ -1,13 +1,18 @@
 /**
  * Truco Goiano · NBP Games
  * Suporte a 1v1 (Mano a Mano) e 2v2 (Duplas)
- * Motor de Baralho Real (NBPDeck), Manilhas Dinâmicas, Gritos de Truco e Bots de IA
+ * Mesa com aspectos em 3D (Three.js), Baralho Real e Regras de Truco Goiano:
+ * Ordem: 5 < 6 < 7 < 8 < 9 < 10 < Q < J < K < A < 2 < 3
+ * Sem 7 de copas nem 7 de ouros
  */
 
-;(() => {
-  // Ordem de valores do truco limpo
-  const TRUCO_CARD_VALUES = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3']
-  const SUIT_ORDER = ['diamonds', 'spades', 'hearts', 'clubs'] // Ouros (pica-fumo), Espadas (espadilha), Copas (copeta), Paus (zap)
+import { createTrucoTable } from './table3d.js'
+
+// Ordem de valores do Truco Goiano (5 a 3)
+const TRUCO_CARD_VALUES = ['5', '6', '7', '8', '9', '10', 'Q', 'J', 'K', 'A', '2', '3']
+const SUIT_ORDER = ['diamonds', 'spades', 'hearts', 'clubs'] // Ouros (pica-fumo), Espadas (espadilha), Copas (copeta), Paus (zap)
+
+let table3d = null
 
   // Sons sintetizados na Web Audio API
   class TrucoSound {
@@ -99,6 +104,8 @@
     const suits = ['spades', 'hearts', 'diamonds', 'clubs']
     TRUCO_CARD_VALUES.forEach((val) => {
       suits.forEach((suit) => {
+        // Truco Goiano: Não usa 7 de copas nem 7 de ouros
+        if (val === '7' && (suit === 'hearts' || suit === 'diamonds')) return
         deck.push({ id: `${val}_${suit}`, value: val, suit })
       })
     })
@@ -108,7 +115,7 @@
   // Descobre a Manilha com base no Vira
   function getManilhaValue(viraVal) {
     const idx = TRUCO_CARD_VALUES.indexOf(String(viraVal).toUpperCase())
-    if (idx < 0) return '4'
+    if (idx < 0) return '5'
     return TRUCO_CARD_VALUES[(idx + 1) % TRUCO_CARD_VALUES.length]
   }
 
@@ -123,7 +130,7 @@
       return 100 + suitPower
     }
 
-    // Cartas normais (1 a 10): 3(10) > 2(9) > A(8) > K(7) > J(6) > Q(5) > 7(4) > 6(3) > 5(2) > 4(1)
+    // Cartas normais (1 a 12): 5(1) < 6(2) < 7(3) < 8(4) < 9(5) < 10(6) < Q(7) < J(8) < K(9) < A(10) < 2(11) < 3(12)
     return TRUCO_CARD_VALUES.indexOf(card.value) + 1
   }
 
@@ -590,8 +597,21 @@
     handleHostAction({ type: 'PLAY_CARD', cardId: cardToPlay.id, covered: false }, { id: bot.id })
   }
 
+  function initTable3D() {
+    if (table3d) return
+    const canvas = document.getElementById('truco-canvas-3d')
+    if (canvas) {
+      table3d = createTrucoTable(canvas)
+    }
+  }
+
   // --- RENDERIZAÇÃO DA INTERFACE ---
   function render() {
+    initTable3D()
+    if (table3d && state.phase !== 'lobby') {
+      table3d.update(state, room.profile.id)
+    }
+
     renderTopbar()
     renderLobby()
     renderTable()
@@ -979,4 +999,4 @@
 
     render()
   })
-})()
+

@@ -110,6 +110,9 @@
       <!-- PAINEL DA MESA REAL DE TRUCO -->
       <section id="game-table" class="table-layout" hidden>
         <div class="truco-table-wrap">
+          <!-- Canvas 3D de Feltro, Mogno e Cartas Realistas -->
+          <canvas id="truco-canvas-3d" class="truco-3d-canvas"></canvas>
+
           <div class="truco-table-felt">
             <!-- PLACAR DE TENTOS (NÓS VS ELES) -->
             <div class="truco-scoreboard">
@@ -208,7 +211,7 @@
             O <strong>Truco Goiano</strong> é disputado até <strong>12 pontos (tentos)</strong>. Cada mão é uma disputa de melhor de 3 vazas.
           </p>
           <p>
-            👑 <strong>O Vira e as Manilhas:</strong> Uma carta é virada na mesa. As 4 cartas de valor imediatamente superior tornam-se as <strong>Manilhas</strong> (as mais fortes do jogo), respeitando a ordem de naipes:
+            👑 <strong>O Vira e as Manilhas:</strong> Uma carta é virada na mesa. As cartas de valor imediatamente superior tornam-se as <strong>Manilhas</strong> (as mais fortes do jogo), respeitando a ordem de naipes:
           </p>
           <div style="background:rgba(0,0,0,0.4); padding:10px; border-radius:10px; border:1px solid #f59e0b; color:#fff;">
             <strong>1. ♣ Paus (Zap / Gato)</strong> — A maior carta do jogo!<br/>
@@ -217,7 +220,11 @@
             <strong>4. ♦ Ouros (Pica-fumo / Moleque)</strong>
           </div>
           <p>
-            🃏 <strong>Ordem das cartas normais:</strong> 3 > 2 > A > K > J > Q > 7 > 6 > 5 > 4.
+            🃏 <strong>Ordem das cartas no Truco Goiano:</strong><br/>
+            <code>5 &lt; 6 &lt; 7 &lt; 8 &lt; 9 &lt; 10 &lt; Q &lt; J &lt; K &lt; A &lt; 2 &lt; 3</code>.
+          </p>
+          <p>
+            🚫 <strong>Sem 7 de Copas e sem 7 de Ouros:</strong> O baralho não usa 7♥ nem 7♦. Apenas 7♠ e 7♣ participam do jogo!
           </p>
           <p>
             🔥 <strong>Gritos de Tento:</strong> A mão começa valendo 1 tento. O Truco sobe para 3, depois 6, 9 e 12 tentos!
@@ -249,6 +256,6 @@
     <script src="../../vendor/peerjs.min.js"></script>
     <script src="../../vendor/nbp-p2p.js"></script>
     <script src="../../vendor/real-deck.js"></script>
-    <script src="game.js?v=20261111v1"></script>
+    <script type="module" src="game.js?v=20261111v2"></script>
   </body>
 </html>
