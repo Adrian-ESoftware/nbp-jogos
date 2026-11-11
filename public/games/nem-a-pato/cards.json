@@ -416,11 +416,11 @@
   {
     "id": 47,
     "category": "Ciência & Natureza",
-    "question": "Quantos ossos tem o esqueleto de um tubarão adulto?",
-    "answer": 0,
-    "unit": "ossos",
+    "question": "Quantas fendas branquiais a maioria das espécies de tubarão possui em cada lado do corpo?",
+    "answer": 5,
+    "unit": "fendas branquiais",
     "ducks": 1,
-    "fact": "Zero! O esqueleto dos tubarões é totalmente cartilaginoso, mais leve e flexível que o osso."
+    "fact": "A grande maioria tem exatamente 5 pares de fendas branquiais (embora espécies raras tenham 6 ou 7)."
   },
   {
     "id": 48,
@@ -898,5 +898,2705 @@
     "unit": "cores",
     "ducks": 1,
     "fact": "Vermelho, laranja, amarelo, verde, azul, anil e violeta."
+  },
+  {
+    "id": 101,
+    "category": "Astronomia & Espaço",
+    "question": "Quantos planetas anões oficiais são reconhecidos pela União Astronômica Internacional no Sistema Solar?",
+    "answer": 5,
+    "unit": "planetas anões",
+    "ducks": 1,
+    "fact": "São eles: Plutão, Ceres, Éris, Haumea e Makemake."
+  },
+  {
+    "id": 102,
+    "category": "Astronomia & Espaço",
+    "question": "Quantos minutos a luz do Sol leva para chegar até a Terra (arredondado para inteiro mais próximo)?",
+    "answer": 8,
+    "unit": "minutos",
+    "ducks": 1,
+    "fact": "A luz viaja cerca de 150 milhões de quilômetros em aproximadamente 8 minutos e 20 segundos!"
+  },
+  {
+    "id": 103,
+    "category": "Astronomia & Espaço",
+    "question": "Quantos astronautas já pisaram na superfície da Lua em toda a história?",
+    "answer": 12,
+    "unit": "astronautas",
+    "ducks": 2,
+    "fact": "Todos eram americanos do programa Apollo entre 1969 e 1972 (Neil Armstrong foi o primeiro e Eugene Cernan o último)."
+  },
+  {
+    "id": 104,
+    "category": "Astronomia & Espaço",
+    "question": "Quantos dias dura aproximadamente um ano no planeta Marte (em dias terrestres)?",
+    "answer": 687,
+    "unit": "dias terrestres",
+    "ducks": 3,
+    "fact": "Como Marte está mais distante do Sol que a Terra, sua órbita leva quase o dobro do tempo terrestre."
+  },
+  {
+    "id": 105,
+    "category": "Astronomia & Espaço",
+    "question": "Quantas luas oficiais orbitam o planeta Marte?",
+    "answer": 2,
+    "unit": "luas",
+    "ducks": 1,
+    "fact": "São elas Fobos e Deimos, dois pequenos corpos celestes que parecem asteroides capturados."
+  },
+  {
+    "id": 106,
+    "category": "Astronomia & Espaço",
+    "question": "Quantas constelações oficiais são reconhecidas pela União Astronômica Internacional no céu noturno?",
+    "answer": 88,
+    "unit": "constelações",
+    "ducks": 2,
+    "fact": "O mapeamento foi oficializado em 1922 dividindo toda a esfera celeste em 88 regiões."
+  },
+  {
+    "id": 107,
+    "category": "Astronomia & Espaço",
+    "question": "Quantas tripulações pousaram na Lua com sucesso no programa Apollo?",
+    "answer": 6,
+    "unit": "missões",
+    "ducks": 1,
+    "fact": "Missões Apollo 11, 12, 14, 15, 16 e 17 (a Apollo 13 sofreu o acidente no tanque de oxigênio e não pousou)."
+  },
+  {
+    "id": 108,
+    "category": "Astronomia & Espaço",
+    "question": "Quantos anos leva aproximadamente o planeta Plutão para completar uma única volta ao redor do Sol?",
+    "answer": 248,
+    "unit": "anos terrestres",
+    "ducks": 3,
+    "fact": "Plutão foi descoberto em 1930 e ainda não completou nem uma volta completa desde sua descoberta (isso só ocorrerá em 2178)!"
+  },
+  {
+    "id": 109,
+    "category": "Astronomia & Espaço",
+    "question": "Quantos anéis principais Saturno possui catalogados por letras (A até G)?",
+    "answer": 7,
+    "unit": "anéis principais",
+    "ducks": 1,
+    "fact": "Eles são compostos por 99% de partículas de gelo de água pura com tamanhos de poeira até blocos de vários metros."
+  },
+  {
+    "id": 110,
+    "category": "Astronomia & Espaço",
+    "question": "Quantas pessoas podem viver a bordo da Estação Espacial Internacional (ISS) em sua tripulação padrão completa?",
+    "answer": 7,
+    "unit": "astronautas",
+    "ducks": 2,
+    "fact": "A tripulação de longa permanência geralmente conta com 7 astronautas e cosmonautas de vários países."
+  },
+  {
+    "id": 111,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantas costelas tem o corpo humano no total (pares esquerdo e direito somados)?",
+    "answer": 24,
+    "unit": "costelas",
+    "ducks": 2,
+    "fact": "São 12 pares: 7 pares de costelas verdadeiras, 3 falsas e 2 pares de flutuantes."
+  },
+  {
+    "id": 112,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantos ossos compõem a mão humana (incluindo punho, palma e dedos)?",
+    "answer": 27,
+    "unit": "ossos",
+    "ducks": 2,
+    "fact": "São 8 ossos carpais no punho, 5 metacarpais na palma e 14 falanges nos dedos."
+  },
+  {
+    "id": 113,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantos ossos compõem o pé e tornozelo humanos?",
+    "answer": 26,
+    "unit": "ossos",
+    "ducks": 2,
+    "fact": "Juntos, os dois pés contêm mais de 25% de todos os ossos do corpo humano!"
+  },
+  {
+    "id": 114,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantas vértebras compõem a coluna vertebral humana adulta padrão (com sacro e cóccix fundidos)?",
+    "answer": 26,
+    "unit": "vértebras",
+    "ducks": 2,
+    "fact": "São 7 cervicais, 12 torácicas, 5 lombares, o osso sacro (5 fundidas) e o cóccix (4 fundidas)."
+  },
+  {
+    "id": 115,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantos litros de sangue circulam em média no corpo de um adulto saudável?",
+    "answer": 5,
+    "unit": "litros",
+    "ducks": 1,
+    "fact": "Isso representa cerca de 7% a 8% do peso corporal total de um adulto."
+  },
+  {
+    "id": 116,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantas batidas por minuto (bpm) bate em média o coração de um adulto em repouso?",
+    "answer": 72,
+    "unit": "batidas por minuto",
+    "ducks": 2,
+    "fact": "A faixa normal em repouso fica entre 60 e 100 bpm, com a média em torno de 70 a 75 bpm."
+  },
+  {
+    "id": 117,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantos cromossomos tem uma célula humana normal (número diploide)?",
+    "answer": 46,
+    "unit": "cromossomos",
+    "ducks": 2,
+    "fact": "São 23 pares recebidos dos pais (22 pares autossomos e 1 par de cromossomos sexuais)."
+  },
+  {
+    "id": 118,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantos grupos sanguíneos principais existem no sistema ABO?",
+    "answer": 4,
+    "unit": "tipos",
+    "ducks": 1,
+    "fact": "São os tipos A, B, AB e O (combinados com o fator Rh positivo ou negativo formam os 8 tipos comuns)."
+  },
+  {
+    "id": 119,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantos músculos o ser humano utiliza aproximadamente para conseguir dar um único passo?",
+    "answer": 200,
+    "unit": "músculos",
+    "ducks": 3,
+    "fact": "O ato de caminhar envolve coordenação de pernas, quadris, abdômen e costas!"
+  },
+  {
+    "id": 120,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantos pares de nervos cranianos existem no cérebro humano?",
+    "answer": 12,
+    "unit": "pares",
+    "ducks": 2,
+    "fact": "Eles controlam olfato, visão, audição, paladar e movimentos dos olhos e da face."
+  },
+  {
+    "id": 121,
+    "category": "Ciência & Natureza",
+    "question": "Quantos estômagos (compartimentos estomacais) possui uma vaca?",
+    "answer": 4,
+    "unit": "compartimentos",
+    "ducks": 1,
+    "fact": "São eles o rúmen, o retículo, o omaso e o abomaso (o estômago verdadeiro)."
+  },
+  {
+    "id": 122,
+    "category": "Ciência & Natureza",
+    "question": "Quantas pernas tem uma lagosta marinha comum (incluindo as pinças anteriores)?",
+    "answer": 10,
+    "unit": "pernas",
+    "ducks": 1,
+    "fact": "Lagostas são crustáceos decápodes, significando 'dez pés'."
+  },
+  {
+    "id": 123,
+    "category": "Ciência & Natureza",
+    "question": "Quantos tentáculos tem uma lula gigante?",
+    "answer": 10,
+    "unit": "tentáculos/braços",
+    "ducks": 2,
+    "fact": "Lulas possuem 8 braços com ventosas e mais 2 longos tentáculos de caça especializados."
+  },
+  {
+    "id": 124,
+    "category": "Ciência & Natureza",
+    "question": "Quantos dentes pode ter um tubarão ao longo de toda a sua vida (substituindo continuamente)?",
+    "answer": 30000,
+    "unit": "dentes",
+    "ducks": 3,
+    "fact": "Tubarões têm fileiras de reposição; quando um dente cai ou quebra, outro desliza para a frente em poucos dias!"
+  },
+  {
+    "id": 125,
+    "category": "Ciência & Natureza",
+    "question": "Quantas semanas dura em média a gestação de uma cadela?",
+    "answer": 9,
+    "unit": "semanas",
+    "ducks": 1,
+    "fact": "A gestação canina varia entre 58 e 68 dias, ou cerca de 9 semanas."
+  },
+  {
+    "id": 126,
+    "category": "Ciência & Natureza",
+    "question": "Quantos olhos tem uma abelha melífera?",
+    "answer": 5,
+    "unit": "olhos",
+    "ducks": 2,
+    "fact": "Elas têm 2 grandes olhos compostos laterais e 3 pequenos ocelos no topo da cabeça para orientação solar!"
+  },
+  {
+    "id": 127,
+    "category": "Ciência & Natureza",
+    "question": "Quantas asas tem uma libélula comum?",
+    "answer": 4,
+    "unit": "asas",
+    "ducks": 1,
+    "fact": "Elas têm 2 pares de asas transparentes e independentes que permitem voar em qualquer direção, inclusive para trás."
+  },
+  {
+    "id": 128,
+    "category": "Ciência & Natureza",
+    "question": "Quantos dias dura em média a vida de uma mosca doméstica adulta?",
+    "answer": 28,
+    "unit": "dias",
+    "ducks": 2,
+    "fact": "A vida média varia de 15 a 30 dias dependendo da temperatura e acesso a alimentos."
+  },
+  {
+    "id": 129,
+    "category": "Ciência & Natureza",
+    "question": "Quantos dedos tem um gato nas quatro patas somadas (considerando patas dianteiras com 5 e traseiras com 4)?",
+    "answer": 18,
+    "unit": "dedos",
+    "ducks": 2,
+    "fact": "Gatos têm 5 dedos em cada pata da frente e 4 dedos em cada pata traseira."
+  },
+  {
+    "id": 130,
+    "category": "Ciência & Natureza",
+    "question": "Quantos quilômetros por hora atinge o guepardo em seu arranque máximo?",
+    "answer": 120,
+    "unit": "km/h",
+    "ducks": 2,
+    "fact": "Ele é o animal terrestre mais veloz do planeta e atinge 100 km/h em menos de 3 segundos!"
+  },
+  {
+    "id": 131,
+    "category": "Ciência & Natureza",
+    "question": "Quantos meses pode durar a gestação de um elefante africano (o período de gestação mais longo entre mamíferos)?",
+    "answer": 22,
+    "unit": "meses",
+    "ducks": 3,
+    "fact": "Quase dois anos completos de gravidez para gerar um filhote com cerca de 100 kg!"
+  },
+  {
+    "id": 132,
+    "category": "Ciência & Natureza",
+    "question": "Quantos dentes tem um caracol terrestre em sua língua áspera (rádula), em média?",
+    "answer": 14000,
+    "unit": "dentes microscópicos",
+    "ducks": 3,
+    "fact": "A rádula dos caracóis possui milhares de fileiras de dentículos microscópicos para raspar folhas!"
+  },
+  {
+    "id": 133,
+    "category": "Ciência & Natureza",
+    "question": "Quantas vértebras cervicais tem o pescoço de uma girafa gigante?",
+    "answer": 7,
+    "unit": "vértebras",
+    "ducks": 2,
+    "fact": "Surpreendentemente, girafas têm exatamente o mesmo número de vértebras no pescoço que humanos e a maioria dos mamíferos, só que muito maiores!"
+  },
+  {
+    "id": 134,
+    "category": "Ciência & Natureza",
+    "question": "Quantos anos pode viver uma tartaruga-gigante-de-galápagos em média?",
+    "answer": 150,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Alguns espécimes registrados chegaram a ultrapassar 175 anos de idade com saúde!"
+  },
+  {
+    "id": 135,
+    "category": "Mundo & Geografia",
+    "question": "Quantos países fazem fronteira terrestre direta com o Brasil?",
+    "answer": 10,
+    "unit": "países",
+    "ducks": 2,
+    "fact": "O Brasil faz fronteira com todos os países da América do Sul exceto Chile e Equador!"
+  },
+  {
+    "id": 136,
+    "category": "Mundo & Geografia",
+    "question": "Quantos estados compõem os Estados Unidos da América?",
+    "answer": 50,
+    "unit": "estados",
+    "ducks": 1,
+    "fact": "Representados pelas 50 estrelas brancas na bandeira norte-americana."
+  },
+  {
+    "id": 137,
+    "category": "Mundo & Geografia",
+    "question": "Quantos fusos horários diferentes cobrem todo o território da Rússia (de leste a oeste)?",
+    "answer": 11,
+    "unit": "fusos horários",
+    "ducks": 2,
+    "fact": "A Rússia é o país com maior extensão territorial do mundo, estendendo-se por 11 fusos contínuos."
+  },
+  {
+    "id": 138,
+    "category": "Mundo & Geografia",
+    "question": "Quantos países membros compõem oficialmente a União Europeia atualmente?",
+    "answer": 27,
+    "unit": "países",
+    "ducks": 2,
+    "fact": "Eram 28 até a saída oficial do Reino Unido (Brexit) concluída em 2020."
+  },
+  {
+    "id": 139,
+    "category": "Mundo & Geografia",
+    "question": "Quantos oceanos são oficialmente reconhecidos no planeta Terra?",
+    "answer": 5,
+    "unit": "oceanos",
+    "ducks": 1,
+    "fact": "Pacífico, Atlântico, Índico, Ártico e o Oceano Antártico (Glacial Antártico)."
+  },
+  {
+    "id": 140,
+    "category": "Mundo & Geografia",
+    "question": "Quantos metros de altura tem o Cristo Redentor no Rio de Janeiro (incluindo o pedestal de 8 metros)?",
+    "answer": 38,
+    "unit": "metros",
+    "ducks": 2,
+    "fact": "A estátua tem 30 metros e repousa sobre um pedestal de 8 metros no topo do Corcovado."
+  },
+  {
+    "id": 141,
+    "category": "Mundo & Geografia",
+    "question": "Quantos metros de altura tem a Torre Eiffel em Paris (incluindo antenas)?",
+    "answer": 330,
+    "unit": "metros",
+    "ducks": 2,
+    "fact": "Inaugurada em 1889 com 312 metros, hoje mede 330 metros após a adição de antenas de rádio."
+  },
+  {
+    "id": 142,
+    "category": "Mundo & Geografia",
+    "question": "Quantas ilhas formam o arquipélago principal do Havaí?",
+    "answer": 8,
+    "unit": "ilhas principais",
+    "ducks": 2,
+    "fact": "Havaí (Big Island), Maui, Oahu, Kauai, Molokai, Lanai, Niihau e Kahoolawe."
+  },
+  {
+    "id": 143,
+    "category": "Mundo & Geografia",
+    "question": "Quantos quilômetros de extensão tem aproximadamente a Linha do Equador terrestre?",
+    "answer": 40075,
+    "unit": "quilômetros",
+    "ducks": 3,
+    "fact": "Essa é a circunferência equatorial exata da Terra calculada pelos sistemas geodésicos modernos."
+  },
+  {
+    "id": 144,
+    "category": "Mundo & Geografia",
+    "question": "Quantas cataratas/quedas formam aproximadamente o conjunto das Cataratas do Iguaçu?",
+    "answer": 275,
+    "unit": "quedas d'água",
+    "ducks": 3,
+    "fact": "O número varia de 150 a 300 dependendo da vazão do rio, com média catalogada de 275 quedas!"
+  },
+  {
+    "id": 145,
+    "category": "Mundo & Geografia",
+    "question": "Quantas estrelas estão estampadas na bandeira nacional do Brasil?",
+    "answer": 27,
+    "unit": "estrelas",
+    "ducks": 2,
+    "fact": "Representam os 26 estados brasileiros e o Distrito Federal."
+  },
+  {
+    "id": 146,
+    "category": "Mundo & Geografia",
+    "question": "Quantos países compõem a América do Sul no total?",
+    "answer": 12,
+    "unit": "países soberanos",
+    "ducks": 1,
+    "fact": "12 países soberanos mais a Guiana Francesa (que é um território ultramarino da França)."
+  },
+  {
+    "id": 147,
+    "category": "Mundo & Geografia",
+    "question": "Quantos degraus tem que subir a pé quem quiser ir do chão até o topo do Corcovado pelas escadarias históricas?",
+    "answer": 220,
+    "unit": "degraus",
+    "ducks": 2,
+    "fact": "Embora hoje haja escadas rolantes e elevadores panorâmicos, a escadaria histórica tem 220 degraus."
+  },
+  {
+    "id": 148,
+    "category": "Mundo & Geografia",
+    "question": "Quantos países no mundo têm o português como língua oficial?",
+    "answer": 9,
+    "unit": "países",
+    "ducks": 2,
+    "fact": "Brasil, Portugal, Angola, Moçambique, Guiné-Bissau, Cabo Verde, São Tomé e Príncipe, Timor-Leste e Guiné Equatorial."
+  },
+  {
+    "id": 149,
+    "category": "Mundo & Geografia",
+    "question": "Quantos metros de profundidade tem o ponto mais fundo dos oceanos na Fossa das Marianas?",
+    "answer": 10994,
+    "unit": "metros",
+    "ducks": 3,
+    "fact": "Conhecido como Challenger Deep, se o Monte Everest fosse colocado ali, ainda sobrariam mais de 2 km de água por cima!"
+  },
+  {
+    "id": 150,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos Pokémon existiam na primeira geração original de Game Boy (Red/Blue)?",
+    "answer": 151,
+    "unit": "Pokémon",
+    "ducks": 2,
+    "fact": "Do Bulbassauro (#001) ao lendário Mew (#151)!"
+  },
+  {
+    "id": 151,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos botões e direcionais tem o controle clássico do Super Nintendo (SNES)?",
+    "answer": 8,
+    "unit": "botões",
+    "ducks": 1,
+    "fact": "D-Pad, botões A, B, X, Y, Select, Start e os inovadores botões de ombro L e R!"
+  },
+  {
+    "id": 152,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos blocos de altura máxima pode ter uma torre de Jenga antes do jogo começar (18 andares com 3 blocos)?",
+    "answer": 54,
+    "unit": "blocos de madeira",
+    "ducks": 2,
+    "fact": "O jogo original de Jenga possui exatamente 54 blocos de madeira dura organizados em 18 camadas de 3."
+  },
+  {
+    "id": 153,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas casas tem o tabuleiro oficial de Dama internacional (10x10)?",
+    "answer": 100,
+    "unit": "casas",
+    "ducks": 2,
+    "fact": "No jogo de damas de padrão internacional o tabuleiro é 10x10 (100 casas), enquanto no padrão brasileiro tradicional costuma ser 8x8 (64 casas)."
+  },
+  {
+    "id": 154,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas peças compõem o quebra-cabeça do Cubo Mágico 3x3x3 padrão (sem contar o núcleo fixo)?",
+    "answer": 26,
+    "unit": "peças móveis",
+    "ducks": 2,
+    "fact": "São 8 peças de quina (cantos), 12 peças de borda (arestas) e 6 centros móveis presos ao núcleo cruciforme."
+  },
+  {
+    "id": 155,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas peças compõem o jogo clássico de Dominó tradicional (duplo-seis)?",
+    "answer": 28,
+    "unit": "pedras",
+    "ducks": 2,
+    "fact": "Do duplo-branco (0-0) até o lendário duplo-seis (6-6)."
+  },
+  {
+    "id": 156,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos pontos vale a letra 'Z' no jogo oficial de palavras Scrabble em português?",
+    "answer": 8,
+    "unit": "pontos",
+    "ducks": 1,
+    "fact": "No Scrabble brasileiro, a letra Z vale 8 pontos, empatada com X como uma das letras mais valiosas!"
+  },
+  {
+    "id": 157,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos mundos tem o clássico Super Mario Bros do NES (cada um com 4 fases)?",
+    "answer": 8,
+    "unit": "mundos",
+    "ducks": 1,
+    "fact": "São 8 mundos com 4 fases cada, totalizando as lendárias 32 fases originais!"
+  },
+  {
+    "id": 158,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas estrelas de ouro é possível coletar no jogo Super Mario 64 do Nintendo 64?",
+    "answer": 120,
+    "unit": "estrelas do poder",
+    "ducks": 2,
+    "fact": "Coletar todas as 120 estrelas destrava o canhão do castelo para encontrar o Yoshi no telhado!"
+  },
+  {
+    "id": 159,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos jogadores compõem uma partida padrão de Among Us no número máximo permitido?",
+    "answer": 15,
+    "unit": "jogadores",
+    "ducks": 1,
+    "fact": "O jogo começou com limite de 10 jogadores e foi expandido pela Innersloth para até 15 tripulantes com até 3 impostores."
+  },
+  {
+    "id": 160,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos diamantes são necessários para forjar uma armadura completa em Minecraft (elmo, peitoral, calça e botas)?",
+    "answer": 24,
+    "unit": "diamantes",
+    "ducks": 2,
+    "fact": "5 para o capacete, 8 para o peitoral, 7 para a calça e 4 para as botas."
+  },
+  {
+    "id": 161,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos pinos há em uma pista oficial de boliche tradicional?",
+    "answer": 10,
+    "unit": "pinos",
+    "ducks": 1,
+    "fact": "Dispostos em formação triangular na proporção 1-2-3-4."
+  },
+  {
+    "id": 162,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas bolas no total há na mesa no início de uma partida tradicional de Sinuca / Bilhar mata-mata (8-ball)?",
+    "answer": 16,
+    "unit": "bolas",
+    "ducks": 2,
+    "fact": "15 bolas coloridas numeradas organizadas no triângulo mais a bola branca de tiro."
+  },
+  {
+    "id": 163,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas cartas compõem um baralho oficial de Tarot clássico (arcanos maiores e menores)?",
+    "answer": 78,
+    "unit": "cartas",
+    "ducks": 2,
+    "fact": "São 22 Arcanos Maiores e 56 Arcanos Menores divididos em 4 naipes."
+  },
+  {
+    "id": 164,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos anos durou a produção de Grand Theft Auto V (GTA V) até seu lançamento original em 2013?",
+    "answer": 5,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "A Rockstar Games começou o desenvolvimento em 2008 logo após GTA IV, lançando a obra-prima em setembro de 2013."
+  },
+  {
+    "id": 165,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantas estatuetas do Oscar o filme Titanic (1997) ganhou?",
+    "answer": 11,
+    "unit": "estatuetas do Oscar",
+    "ducks": 2,
+    "fact": "Empatado com Ben-Hur (1959) e O Senhor dos Anéis: O Retorno do Rei (2003) como os maiores vencedores da história!"
+  },
+  {
+    "id": 166,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos episódios tem a famosa série de comédia Friends em suas 10 temporadas completas?",
+    "answer": 236,
+    "unit": "episódios",
+    "ducks": 3,
+    "fact": "A série foi ao ar de 1994 a 2004 e continua sendo uma das mais assistidas do streaming mundial."
+  },
+  {
+    "id": 167,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos filmes oficiais do agente secreto James Bond (007) foram lançados pela EON Productions até 2021?",
+    "answer": 25,
+    "unit": "filmes",
+    "ducks": 2,
+    "fact": "De '007 Contra o Satânico Dr. No' (1962) até 'Sem Tempo Para Morrer' (2021) com Daniel Craig."
+  },
+  {
+    "id": 168,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos minutos tem a versão estendida do filme O Senhor dos Anéis: O Retorno do Rei?",
+    "answer": 263,
+    "unit": "minutos",
+    "ducks": 3,
+    "fact": "São impressionantes 4 horas e 23 minutos de cinema épico na versão estendida de Peter Jackson!"
+  },
+  {
+    "id": 169,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantas Joias do Infinito existem no Universo Cinematográfico da Marvel (MCU)?",
+    "answer": 6,
+    "unit": "joias",
+    "ducks": 1,
+    "fact": "Espaço (Azul), Mente (Amarela), Realidade (Vermelha), Poder (Roxa), Tempo (Verde) e Alma (Laranja)!"
+  },
+  {
+    "id": 170,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantas temporadas completas teve a premiada série Game of Thrones na HBO?",
+    "answer": 8,
+    "unit": "temporadas",
+    "ducks": 1,
+    "fact": "Exibida entre 2011 e 2019, quebrando recordes de audiência e ganhando 59 prêmios Emmy."
+  },
+  {
+    "id": 171,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos dálmatas dão título ao famoso desenho animado da Disney?",
+    "answer": 101,
+    "unit": "dálmatas",
+    "ducks": 1,
+    "fact": "Pongo e Prenda tiveram 15 filhotes, e os outros 84 foram resgatados das garras de Cruella de Vil!"
+  },
+  {
+    "id": 172,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantas portas de entrada com nome de feriado existem no tronco das árvores na abertura de 'O Estranho Mundo de Jack'?",
+    "answer": 7,
+    "unit": "árvores de feriados",
+    "ducks": 2,
+    "fact": "Halloween, Natal, Páscoa, Dia de Ação de Graças, São Patrício, Dia dos Namorados e 4 de Julho!"
+  },
+  {
+    "id": 173,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos Oscars Walt Disney ganhou pessoalmente ao longo de sua carreira (recorde absoluto até hoje)?",
+    "answer": 22,
+    "unit": "estatuetas do Oscar",
+    "ducks": 2,
+    "fact": "Ele teve 59 indicações competitivas e venceu 22 Oscars, além de 4 prêmios honorários."
+  },
+  {
+    "id": 174,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos filmes compõem a saga cinematográfica principal de Harry Potter (baseada nos 7 livros)?",
+    "answer": 8,
+    "unit": "filmes",
+    "ducks": 1,
+    "fact": "O último livro 'As Relíquias da Morte' foi dividido em Parte 1 e Parte 2 no cinema."
+  },
+  {
+    "id": 175,
+    "category": "Esportes",
+    "question": "Quantos metros tem uma piscina olímpica oficial de natação?",
+    "answer": 50,
+    "unit": "metros",
+    "ducks": 1,
+    "fact": "Tem 50 metros de comprimento, no mínimo 25 metros de largura e 2 metros de profundidade recomendada."
+  },
+  {
+    "id": 176,
+    "category": "Esportes",
+    "question": "Quantas jardas tem um campo de futebol americano da NFL (incluindo as duas end zones de 10 jardas)?",
+    "answer": 120,
+    "unit": "jardas",
+    "ducks": 2,
+    "fact": "O campo de jogo tem 100 jardas e cada end zone acrescenta mais 10 jardas em cada ponta."
+  },
+  {
+    "id": 177,
+    "category": "Esportes",
+    "question": "Quantos pontos vale um touchdown no futebol americano (sem a conversão extra de chute ou dois pontos)?",
+    "answer": 6,
+    "unit": "pontos",
+    "ducks": 1,
+    "fact": "O touchdown em si vale 6 pontos; depois o time tenta o chute de 1 ponto ou a conversão de 2 pontos."
+  },
+  {
+    "id": 178,
+    "category": "Esportes",
+    "question": "Quantos segundos dura a posse de bola no basquete da NBA para um ataque antes do estouro do cronômetro?",
+    "answer": 24,
+    "unit": "segundos",
+    "ducks": 2,
+    "fact": "O shot clock de 24 segundos foi introduzido em 1954 e revolucionou a velocidade e a pontuação do basquete."
+  },
+  {
+    "id": 179,
+    "category": "Esportes",
+    "question": "Quantos jogadores de cada equipe ficam dentro de campo durante uma partida de Rugby Union tradicional?",
+    "answer": 15,
+    "unit": "jogadores",
+    "ducks": 2,
+    "fact": "No rugby tradicional (Union) jogam 15 contra 15, ao contrário da versão olímpica que é disputada por 7 atletas (Rugby Sevens)."
+  },
+  {
+    "id": 180,
+    "category": "Esportes",
+    "question": "Quantos títulos mundiais de Fórmula 1 o piloto brasileiro Ayrton Senna conquistou?",
+    "answer": 3,
+    "unit": "títulos",
+    "ducks": 1,
+    "fact": "Senna foi campeão do mundo nos anos de 1988, 1990 e 1991, todos correndo pela lendária McLaren-Honda."
+  },
+  {
+    "id": 181,
+    "category": "Esportes",
+    "question": "Quantas medalhas olímpicas o nadador Michael Phelps conquistou em toda a sua carreira (recordista da história)?",
+    "answer": 28,
+    "unit": "medalhas",
+    "ducks": 2,
+    "fact": "Sendo 23 de ouro, 3 de prata e 2 de bronze ao longo de cinco edições dos Jogos Olímpicos!"
+  },
+  {
+    "id": 182,
+    "category": "Esportes",
+    "question": "Quantos metros de altura fica a cesta de basquete em relação ao chão nas regras da FIBA e NBA?",
+    "answer": 3,
+    "unit": "metros (3,05 m)",
+    "ducks": 1,
+    "fact": "Exatamente 10 pés de altura, o que equivale a 3,05 metros!"
+  },
+  {
+    "id": 183,
+    "category": "Esportes",
+    "question": "Quantas Copas do Mundo a Seleção Brasileira masculina de futebol já venceu até hoje?",
+    "answer": 5,
+    "unit": "títulos mundiais",
+    "ducks": 1,
+    "fact": "1958 na Suécia, 1962 no Chile, 1970 no México, 1994 nos EUA e 2002 na Coreia/Japão (o único Pentacampeão)!"
+  },
+  {
+    "id": 184,
+    "category": "Esportes",
+    "question": "Quantos buracos são jogados em uma rodada completa de golfe profissional padrão?",
+    "answer": 18,
+    "unit": "buracos",
+    "ducks": 2,
+    "fact": "O campo clássico de St Andrews na Escócia estabeleceu a tradição de 18 buracos em 1764."
+  },
+  {
+    "id": 185,
+    "category": "História & Sociedade",
+    "question": "Quantos anos durou a Guerra dos Cem Anos entre Inglaterra e França?",
+    "answer": 116,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Apesar do nome, o conflito durou de 1337 até 1453 com vários períodos de trégua intercalados!"
+  },
+  {
+    "id": 186,
+    "category": "História & Sociedade",
+    "question": "Quantos presidentes o Brasil já teve desde a Proclamação da República até Luiz Inácio Lula da Silva em seu 3º mandato (contando posses oficiais)?",
+    "answer": 39,
+    "unit": "presidentes",
+    "ducks": 2,
+    "fact": "De Deodoro da Fonseca em 1889 até o 39º presidente do país."
+  },
+  {
+    "id": 187,
+    "category": "História & Sociedade",
+    "question": "Quantos dias durou a Primeira Viagem de Cristóvão Colombo em 1492 desde a saída das Ilhas Canárias até avistar terra nas Bahamas?",
+    "answer": 36,
+    "unit": "dias de navegação",
+    "ducks": 3,
+    "fact": "Eles partiram de La Gomera em 6 de setembro e avistaram a ilha de Guanahani em 12 de outubro de 1492."
+  },
+  {
+    "id": 188,
+    "category": "História & Sociedade",
+    "question": "Em que século a imprensa com tipos móveis foi inventada por Johannes Gutenberg na Europa (século XV)?",
+    "answer": 15,
+    "unit": "século",
+    "ducks": 1,
+    "fact": "Por volta de 1440, iniciando a democratização do conhecimento e da leitura no mundo ocidental."
+  },
+  {
+    "id": 189,
+    "category": "História & Sociedade",
+    "question": "Quantas Maravilhas do Mundo Antigo existiam na lista canônica clássica?",
+    "answer": 7,
+    "unit": "maravilhas",
+    "ducks": 1,
+    "fact": "Apenas a Grande Pirâmide de Gizé ainda está em pé nos dias de hoje!"
+  },
+  {
+    "id": 190,
+    "category": "História & Sociedade",
+    "question": "Quantos anos tinha o imperador romano Júlio César quando foi assassinado nos Idos de Março de 44 a.C.?",
+    "answer": 55,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Ele nasceu em 100 a.C. e foi apunhalado no Senado romano em 15 de março de 44 a.C."
+  },
+  {
+    "id": 191,
+    "category": "História & Sociedade",
+    "question": "Quantas nações assinaram a Carta de fundação da Organização das Nações Unidas (ONU) em 1945 em São Francisco?",
+    "answer": 50,
+    "unit": "países fundadores",
+    "ducks": 2,
+    "fact": "50 países assinaram em 26 de junho e a Polônia assinou logo depois como o 51º membro fundador original."
+  },
+  {
+    "id": 192,
+    "category": "História & Sociedade",
+    "question": "Quantas caravelas/naus compunham a esquadra de Pedro Álvares Cabral na chegada ao Brasil em 1500?",
+    "answer": 13,
+    "unit": "embarcações",
+    "ducks": 2,
+    "fact": "Eram 10 naus e 3 caravelas tripuladas por cerca de 1.500 homens na maior expedição marítima de Portugal até então."
+  },
+  {
+    "id": 193,
+    "category": "História & Sociedade",
+    "question": "Quantos anos durou a construção do Muro de Berlim até sua histórica queda em 1989?",
+    "answer": 28,
+    "unit": "anos em pé",
+    "ducks": 2,
+    "fact": "Erguido na noite de 13 de agosto de 1961 pela Alemanha Oriental e derrubado em 9 de novembro de 1989."
+  },
+  {
+    "id": 194,
+    "category": "História & Sociedade",
+    "question": "Quantos dias durou a crise dos mísseis em Cuba em outubro de 1962 (o momento mais tenso da Guerra Fria)?",
+    "answer": 13,
+    "unit": "dias",
+    "ducks": 2,
+    "fact": "Entre 16 e 28 de outubro de 1962, o mundo esteve à beira de uma guerra nuclear entre EUA e União Soviética."
+  },
+  {
+    "id": 195,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas sementes tem em média uma espiga de milho madura padrão?",
+    "answer": 800,
+    "unit": "grãos de milho",
+    "ducks": 3,
+    "fact": "Uma espiga de milho tem em média 16 fileiras com cerca de 50 grãos cada, sempre em número par de fileiras!"
+  },
+  {
+    "id": 196,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas uvas são necessárias aproximadamente para produzir uma garrafa de 750 ml de vinho?",
+    "answer": 700,
+    "unit": "uvas",
+    "ducks": 3,
+    "fact": "Equivale a cerca de 1,2 kg a 1,5 kg de uvas frescas colhidas."
+  },
+  {
+    "id": 197,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos graus Celsius de temperatura precisa atingir o óleo de cozinha para fritar batatas perfeitamente?",
+    "answer": 180,
+    "unit": "graus Celsius",
+    "ducks": 2,
+    "fact": "A temperatura ideal para fritura por imersão sem encharcar fica entre 175°C e 180°C."
+  },
+  {
+    "id": 198,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos litros de leite são necessários em média para produzir 1 kg de queijo curado tipo Parmesão?",
+    "answer": 14,
+    "unit": "litros de leite",
+    "ducks": 2,
+    "fact": "Como o queijo passa por longa desidratação e maturação, são precisos até 14 litros de leite de vaca!"
+  },
+  {
+    "id": 199,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas calorias (kcal) tem aproximadamente uma colher de sopa de azeite de oliva puro?",
+    "answer": 119,
+    "unit": "calorias (kcal)",
+    "ducks": 2,
+    "fact": "O azeite de oliva é 100% lipídio benéfico e fornece cerca de 119 a 120 calorias por porção de 13 ml."
+  },
+  {
+    "id": 200,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos anos de idade precisa ter um whisky escocês tradicional para poder ser chamado legalmente de 'Scotch'?",
+    "answer": 3,
+    "unit": "anos de maturação",
+    "ducks": 1,
+    "fact": "A lei do Reino Unido exige no mínimo 3 anos inteiros de envelhecimento em barris de carvalho na Escócia."
+  },
+  {
+    "id": 201,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas fatias tem uma pizza grande tradicional padrão no Brasil?",
+    "answer": 8,
+    "unit": "fatias",
+    "ducks": 1,
+    "fact": "O corte padrão em quatro diâmetros cruzados divide a pizza grande de 35 cm em 8 pedaços triangulares."
+  },
+  {
+    "id": 202,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos gramas pesa aproximadamente uma barra de chocolate padrão vendida em supermercados brasileiros atuais?",
+    "answer": 80,
+    "unit": "gramas",
+    "ducks": 2,
+    "fact": "As barras que antigamente tinham 200g e 150g foram reduzidas pela indústria para cerca de 80g a 90g."
+  },
+  {
+    "id": 203,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos dias dura aproximadamente a maturação de um queijo Canastra tradicional artesanal meia-cura?",
+    "answer": 21,
+    "unit": "dias",
+    "ducks": 2,
+    "fact": "A maturação tradicional na Serra da Canastra dura entre 14 e 21 dias para atingir a casca amarelada perfeita."
+  },
+  {
+    "id": 204,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos mililitros (ml) tem uma lata de refrigerante padrão no Brasil?",
+    "answer": 350,
+    "unit": "ml",
+    "ducks": 1,
+    "fact": "A clássica lata de alumínio tem exatamente 350 ml de capacidade."
+  },
+  {
+    "id": 205,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos anos tem uma 'Bodas de Prata' de casamento?",
+    "answer": 25,
+    "unit": "anos de casado",
+    "ducks": 1,
+    "fact": "Enquanto as Bodas de Ouro comemoram 50 anos e as Bodas de Diamante 60 anos!"
+  },
+  {
+    "id": 206,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos segundos tem uma hora inteira?",
+    "answer": 3600,
+    "unit": "segundos",
+    "ducks": 2,
+    "fact": "60 segundos por minuto vezes 60 minutos em uma hora = 3.600 segundos!"
+  },
+  {
+    "id": 207,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos zeros tem o número 1 bilhão na notação numérica padrão (escala curta brasileira)?",
+    "answer": 9,
+    "unit": "zeros",
+    "ducks": 2,
+    "fact": "1.000.000.000 possui exatamente 9 zeros (10 elevado à 9ª potência)!"
+  },
+  {
+    "id": 208,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos caracteres tinha o limite máximo original de uma postagem no Twitter (X) quando foi criado?",
+    "answer": 140,
+    "unit": "caracteres",
+    "ducks": 1,
+    "fact": "O limite de 140 caracteres foi inspirado no teto dos SMS de celular de 160 caracteres menos o nome do usuário."
+  },
+  {
+    "id": 209,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas casas decimais do número Pi (π) costumam ser ensinadas para cálculos escolares básicos (3,...)?",
+    "answer": 2,
+    "unit": "casas decimais (3,14)",
+    "ducks": 1,
+    "fact": "A aproximação 3,14 usa 2 casas decimais, embora o número irracional tenha infinitos decimais."
+  },
+  {
+    "id": 210,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas cartas de números e ações tem uma caixa oficial do jogo de cartas UNO?",
+    "answer": 108,
+    "unit": "cartas",
+    "ducks": 2,
+    "fact": "São 108 cartas: 76 numéricas de cores, 24 de ação (Inverter, Pular, +2) e 8 cartas pretas (Coringa e +4)!"
+  },
+  {
+    "id": 211,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos anos viveu a pessoa mais velha já comprovada na história da humanidade (Jeanne Calment da França)?",
+    "answer": 122,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Ela viveu 122 anos e 164 dias, falecendo em 1997 com documentação civil confirmada!"
+  },
+  {
+    "id": 212,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas semanas completas tem um ano civil comum?",
+    "answer": 52,
+    "unit": "semanas",
+    "ducks": 1,
+    "fact": "52 semanas completas mais 1 dia adicional (ou 2 dias se for bissexto)."
+  },
+  {
+    "id": 213,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos lados tem a moeda brasileira de 25 centavos em seu formato poligonal?",
+    "answer": 7,
+    "unit": "lados (heptágono)",
+    "ducks": 2,
+    "fact": "A moeda de 25 centavos da segunda família do Real possui borda heptagonal com 7 lados para identificação tátil!"
+  },
+  {
+    "id": 214,
+    "category": "Ciência & Natureza",
+    "question": "Quantos elementos químicos compõem a Tabela Periódica moderna oficial reconhecida pela IUPAC?",
+    "answer": 118,
+    "unit": "elementos químicos",
+    "ducks": 2,
+    "fact": "Do Hidrogênio (número atômico 1) até o Oganessônio (número atômico 118)!"
+  },
+  {
+    "id": 215,
+    "category": "Ciência & Natureza",
+    "question": "Em que temperatura (em graus Celsius negativos) ocorre o Zero Absoluto arredondado para inteiro?",
+    "answer": 273,
+    "unit": "graus Celsius negativos (-273 °C)",
+    "ducks": 3,
+    "fact": "Equivale a 0 Kelvin ou aproximadamente -273,15 °C, onde toda agitação térmica molecular cessa teoricamente."
+  },
+  {
+    "id": 216,
+    "category": "Ciência & Natureza",
+    "question": "Quantos prótons tem um átomo de Ouro puro em seu núcleo atômico?",
+    "answer": 79,
+    "unit": "prótons",
+    "ducks": 2,
+    "fact": "O Ouro tem número atômico 79 na tabela periódica (símbolo químico Au)."
+  },
+  {
+    "id": 217,
+    "category": "Ciência & Natureza",
+    "question": "Quantos minutos leva para a luz da Lua refletida chegar até os olhos de quem a observa na Terra?",
+    "answer": 1,
+    "unit": "segundo (1,3 segundos)",
+    "ducks": 1,
+    "fact": "A Lua está a cerca de 384.400 km de distância; à velocidade da luz de 300.000 km/s, leva pouco mais de 1 segundo!"
+  },
+  {
+    "id": 218,
+    "category": "Ciência & Natureza",
+    "question": "Quantas patas tem uma centopeia comum na maioria das espécies reais (embora o nome sugira cem)?",
+    "answer": 30,
+    "unit": "patas (15 pares)",
+    "ducks": 2,
+    "fact": "A maioria das espécies tem cerca de 15 pares de patas (30 no total), e o número de pares é sempre ímpar!"
+  },
+  {
+    "id": 219,
+    "category": "Ciência & Natureza",
+    "question": "Quantos quilômetros por hora viaja o som no ar ao nível do mar a 20°C (Mach 1), arredondado?",
+    "answer": 1235,
+    "unit": "km/h",
+    "ducks": 3,
+    "fact": "A velocidade do som no ar à temperatura ambiente é cerca de 343 m/s, o que dá 1.235 km/h!"
+  },
+  {
+    "id": 220,
+    "category": "Ciência & Natureza",
+    "question": "Quantos litros de água uma pessoa comum deve beber por dia em média segundo as recomendações médicas gerais?",
+    "answer": 2,
+    "unit": "litros",
+    "ducks": 1,
+    "fact": "Geralmente recomendado cerca de 2 litros (ou 35 ml por kg de peso corporal ao dia)."
+  },
+  {
+    "id": 221,
+    "category": "Ciência & Natureza",
+    "question": "Quantos quilômetros tem a Maratona olímpica oficial?",
+    "answer": 42,
+    "unit": "quilômetros (42,195 km)",
+    "ducks": 1,
+    "fact": "A distância oficial é de 42 km e 195 metros, padronizada nos Jogos de Londres em 1908."
+  },
+  {
+    "id": 222,
+    "category": "Ciência & Natureza",
+    "question": "Quantos vulcões ativos existem aproximadamente em erupção constante no fundo dos oceanos do planeta Terra?",
+    "answer": 1500,
+    "unit": "vulcões submarinos ativos",
+    "ducks": 3,
+    "fact": "A maior parte da atividade vulcânica do planeta ocorre nas dorsais oceânicas abaixo de milhares de metros de água!"
+  },
+  {
+    "id": 223,
+    "category": "Ciência & Natureza",
+    "question": "Quantos filhotes em média uma porca pode dar à luz em uma única ninhada saudável?",
+    "answer": 12,
+    "unit": "leitões",
+    "ducks": 2,
+    "fact": "Uma ninhada normal tem entre 10 e 14 filhotes, havendo casos recordes de mais de 25 leitões!"
+  },
+  {
+    "id": 224,
+    "category": "Mundo & Geografia",
+    "question": "Quantas pontes cruzam os canais da cidade de Veneza na Itália?",
+    "answer": 400,
+    "unit": "pontes",
+    "ducks": 3,
+    "fact": "Veneza tem mais de 400 pontes históricas conectando 118 pequenas ilhotas separadas por canais!"
+  },
+  {
+    "id": 225,
+    "category": "Mundo & Geografia",
+    "question": "Quantas capitais nacionais diferentes já foram sedes do governo brasileiro na história?",
+    "answer": 3,
+    "unit": "capitais",
+    "ducks": 1,
+    "fact": "Salvador (1549–1763), Rio de Janeiro (1763–1960) e Brasília (desde 1960)!"
+  },
+  {
+    "id": 226,
+    "category": "Mundo & Geografia",
+    "question": "Quantas estações tem o metrô de Londres (o mais antigo sistema subterrâneo do mundo)?",
+    "answer": 272,
+    "unit": "estações",
+    "ducks": 3,
+    "fact": "Inaugurado em 1863, o London Underground atende 272 estações ao longo de 400 km de trilhos."
+  },
+  {
+    "id": 227,
+    "category": "Mundo & Geografia",
+    "question": "Quantos países têm costa banhada pelo Mar Mediterrâneo?",
+    "answer": 21,
+    "unit": "países",
+    "ducks": 2,
+    "fact": "Divididos entre a Europa, África e Ásia, incluindo Espanha, França, Itália, Grécia e Egito."
+  },
+  {
+    "id": 228,
+    "category": "Mundo & Geografia",
+    "question": "Quantos metros de altura acima do nível do mar tem o Monte Everest, o ponto mais alto da Terra?",
+    "answer": 8848,
+    "unit": "metros",
+    "ducks": 3,
+    "fact": "A medição oficial acordada entre Nepal e China estabelece 8.848,86 metros."
+  },
+  {
+    "id": 229,
+    "category": "Mundo & Geografia",
+    "question": "Quantos municípios compõem o estado de Minas Gerais (o estado brasileiro com mais municípios)?",
+    "answer": 853,
+    "unit": "municípios",
+    "ducks": 3,
+    "fact": "Minas Gerais sozinho possui mais cidades que qualquer outro estado brasileiro!"
+  },
+  {
+    "id": 230,
+    "category": "Mundo & Geografia",
+    "question": "Quantas ilhas formam o país da Grécia (incluindo ilhotas inabitadas)?",
+    "answer": 6000,
+    "unit": "ilhas",
+    "ducks": 3,
+    "fact": "Entre 200 e 227 são habitadas de forma permanente, como Creta, Santorini e Rodes."
+  },
+  {
+    "id": 231,
+    "category": "Mundo & Geografia",
+    "question": "Quantos quilômetros de extensão tem a Floresta Amazônica em seu trecho de maior largura leste-oeste?",
+    "answer": 3000,
+    "unit": "quilômetros",
+    "ducks": 3,
+    "fact": "A maior floresta tropical do planeta se estende por mais de 3.000 km cruzando 9 países da América do Sul!"
+  },
+  {
+    "id": 232,
+    "category": "Mundo & Geografia",
+    "question": "Quantos quilômetros tem o famoso Canal do Panamá conectando os oceanos Atlântico e Pacífico?",
+    "answer": 82,
+    "unit": "quilômetros",
+    "ducks": 2,
+    "fact": "Inaugurado em 1914, o canal possui um sistema de eclusas que eleva os navios a 26 metros de altitude!"
+  },
+  {
+    "id": 233,
+    "category": "Mundo & Geografia",
+    "question": "Quantas pirâmides principais formam o complexo de Gizé no Egito?",
+    "answer": 3,
+    "unit": "grandes pirâmides",
+    "ducks": 1,
+    "fact": "As pirâmides dos faraós Quéops, Quéfren e Miquerinos, guardadas pela Grande Esfinge."
+  },
+  {
+    "id": 234,
+    "category": "Cultura Pop & Música",
+    "question": "Quantas cordas tem um violão acústico clássico padrão?",
+    "answer": 6,
+    "unit": "cordas",
+    "ducks": 1,
+    "fact": "Afinadas tradicionalmente em Mi, Lá, Ré, Sol, Si, Mi (E-A-D-G-B-E)."
+  },
+  {
+    "id": 235,
+    "category": "Cultura Pop & Música",
+    "question": "Quantas cordas tem um contrabaixo elétrico clássico padrão?",
+    "answer": 4,
+    "unit": "cordas",
+    "ducks": 1,
+    "fact": "Afinadas em quartas: Mi, Lá, Ré, Sol (uma oitava abaixo das 4 cordas mais graves do violão)."
+  },
+  {
+    "id": 236,
+    "category": "Cultura Pop & Música",
+    "question": "Quantos membros compunham a formação clássica da banda britânica The Beatles?",
+    "answer": 4,
+    "unit": "integrantes",
+    "ducks": 1,
+    "fact": "John Lennon, Paul McCartney, George Harrison e Ringo Starr (o 'Fab Four')!"
+  },
+  {
+    "id": 237,
+    "category": "Cultura Pop & Música",
+    "question": "Quantas faixas tem o lendário álbum 'Thriller' de Michael Jackson, o mais vendido da história da música?",
+    "answer": 9,
+    "unit": "músicas",
+    "ducks": 2,
+    "fact": "Incluindo os sucessos monstruosos Billie Jean, Beat It, Thriller e Wanna Be Startin' Somethin'!"
+  },
+  {
+    "id": 238,
+    "category": "Cultura Pop & Música",
+    "question": "Quantos anos tinha o cantor Freddie Mercury quando faleceu em Londres em 1991?",
+    "answer": 45,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Nascido em Zanzibar em 1946 como Farrokh Bulsara, foi uma das vozes mais icônicas da história do rock."
+  },
+  {
+    "id": 239,
+    "category": "Cultura Pop & Música",
+    "question": "Quantos prêmios Grammy a cantora Beyoncé já ganhou (recorde de todos os tempos na premiação)?",
+    "answer": 32,
+    "unit": "estatuetas do Grammy",
+    "ducks": 2,
+    "fact": "Ela ultrapassou o maestro Georg Solti em 2023 tornando-se a artista mais premiada da história do Grammy!"
+  },
+  {
+    "id": 240,
+    "category": "Cultura Pop & Música",
+    "question": "Quantos minutos dura a clássica canção 'Bohemian Rhapsody' do Queen (arredondado para inteiro)?",
+    "answer": 6,
+    "unit": "minutos",
+    "ducks": 1,
+    "fact": "Dura exatamente 5 minutos e 55 segundos; os executivos diziam que nunca tocaria nas rádios por ser longa demais!"
+  },
+  {
+    "id": 241,
+    "category": "Cultura Pop & Música",
+    "question": "Quantos cantores participaram da gravação histórica da música beneficente 'We Are the World' em 1985?",
+    "answer": 46,
+    "unit": "vocalistas",
+    "ducks": 2,
+    "fact": "Reunidos sob a produção de Quincy Jones, com Michael Jackson, Stevie Wonder, Tina Turner, Bob Dylan e Bruce Springsteen."
+  },
+  {
+    "id": 242,
+    "category": "Cultura Pop & Música",
+    "question": "Quantos instrumentos tocam juntos em uma orquestra sinfônica completa tradicional em grandes concertos?",
+    "answer": 100,
+    "unit": "músicos",
+    "ducks": 2,
+    "fact": "Uma orquestra completa típica conta com 80 a 100 instrumentistas entre cordas, madeiras, metais e percussão."
+  },
+  {
+    "id": 243,
+    "category": "Cultura Pop & Música",
+    "question": "Quantas músicas compõem a famosa ópera-rock 'The Wall' do Pink Floyd em seu álbum duplo de 1979?",
+    "answer": 26,
+    "unit": "faixas",
+    "ducks": 2,
+    "fact": "Distribuídas em dois discos de vinil contando a trajetória emocional e psicológica de Pink."
+  },
+  {
+    "id": 244,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas combinações possíveis de posicionamento tem um cubo mágico tradicional 3x3x3 (em quintilhões)?",
+    "answer": 43,
+    "unit": "quintilhões de posições",
+    "ducks": 3,
+    "fact": "Exatamente 43.252.003.274.489.856.000 combinações possíveis, e todas podem ser resolvidas em 20 movimentos ou menos!"
+  },
+  {
+    "id": 245,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas peças compõem o maior conjunto comercial de LEGO já produzido (o Mapa-Múndi LEGO Art)?",
+    "answer": 11695,
+    "unit": "peças de LEGO",
+    "ducks": 3,
+    "fact": "Com 11.695 peças, é o maior set lançado oficialmente pela LEGO na história!"
+  },
+  {
+    "id": 246,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas casas tem o tabuleiro do jogo milenar oriental Go (em uma grade 19x19 de interseções)?",
+    "answer": 361,
+    "unit": "interseções",
+    "ducks": 2,
+    "fact": "São 19 linhas horizontais e 19 verticais cruzando-se em 361 pontos onde as pedras pretas e brancas são jogadas."
+  },
+  {
+    "id": 247,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos lados tem um dado de RPG clássico usado para testes de dano de machado pesado (D12)?",
+    "answer": 12,
+    "unit": "faces (dodecaedro)",
+    "ducks": 1,
+    "fact": "O D12 possui 12 faces pentagonais regulares, sendo um dos 5 Sólidos Platônicos da geometria."
+  },
+  {
+    "id": 248,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos peões existem no tabuleiro de xadrez no início da partida somando as brancas e as pretas?",
+    "answer": 16,
+    "unit": "peões",
+    "ducks": 1,
+    "fact": "São 8 peões brancos e 8 peões pretos, formando a primeira linha de defesa dos reis."
+  },
+  {
+    "id": 249,
+    "category": "Games & Tecnologia",
+    "question": "Quantos bits tem 1 Byte de dados de computador?",
+    "answer": 8,
+    "unit": "bits",
+    "ducks": 1,
+    "fact": "Um byte é formado por 8 bits (cada bit podendo ser 0 ou 1), permitindo 256 valores diferentes."
+  },
+  {
+    "id": 250,
+    "category": "Games & Tecnologia",
+    "question": "Quantos Megabytes (MB) tem 1 Gigabyte (GB) na convenção binária de informática (base 2)?",
+    "answer": 1024,
+    "unit": "Megabytes (MB)",
+    "ducks": 2,
+    "fact": "Como a memória de computadores opera na base binária, 1 GB equivale a 2 elevado a 10 = 1.024 MB!"
+  },
+  {
+    "id": 251,
+    "category": "Games & Tecnologia",
+    "question": "Quantos megapixels tem a resolução de uma imagem 4K Ultra HD (3840 x 2160 pixels) arredondado para inteiro?",
+    "answer": 8,
+    "unit": "megapixels",
+    "ducks": 2,
+    "fact": "3840 x 2160 = 8.294.400 pixels, ou cerca de 8,3 megapixels por quadro!"
+  },
+  {
+    "id": 252,
+    "category": "Games & Tecnologia",
+    "question": "Em que ano foi fundado o site de buscas Google em uma garagem na Califórnia por Larry Page e Sergey Brin?",
+    "answer": 1998,
+    "unit": "ano",
+    "ducks": 2,
+    "fact": "A empresa foi incorporada oficialmente em 4 de setembro de 1998."
+  },
+  {
+    "id": 253,
+    "category": "Games & Tecnologia",
+    "question": "Quantas teclas tem um teclado padrão de computador brasileiro no modelo ABNT2?",
+    "answer": 107,
+    "unit": "teclas",
+    "ducks": 2,
+    "fact": "Possui a tecla 'Ç' dedicada e a tecla AltGr para símbolos da terceira função."
+  },
+  {
+    "id": 254,
+    "category": "Games & Tecnologia",
+    "question": "Quantos satélites compõem a constelação operacional principal do sistema de GPS dos Estados Unidos?",
+    "answer": 31,
+    "unit": "satélites",
+    "ducks": 2,
+    "fact": "São necessários no mínimo 24 satélites ativos para cobertura global total, mantendo sobressalentes em órbita."
+  },
+  {
+    "id": 255,
+    "category": "Games & Tecnologia",
+    "question": "Quantos anos durou o suporte oficial da Microsoft ao lendário sistema operacional Windows XP?",
+    "answer": 12,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Lançado em outubro de 2001 e com suporte oficial encerrado apenas em abril de 2014!"
+  },
+  {
+    "id": 256,
+    "category": "Games & Tecnologia",
+    "question": "Quantos pinos tem um conector de cabo HDMI padrão Tipo A?",
+    "answer": 19,
+    "unit": "pinos",
+    "ducks": 2,
+    "fact": "Os 19 pinos transportam sinais de vídeo digital de alta definição, múltiplos canais de áudio e dados de controle."
+  },
+  {
+    "id": 257,
+    "category": "Games & Tecnologia",
+    "question": "Quantos canais independentes de áudio compõem um sistema de som surround 7.1?",
+    "answer": 8,
+    "unit": "caixas / canais",
+    "ducks": 1,
+    "fact": "São 7 caixas de som direcionais e 1 canal dedicado de graves (.1 subwoofer)!"
+  },
+  {
+    "id": 258,
+    "category": "Games & Tecnologia",
+    "question": "Quantos quilos pesava o primeiro computador eletrônico de uso geral da história, o ENIAC (1945), em toneladas?",
+    "answer": 27,
+    "unit": "toneladas",
+    "ducks": 3,
+    "fact": "Ele ocupava uma sala de 167 m² e continha mais de 17.000 válvulas termiônicas que esquentavam como aquecedores!"
+  },
+  {
+    "id": 259,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos passageiros podia transportar o navio Titanic em sua lotação máxima?",
+    "answer": 2435,
+    "unit": "passageiros",
+    "ducks": 3,
+    "fact": "Além de cerca de 892 tripulantes, totalizando mais de 3.300 pessoas a bordo!"
+  },
+  {
+    "id": 260,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas rodas tem um caminhão conhecido popularmente no Brasil como 'Treminhão' ou 'Bitrem' tradicional?",
+    "answer": 22,
+    "unit": "rodas",
+    "ducks": 2,
+    "fact": "Com cavalomecânico traçado e duas carretas combinadas, costuma rodar sobre 22 a 26 pneus."
+  },
+  {
+    "id": 261,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas turbinas a jato tem o gigantesco avião de passageiros Airbus A380 (o maior avião comercial do mundo)?",
+    "answer": 4,
+    "unit": "turbinas",
+    "ducks": 1,
+    "fact": "O A380 de dois andares completos utiliza quatro potentes motores Rolls-Royce ou Engine Alliance."
+  },
+  {
+    "id": 262,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos quilômetros por hora atinge o trem-bala japonês Shinkansen em operação comercial regular?",
+    "answer": 320,
+    "unit": "km/h",
+    "ducks": 2,
+    "fact": "Na linha Tohoku Shinkansen ele opera com precisão de segundos a 320 km/h!"
+  },
+  {
+    "id": 263,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos cilindros tem o potente motor do hipercarro Bugatti Chiron (motor em W)?",
+    "answer": 16,
+    "unit": "cilindros (W16)",
+    "ducks": 2,
+    "fact": "O lendário motor quadriturbo W16 de 8.0 litros gera mais de 1.500 cavalos de potência!"
+  },
+  {
+    "id": 264,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos metros de comprimento tem um Boeing 747-400 (o clássico 'Jumbo')?",
+    "answer": 71,
+    "unit": "metros",
+    "ducks": 2,
+    "fact": "Com 70,6 metros de comprimento e envergadura de asas de 64,4 metros!"
+  },
+  {
+    "id": 265,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos vagões pode puxar uma locomotiva nos maiores trens de minério de ferro do mundo no Brasil (Carajás)?",
+    "answer": 330,
+    "unit": "vagões",
+    "ducks": 3,
+    "fact": "O trem da Vale na Estrada de Ferro Carajás tem mais de 3,3 km de comprimento e 330 vagões cheios de minério!"
+  },
+  {
+    "id": 266,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas marchas para a frente tem o câmbio manual do clássico fusca brasileiro original?",
+    "answer": 4,
+    "unit": "marchas",
+    "ducks": 1,
+    "fact": "O clássico câmbio em H de 4 velocidades para a frente mais a ré (engatada empurrando a alavanca para baixo)."
+  },
+  {
+    "id": 267,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas portas tem um helicóptero utilitário militar Bell UH-1 Huey clássico?",
+    "answer": 4,
+    "unit": "portas",
+    "ducks": 1,
+    "fact": "Duas pequenas portas dianteiras para pilotos e duas grandes portas corrediças para tropas e macas."
+  },
+  {
+    "id": 268,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos assentos tem um ônibus rodoviário de turismo de dois andares (Double Decker) de luxo no Brasil?",
+    "answer": 60,
+    "unit": "poltronas",
+    "ducks": 2,
+    "fact": "Geralmente 12 leitos no piso inferior e 44 a 48 semileitos no piso superior."
+  },
+  {
+    "id": 269,
+    "category": "História & Sociedade",
+    "question": "Quantos cantos compõem a epopeia poética 'Os Lusíadas' de Luís de Camões?",
+    "answer": 10,
+    "unit": "cantos",
+    "ducks": 2,
+    "fact": "Composta por 10 cantos divididos em 1.102 estrofes em oitava rima celebrando a viagem de Vasco da Gama."
+  },
+  {
+    "id": 270,
+    "category": "História & Sociedade",
+    "question": "Quantos sonetos o dramaturgo William Shakespeare publicou em sua famosa coleção clássica?",
+    "answer": 154,
+    "unit": "sonetos",
+    "ducks": 3,
+    "fact": "Publicados pela primeira vez em 1609 abordando amor, tempo, beleza e mortalidade."
+  },
+  {
+    "id": 271,
+    "category": "História & Sociedade",
+    "question": "Quantos anos o pintor renascentista Leonardo da Vinci levou para pintar e aperfeiçoar a Mona Lisa?",
+    "answer": 14,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Iniciada por volta de 1503, Da Vinci carregou a pintura consigo até sua morte na França em 1519 sem considerá-la 'finalizada'!"
+  },
+  {
+    "id": 272,
+    "category": "História & Sociedade",
+    "question": "Quantas letras compõem o alfabeto da língua havaiana nativa?",
+    "answer": 13,
+    "unit": "letras",
+    "ducks": 2,
+    "fact": "Apenas 5 vogais (A, E, I, O, U), 7 consoantes (H, K, L, M, N, P, W) e a 'okina (oclusiva glotal)."
+  },
+  {
+    "id": 273,
+    "category": "História & Sociedade",
+    "question": "Quantos capítulos compõem a obra-prima Dom Quixote de Miguel de Cervantes (somando as duas partes)?",
+    "answer": 126,
+    "unit": "capítulos",
+    "ducks": 3,
+    "fact": "52 capítulos no primeiro volume publicado em 1605 e 74 capítulos no segundo volume de 1615."
+  },
+  {
+    "id": 274,
+    "category": "História & Sociedade",
+    "question": "Quantas cores primárias existem na teoria das cores da luz (sistema RGB de monitores)?",
+    "answer": 3,
+    "unit": "cores primárias",
+    "ducks": 1,
+    "fact": "Vermelho (Red), Verde (Green) e Azul (Blue), que combinadas em 100% de brilho geram a cor branca!"
+  },
+  {
+    "id": 275,
+    "category": "História & Sociedade",
+    "question": "Quantos versos tem a estrutura clássica de um poema no formato Soneto?",
+    "answer": 14,
+    "unit": "versos",
+    "ducks": 1,
+    "fact": "Tradicionalmente organizado em dois quartetos (4 versos cada) e dois tercetos (3 versos cada), somando 14 versos."
+  },
+  {
+    "id": 276,
+    "category": "História & Sociedade",
+    "question": "Quantos anos durou a pintura do teto da Capela Sistina pelo mestre Michelangelo no Vaticano?",
+    "answer": 4,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Michelangelo pintou os mais de 500 m² de afrescos entre 1508 e 1512 em condições físicas exaustivas!"
+  },
+  {
+    "id": 277,
+    "category": "História & Sociedade",
+    "question": "Quantas línguas vivas são faladas no mundo hoje segundo os catálogos do Ethnologue?",
+    "answer": 7100,
+    "unit": "línguas ativas",
+    "ducks": 3,
+    "fact": "Mais de 7.100 línguas ativas, embora cerca de 40% delas estejam ameaçadas com menos de 1.000 falantes."
+  },
+  {
+    "id": 278,
+    "category": "História & Sociedade",
+    "question": "Quantos volumes compõem a coleção clássica de contos de 'As Mil e Uma Noites'?",
+    "answer": 4,
+    "unit": "volumes principais",
+    "ducks": 2,
+    "fact": "Compilação de narrativas persas, árabes e indianas contadas por Sherazade para salvar sua vida."
+  },
+  {
+    "id": 279,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos centímetros media o homem mais alto de toda a história documentada pela medicina (Robert Wadlow)?",
+    "answer": 272,
+    "unit": "centímetros (2,72 m)",
+    "ducks": 2,
+    "fact": "Robert Wadlow, dos EUA, media incríveis 2,72 metros e pesava 199 kg devido a hipertrofia da hipófise!"
+  },
+  {
+    "id": 280,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos dias um ser humano consegue sobreviver em média sem consumir água em ambiente temperado?",
+    "answer": 3,
+    "unit": "dias",
+    "ducks": 1,
+    "fact": "A regra de sobrevivência dos 3: três minutos sem ar, três dias sem água e três semanas sem comida!"
+  },
+  {
+    "id": 281,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas vezes por dia uma pessoa comum pisca os olhos em média?",
+    "answer": 15000,
+    "unit": "piscadas",
+    "ducks": 3,
+    "fact": "Piscamos cerca de 15 a 20 vezes por minuto, o que equivale a mais de 15.000 a 20.000 vezes por dia acordado!"
+  },
+  {
+    "id": 282,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos fios de cabelo tem uma pessoa saudável em média no couro cabeludo?",
+    "answer": 100000,
+    "unit": "fios de cabelo",
+    "ducks": 3,
+    "fact": "Pessoas loiras têm em média 140.000 fios, morenas 110.000 e ruivas cerca de 90.000 fios."
+  },
+  {
+    "id": 283,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos metros de altura tem o prédio mais alto do mundo atualmente, o Burj Khalifa em Dubai?",
+    "answer": 828,
+    "unit": "metros",
+    "ducks": 3,
+    "fact": "Com 163 andares habitáveis e 828 metros até o topo da antena, visível a até 95 km de distância!"
+  },
+  {
+    "id": 284,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos quilômetros de profundidade tem a camada mais profunda da crosta terrestre antes do manto?",
+    "answer": 70,
+    "unit": "quilômetros",
+    "ducks": 2,
+    "fact": "A crosta continental varia de 30 a 70 km de espessura, enquanto a crosta oceânica tem apenas cerca de 5 a 10 km."
+  },
+  {
+    "id": 285,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas horas tem um dia no planeta Júpiter (o planeta com rotação mais rápida do Sistema Solar)?",
+    "answer": 10,
+    "unit": "horas (9h55m)",
+    "ducks": 2,
+    "fact": "Apesar de ser o maior planeta, Júpiter completa um giro sobre seu próprio eixo em menos de 10 horas!"
+  },
+  {
+    "id": 286,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos anos durou a construção da Catedral de Notre-Dame de Paris no período medieval?",
+    "answer": 182,
+    "unit": "anos",
+    "ducks": 3,
+    "fact": "A pedra fundamental foi colocada em 1163 e a construção principal terminou apenas em 1345!"
+  },
+  {
+    "id": 287,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos litros de ar cabem nos pulmões de um adulto na capacidade pulmonar total média?",
+    "answer": 6,
+    "unit": "litros de ar",
+    "ducks": 2,
+    "fact": "Em repouso respiramos cerca de 0,5 litro por inspiração, mas a capacidade máxima atinge quase 6 litros!"
+  },
+  {
+    "id": 288,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos quilos de bambu um urso-panda gigante adulto come em um único dia?",
+    "answer": 38,
+    "unit": "quilos de bambu",
+    "ducks": 2,
+    "fact": "Eles passam até 14 horas por dia comendo porque o bambu possui baixíssimo teor nutritivo!"
+  },
+  {
+    "id": 289,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas fases/níveis oficiais tem o clássico Tetris de Game Boy antes de zerar ou atingir o teto de pontuação?",
+    "answer": 20,
+    "unit": "níveis",
+    "ducks": 2,
+    "fact": "No modo Type A tradicional, o jogo permite escolher começar até o nível 9 e acelera até o nível 20."
+  },
+  {
+    "id": 290,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos anos se passaram no enredo entre Red Dead Redemption 2 (1899) e o primeiro Red Dead Redemption (1911)?",
+    "answer": 12,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "RDR2 é um prequel que mostra o declínio da gangue de Dutch 12 anos antes dos eventos com John Marston em 1911."
+  },
+  {
+    "id": 291,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos corações de vida máxima Link pode ter no clássico The Legend of Zelda: Ocarina of Time?",
+    "answer": 20,
+    "unit": "corações",
+    "ducks": 2,
+    "fact": "Começa com 3 corações, ganha 8 dos chefes e junta pedaços de coração (Heart Pieces) para completar 2 fileiras de 10!"
+  },
+  {
+    "id": 292,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos rounds são necessários para vencer uma partida regulamentar padrão no competitivo de Counter-Strike 2 (MR12)?",
+    "answer": 13,
+    "unit": "rounds",
+    "ducks": 2,
+    "fact": "No CS2 foi adotado o formato MR12 (máximo de 24 rounds), vencendo a primeira equipe que cravar 13 pontos."
+  },
+  {
+    "id": 293,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas faixas de pista (lanes) tem o mapa tradicional Summoner's Rift no League of Legends?",
+    "answer": 3,
+    "unit": "rotas / lanes",
+    "ducks": 1,
+    "fact": "Top (superior), Mid (meio) e Bot (inferior), além da vasta Jungle (selva) entre elas."
+  },
+  {
+    "id": 294,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas estrelas de procurado máximas o jogador pode acumular na polícia em GTA V?",
+    "answer": 5,
+    "unit": "estrelas de procurado",
+    "ducks": 1,
+    "fact": "Diferente de jogos clássicos como San Andreas que tinham 6 estrelas (trazendo o Exército), o GTA V limitou em 5 estrelas policiais com SWAT e helicópteros!"
+  },
+  {
+    "id": 295,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos blocos de altura pode medir um portal do Nether tradicional em Minecraft (formato mínimo de 4x5)?",
+    "answer": 5,
+    "unit": "blocos de altura",
+    "ducks": 1,
+    "fact": "A moldura clássica de obsidiana mede 4 blocos de largura por 5 blocos de altura, totalizando 14 blocos (ou 10 sem os cantos)."
+  },
+  {
+    "id": 296,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantos lutadores jogáveis estavam disponíveis na tela inicial de seleção do clássico Street Fighter II original (1991)?",
+    "answer": 8,
+    "unit": "lutadores",
+    "ducks": 2,
+    "fact": "Ryu, Ken, Chun-Li, Guile, Blanka, Dhalsim, E. Honda e Zangief (os 4 chefes eram enfrentados no fim mas não eram selecionáveis)!"
+  },
+  {
+    "id": 297,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas vidas extras (Up) o jogador ganha ao coletar 100 moedas douradas em Super Mario Bros?",
+    "answer": 1,
+    "unit": "vida extra (1-Up)",
+    "ducks": 1,
+    "fact": "Ao tocar na 100ª moeda toca o clássico sino de 1-Up e o contador zera novamente."
+  },
+  {
+    "id": 298,
+    "category": "Curiosidades & Jogos",
+    "question": "Quantas esferas do dragão é preciso reunir no anime Dragon Ball para invocar o deus dragão Shenlong?",
+    "answer": 7,
+    "unit": "esferas do dragão",
+    "ducks": 1,
+    "fact": "Cada esfera contém de 1 a 7 estrelas gravadas em seu interior translúcido alaranjado."
+  },
+  {
+    "id": 299,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantas temporadas durou a clássica série 'Breaking Bad' com Walter White?",
+    "answer": 5,
+    "unit": "temporadas",
+    "ducks": 1,
+    "fact": "5 temporadas magistrais com 62 episódios no total, considerada uma das melhores séries já produzidas."
+  },
+  {
+    "id": 300,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantas temporadas teve a icônica versão americana da série de comédia 'The Office'?",
+    "answer": 9,
+    "unit": "temporadas",
+    "ducks": 1,
+    "fact": "Transmitida entre 2005 e 2013 pela NBC, com 201 episódios memoráveis da Dunder Mifflin Paper Company."
+  },
+  {
+    "id": 301,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos anos durou a exibição ininterrupta do seriado 'A Grande Família' na TV Globo (2001 a 2014)?",
+    "answer": 14,
+    "unit": "anos no ar",
+    "ducks": 2,
+    "fact": "A família Silva (Lineu, Nenê, Tuco, Bebel e Agostinho Carrara) ficou no ar por 14 temporadas de sucesso."
+  },
+  {
+    "id": 302,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos membros formam a Sociedade do Anel no livro e filme de J.R.R. Tolkien?",
+    "answer": 9,
+    "unit": "companheiros",
+    "ducks": 2,
+    "fact": "Frodo, Sam, Merry, Pippin, Aragorn, Legolas, Gimli, Boromir e o mago Gandalf (Os 9 contra os 9 Cavaleiros Negros)."
+  },
+  {
+    "id": 303,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos minutos dura a clássica trilogia cinematográfica 'O Poderoso Chefão' somada (arredondado em horas)?",
+    "answer": 9,
+    "unit": "horas",
+    "ducks": 2,
+    "fact": "O Poderoso Chefão I (175 min), Parte II (202 min) e Parte III (162 min) somam cerca de 539 minutos (quase 9 horas)."
+  },
+  {
+    "id": 304,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantas pílulas de cores diferentes Morpheus oferece a Neo na cena icônica de Matrix (1999)?",
+    "answer": 2,
+    "unit": "pílulas (azul e vermelha)",
+    "ducks": 1,
+    "fact": "Tome a pílula azul e a história acaba; tome a pílula vermelha e você fica no País das Maravilhas!"
+  },
+  {
+    "id": 305,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantas estatuetas do Oscar foram vencidas pelo diretor Steven Spielberg na categoria de Melhor Diretor?",
+    "answer": 2,
+    "unit": "Oscars de Diretor",
+    "ducks": 2,
+    "fact": "Venceu por 'A Lista de Schindler' (1993) e 'O Resgate do Soldado Ryan' (1998)."
+  },
+  {
+    "id": 306,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos fantasmas visitam Ebenezer Scrooge no clássico 'Um Conto de Natal' de Charles Dickens?",
+    "answer": 4,
+    "unit": "fantasmas",
+    "ducks": 2,
+    "fact": "O espírito do seu sócio Jacob Marley seguido pelos três fantasmas: do Natal Passado, Presente e Futuro!"
+  },
+  {
+    "id": 307,
+    "category": "Esportes",
+    "question": "Quantos gols oficiais o 'Rei do Futebol' Pelé marcou em toda a sua carreira profissional (pelo critério padrão da FIFA)?",
+    "answer": 767,
+    "unit": "gols oficiais",
+    "ducks": 3,
+    "fact": "Em jogos oficiais de competição foram 767 gols (e 1.283 gols contando todos os amistosos e jogos com o Santos e Brasil)!"
+  },
+  {
+    "id": 308,
+    "category": "Esportes",
+    "question": "Quantas Bolas de Ouro (Ballon d'Or da France Football) o argentino Lionel Messi já conquistou?",
+    "answer": 8,
+    "unit": "troféus Bola de Ouro",
+    "ducks": 2,
+    "fact": "Recordista histórico absoluto com 8 troféus (2009, 2010, 2011, 2012, 2015, 2019, 2021 e 2023)!"
+  },
+  {
+    "id": 309,
+    "category": "Esportes",
+    "question": "Quantos pontos um jogador de basquete marca em um arremesso convertido atrás da linha do perímetro?",
+    "answer": 3,
+    "unit": "pontos",
+    "ducks": 1,
+    "fact": "O cesto de 3 pontos revolucionou a NBA nos últimos anos com chutadores como Stephen Curry."
+  },
+  {
+    "id": 310,
+    "category": "Esportes",
+    "question": "Quantos minutos dura cada round em uma disputa de cinturão masculino do UFC (MMA)?",
+    "answer": 5,
+    "unit": "minutos por round",
+    "ducks": 1,
+    "fact": "As lutas valendo cinturão têm 5 rounds de 5 minutos cada, com 1 minuto de descanso entre eles."
+  },
+  {
+    "id": 311,
+    "category": "Esportes",
+    "question": "Quantas voltas tem em média uma corrida oficial do Grande Prêmio do Brasil de Fórmula 1 em Interlagos?",
+    "answer": 71,
+    "unit": "voltas",
+    "ducks": 2,
+    "fact": "No circuito de 4.309 metros de Interlagos, os pilotos percorrem exatamente 71 voltas (cerca de 305 km no total)."
+  },
+  {
+    "id": 312,
+    "category": "Esportes",
+    "question": "Quantas medalhas de ouro olímpicas o velocista jamaicano Usain Bolt conquistou na pista?",
+    "answer": 8,
+    "unit": "medalhas de ouro",
+    "ducks": 2,
+    "fact": "Ele venceu os 100m e 200m em Pequim 2008, Londres 2012 e Rio 2016, além de revezamentos 4x100m!"
+  },
+  {
+    "id": 313,
+    "category": "Esportes",
+    "question": "Quantas casas de penalidade (metros) fica a marca do pênalti da linha do gol no futebol?",
+    "answer": 11,
+    "unit": "metros (11 metros)",
+    "ducks": 1,
+    "fact": "São 12 jardas na regra inglesa original, o que equivale exatamente a 11 metros de distância."
+  },
+  {
+    "id": 314,
+    "category": "Esportes",
+    "question": "Quantos jogadores compõem uma equipe de polo aquático dentro da água durante o jogo?",
+    "answer": 7,
+    "unit": "jogadores",
+    "ducks": 2,
+    "fact": "São 6 jogadores de linha mais 1 goleiro em cada equipe."
+  },
+  {
+    "id": 315,
+    "category": "Ciência & Natureza",
+    "question": "Quantas toneladas pode pesar uma baleia-azul adulta (o maior animal que já existiu no planeta)?",
+    "answer": 150,
+    "unit": "toneladas",
+    "ducks": 3,
+    "fact": "Algumas fêmeas atingem mais de 30 metros de comprimento e até 180 toneladas de massa corporal!"
+  },
+  {
+    "id": 316,
+    "category": "Ciência & Natureza",
+    "question": "Quantas batidas de asa por segundo consegue dar um beija-flor em pleno voo pairado, em média?",
+    "answer": 80,
+    "unit": "batidas por segundo",
+    "ducks": 3,
+    "fact": "Suas asas se movem em formato de oito de 50 a 80 vezes por segundo, permitindo voar para trás e ficar imóvel no ar!"
+  },
+  {
+    "id": 317,
+    "category": "Ciência & Natureza",
+    "question": "Quantas vezes o próprio peso corporal uma formiga comum consegue carregar nas mandíbulas?",
+    "answer": 50,
+    "unit": "vezes o próprio peso",
+    "ducks": 2,
+    "fact": "Devido à mecânica de alavancas em corpos minúsculos, algumas espécies conseguem erguer até 50 vezes sua massa!"
+  },
+  {
+    "id": 318,
+    "category": "Ciência & Natureza",
+    "question": "Quantos anos pode viver um papagaio-cinzento ou arara-azul sob cuidados humanos?",
+    "answer": 60,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Grandes psitacídeos têm longevidade surpreendente e chegam a ultrapassar os 60 a 70 anos de idade!"
+  },
+  {
+    "id": 319,
+    "category": "Ciência & Natureza",
+    "question": "Quantas vezes a própria altura uma pulga consegue pular em um salto vertical?",
+    "answer": 150,
+    "unit": "vezes a própria altura",
+    "ducks": 3,
+    "fact": "Ela acumula energia mecânica na proteína resilina em suas patas traseiras disparando como uma mola!"
+  },
+  {
+    "id": 320,
+    "category": "Ciência & Natureza",
+    "question": "Quantos quilômetros de teia de seda uma aranha de jardim consegue produzir em toda a sua vida?",
+    "answer": 30,
+    "unit": "quilômetros",
+    "ducks": 3,
+    "fact": "A seda de aranha é mais forte e resistente à tração que o aço do mesmo diâmetro!"
+  },
+  {
+    "id": 321,
+    "category": "Ciência & Natureza",
+    "question": "Quantos graus de rotação a cabeça de uma coruja consegue girar sem mover o tronco?",
+    "answer": 270,
+    "unit": "graus",
+    "ducks": 2,
+    "fact": "Elas têm 14 vértebras cervicais e artérias especiais para não interromper o fluxo sanguíneo ao girar quase em 360°!"
+  },
+  {
+    "id": 322,
+    "category": "Mundo & Geografia",
+    "question": "Quantos milhões de habitantes vivem na Região Metropolitana de Tóquio no Japão (a maior aglomeração urbana do planeta)?",
+    "answer": 37,
+    "unit": "milhões de pessoas",
+    "ducks": 3,
+    "fact": "A Grande Tóquio concentra mais de 37 milhões de moradores com um sistema ferroviário hiperconectado!"
+  },
+  {
+    "id": 323,
+    "category": "Mundo & Geografia",
+    "question": "Quantos metros de altura tem as Cataratas do Niágara na queda principal (Ferradura)?",
+    "answer": 51,
+    "unit": "metros",
+    "ducks": 2,
+    "fact": "Mais de 168.000 metros cúbicos de água caem pela beirada da catarata a cada minuto no pico do verão."
+  },
+  {
+    "id": 324,
+    "category": "Mundo & Geografia",
+    "question": "Quantos anos tem a cidade de Salvador, a primeira capital da história do Brasil (fundada em 1549)?",
+    "answer": 475,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Fundada por Tomé de Sousa em 29 de março de 1549 como sede do Governo-Geral do Brasil colônia."
+  },
+  {
+    "id": 325,
+    "category": "Mundo & Geografia",
+    "question": "Quantos aeroportos internacionais comerciais de grande porte atendem a cidade de Nova York e sua região metropolitana?",
+    "answer": 3,
+    "unit": "aeroportos principais",
+    "ducks": 1,
+    "fact": "JFK (John F. Kennedy), LaGuardia (LGA) e Newark Liberty (EWR) em Nova Jersey."
+  },
+  {
+    "id": 326,
+    "category": "Mundo & Geografia",
+    "question": "Quantas ilhas formam o país do Japão em todo o seu arquipélago catalogado recentemente?",
+    "answer": 14125,
+    "unit": "ilhas",
+    "ducks": 3,
+    "fact": "Em 2023, um novo mapeamento geográfico digital oficial do governo japonês dobrou o catálogo para mais de 14.000 ilhas!"
+  },
+  {
+    "id": 327,
+    "category": "Mundo & Geografia",
+    "question": "Quantos países compartilham o território do deserto do Saara na África?",
+    "answer": 11,
+    "unit": "países",
+    "ducks": 2,
+    "fact": "Argélia, Chade, Egito, Líbia, Mali, Mauritânia, Marrocos, Níger, Sudão Ocidental, Sudão e Tunísia."
+  },
+  {
+    "id": 328,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos graus mede um ângulo reto perfeito em geometria?",
+    "answer": 90,
+    "unit": "graus",
+    "ducks": 1,
+    "fact": "Formado pela intersecção de duas retas perpendiculares e simbolizado pelo quadradinho com um ponto no meio."
+  },
+  {
+    "id": 329,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas semanas dura em média uma gravidez humana completa (a termo)?",
+    "answer": 40,
+    "unit": "semanas",
+    "ducks": 1,
+    "fact": "O parto a termo é considerado seguro entre 37 e 42 semanas de desenvolvimento gestacional."
+  },
+  {
+    "id": 330,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas teclas tem um telefone de discagem em teclado numérico padrão (incluindo * e #)?",
+    "answer": 12,
+    "unit": "teclas",
+    "ducks": 1,
+    "fact": "Dígitos de 0 a 9 mais as teclas de asterisco (*) e cerquilha/jogo da velha (#)."
+  },
+  {
+    "id": 331,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos dias dura o ciclo menstrual médio da mulher humana saudável?",
+    "answer": 28,
+    "unit": "dias",
+    "ducks": 1,
+    "fact": "A média clínica padrão é 28 dias, variando normalmente entre 21 e 35 dias entre indivíduos."
+  },
+  {
+    "id": 332,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos volts tem a tensão da rede elétrica doméstica padrão na maior parte das residências de São Paulo e Rio de Janeiro?",
+    "answer": 127,
+    "unit": "volts",
+    "ducks": 2,
+    "fact": "Embora chamada popularmente de '110V', a norma brasileira técnica oficial ABNT estabelece a tensão nominal em 127V."
+  },
+  {
+    "id": 333,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos anos é necessário ter no Brasil para ser legalmente eleito Presidente da República?",
+    "answer": 35,
+    "unit": "anos de idade",
+    "ducks": 2,
+    "fact": "A Constituição Federal de 1988 exige no mínimo 35 anos para Presidente, Vice-Presidente e Senador."
+  },
+  {
+    "id": 334,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas vezes por ano a Terra passa pelos pontos astronômicos de Solstício e Equinócio somados?",
+    "answer": 4,
+    "unit": "eventos sazonais",
+    "ducks": 1,
+    "fact": "Dois equinócios (outono e primavera) e dois solstícios (verão e inverno), marcando o início de cada estação."
+  },
+  {
+    "id": 335,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos gramas de café moído são recomendados em média para preparar 1 litro de café filtrado equilibrado?",
+    "answer": 60,
+    "unit": "gramas",
+    "ducks": 2,
+    "fact": "A proporção áurea recomendada por baristas internacionais da SCA é de 60g de pó para 1.000 ml de água (proporção 1:16)."
+  },
+  {
+    "id": 336,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos anos durou o Império do Brasil (de Dom Pedro I até a proclamação da República de 1889)?",
+    "answer": 67,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Da Independência em 7 de setembro de 1822 até o golpe republicano em 15 de novembro de 1889."
+  },
+  {
+    "id": 337,
+    "category": "Mundo & Geografia",
+    "question": "Quantos municípios compõem o estado de São Paulo (o estado mais populoso do Brasil)?",
+    "answer": 645,
+    "unit": "municípios",
+    "ducks": 3,
+    "fact": "São Paulo possui 645 cidades distribuídas em 16 regiões administrativas!"
+  },
+  {
+    "id": 338,
+    "category": "Mundo & Geografia",
+    "question": "Quantos estados compõem a Região Nordeste do Brasil?",
+    "answer": 9,
+    "unit": "estados",
+    "ducks": 1,
+    "fact": "Alagoas, Bahia, Ceará, Maranhão, Paraíba, Pernambuco, Piauí, Rio Grande do Norte e Sergipe."
+  },
+  {
+    "id": 339,
+    "category": "Mundo & Geografia",
+    "question": "Quantos estados compõem a Região Norte do Brasil?",
+    "answer": 7,
+    "unit": "estados",
+    "ducks": 1,
+    "fact": "Acre, Amapá, Amazonas, Pará, Rondônia, Roraima e Tocantins."
+  },
+  {
+    "id": 340,
+    "category": "Mundo & Geografia",
+    "question": "Quantos estados compõem a Região Sul do Brasil?",
+    "answer": 3,
+    "unit": "estados",
+    "ducks": 1,
+    "fact": "Paraná, Santa Catarina e Rio Grande do Sul."
+  },
+  {
+    "id": 341,
+    "category": "Mundo & Geografia",
+    "question": "Quantos estados compõem a Região Centro-Oeste do Brasil (sem contar o Distrito Federal)?",
+    "answer": 3,
+    "unit": "estados",
+    "ducks": 1,
+    "fact": "Goiás, Mato Grosso e Mato Grosso do Sul (além do Distrito Federal, que não é estado)."
+  },
+  {
+    "id": 342,
+    "category": "Mundo & Geografia",
+    "question": "Quantos anos tinha o arquiteto Oscar Niemeyer quando faleceu em 2012 no Rio de Janeiro?",
+    "answer": 104,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Ele nasceu em 1907 e faleceu a poucos dias de completar 105 anos, deixando obras em todo o mundo!"
+  },
+  {
+    "id": 343,
+    "category": "Mundo & Geografia",
+    "question": "Quantas pontes principais ligam a ilha de Florianópolis ao continente em Santa Catarina?",
+    "answer": 3,
+    "unit": "pontes",
+    "ducks": 1,
+    "fact": "A histórica Ponte Hercílio Luz (pênsil) e as pontes Colombo Salles e Pedro Ivo Campos."
+  },
+  {
+    "id": 344,
+    "category": "Mundo & Geografia",
+    "question": "Quantos metros de altura tem o Pico da Neblina, o ponto mais alto do território brasileiro?",
+    "answer": 2995,
+    "unit": "metros",
+    "ducks": 3,
+    "fact": "Localizado no norte do estado do Amazonas na Serra do Imeri, na fronteira com a Venezuela."
+  },
+  {
+    "id": 345,
+    "category": "Mundo & Geografia",
+    "question": "Quantos quilômetros de extensão tem a Ponte Rio-Niterói sobre a Baía de Guanabara?",
+    "answer": 13,
+    "unit": "quilômetros",
+    "ducks": 2,
+    "fact": "Com 13,29 km de extensão, é uma das maiores pontes do hemisfério sul, inaugurada em 1974."
+  },
+  {
+    "id": 346,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos membros fundadores compunham Os Vingadores no primeiro filme do MCU em 2012?",
+    "answer": 6,
+    "unit": "heróis",
+    "ducks": 1,
+    "fact": "Homem de Ferro, Capitão América, Thor, Hulk, Viúva Negra e Gavião Arqueiro!"
+  },
+  {
+    "id": 347,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos filmes compõem a trilogia clássica e a trilogia prequel somadas de Star Wars criadas por George Lucas?",
+    "answer": 6,
+    "unit": "filmes",
+    "ducks": 1,
+    "fact": "Episódios IV, V e VI (1977-1983) e Episódios I, II e III (1999-2005)."
+  },
+  {
+    "id": 348,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos anos durou a exibição do programa infantil 'Castelo Rá-Tim-Bum' na TV Cultura em episódios originais?",
+    "answer": 4,
+    "unit": "anos",
+    "ducks": 2,
+    "fact": "Produzido e exibido de 1994 a 1997, marcou gerações e teve 90 episódios e um especial de Natal."
+  },
+  {
+    "id": 349,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos membros compõem o bando do Chapéu de Palha liderado por Monkey D. Luffy em One Piece (até a entrada de Jinbe)?",
+    "answer": 10,
+    "unit": "piratas",
+    "ducks": 2,
+    "fact": "Luffy, Zoro, Nami, Usopp, Sanji, Chopper, Robin, Franky, Brook e Jinbe!"
+  },
+  {
+    "id": 350,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantas vilas ninjas principais compõem o mundo do anime Naruto (as Cinco Grandes Nações Ninjas)?",
+    "answer": 5,
+    "unit": "grandes vilas",
+    "ducks": 1,
+    "fact": "Vila da Folha (Konoha), Areia (Suna), Névoa (Kiri), Nuvem (Kumo) e Pedra (Iwa)!"
+  },
+  {
+    "id": 351,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantas transformações de Super Saiyajin numeradas Goku alcança no anime original Dragon Ball Z (SSJ 1 até...)?",
+    "answer": 3,
+    "unit": "níveis (SSJ1, SSJ2, SSJ3)",
+    "ducks": 1,
+    "fact": "O Super Saiyajin 1 contra Freeza, o 2 contra Cell/Majin Vegeta e o 3 de cabelos longos contra Majin Boo!"
+  },
+  {
+    "id": 352,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos anos tem o personagem Chaves no seriado mexicano (segundo o próprio criador Roberto Gómez Bolaños)?",
+    "answer": 8,
+    "unit": "anos",
+    "ducks": 1,
+    "fact": "Bolaños escreveu que o Chaves tinha 8 anos de idade e morava no apartamento número 8 da vila."
+  },
+  {
+    "id": 353,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos minutos dura a clássica música de abertura do desenho 'Os Simpsons' na versão estendida do sofá?",
+    "answer": 2,
+    "unit": "minutos",
+    "ducks": 1,
+    "fact": "Criada por Danny Elfman, a abertura completa com a piada do sofá dura até quase 2 minutos."
+  },
+  {
+    "id": 354,
+    "category": "Cultura Pop & Cinema",
+    "question": "Quantos heróis compõem o sexteto clássico dos Power Rangers originais (Mighty Morphin) após a redenção do Ranger Verde?",
+    "answer": 6,
+    "unit": "rangers",
+    "ducks": 1,
+    "fact": "Vermelho, Azul, Amarelo, Rosa, Preto e o icônico Tommy Oliver como Ranger Verde!"
+  },
+  {
+    "id": 355,
+    "category": "Ciência & Natureza",
+    "question": "Quantas pernas tem um caranguejo marinho comum?",
+    "answer": 10,
+    "unit": "pernas",
+    "ducks": 1,
+    "fact": "São crustáceos decápodes com 5 pares de pernas locomotoras, incluindo as pinças dianteiras."
+  },
+  {
+    "id": 356,
+    "category": "Ciência & Natureza",
+    "question": "Quantos corações tem uma minhoca comum da terra?",
+    "answer": 5,
+    "unit": "arcos aórticos (corações)",
+    "ducks": 2,
+    "fact": "Minhocas têm 5 pares de arcos aórticos que funcionam como corações primitivos bombeando sangue."
+  },
+  {
+    "id": 357,
+    "category": "Ciência & Natureza",
+    "question": "Quantas semanas leva em média para o ovo de uma galinha chocar após o início do choco?",
+    "answer": 3,
+    "unit": "semanas (21 dias)",
+    "ducks": 1,
+    "fact": "O período de incubação dura exatamente 21 dias mantidos a cerca de 37,5°C."
+  },
+  {
+    "id": 358,
+    "category": "Ciência & Natureza",
+    "question": "Quantos olhos tem uma aranha comum na maioria das espécies?",
+    "answer": 8,
+    "unit": "olhos",
+    "ducks": 2,
+    "fact": "A maioria possui 8 olhos simples organizados em duas ou três fileiras na cabeça!"
+  },
+  {
+    "id": 359,
+    "category": "Ciência & Natureza",
+    "question": "Quantos minutos um golfinho consegue ficar embaixo d'água prendendo a respiração antes de subir para respirar?",
+    "answer": 15,
+    "unit": "minutos",
+    "ducks": 2,
+    "fact": "Em mergulhos profundos algumas espécies conseguem segurar até 15 minutos, embora costumem respirar a cada 2 ou 3 minutos."
+  },
+  {
+    "id": 360,
+    "category": "Ciência & Natureza",
+    "question": "Quantas horas por dia um bicho-preguiça passa dormindo em média na copa das árvores?",
+    "answer": 10,
+    "unit": "horas",
+    "ducks": 2,
+    "fact": "Na natureza elas dormem entre 9 e 10 horas por dia, menos do que os mitos populares de 20 horas sugeriam!"
+  },
+  {
+    "id": 361,
+    "category": "Ciência & Natureza",
+    "question": "Quantos quilos de carne um leão macho adulto consegue devorar em uma única refeição após caçar?",
+    "answer": 40,
+    "unit": "quilos de carne",
+    "ducks": 3,
+    "fact": "Eles conseguem ingerir até um quarto do próprio peso corporal de uma só vez e depois jejuar por dias!"
+  },
+  {
+    "id": 362,
+    "category": "Ciência & Natureza",
+    "question": "Quantos graus Celsius abaixo de zero pode atingir a temperatura na Antártida durante o inverno profundo?",
+    "answer": 89,
+    "unit": "graus negativos (-89 °C)",
+    "ducks": 3,
+    "fact": "O recorde terrestre na Estação Vostok registrou -89,2 °C em julho de 1983!"
+  },
+  {
+    "id": 363,
+    "category": "Ciência & Natureza",
+    "question": "Quantas listras tem a bandeira oficial dos Estados Unidos (as 13 colônias originais)?",
+    "answer": 13,
+    "unit": "listras",
+    "ducks": 1,
+    "fact": "7 listras vermelhas e 6 listras brancas alternadas representando as colônias fundadoras."
+  },
+  {
+    "id": 364,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantas camadas principais compõem a pele humana (epiderme, derme e hipoderme)?",
+    "answer": 3,
+    "unit": "camadas",
+    "ducks": 1,
+    "fact": "A epiderme externa protetora, a derme vascular intermediária e a hipoderme de tecido adiposo profundo."
+  },
+  {
+    "id": 365,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantas câmaras tem o coração humano (átrios e ventrículos)?",
+    "answer": 4,
+    "unit": "câmaras",
+    "ducks": 1,
+    "fact": "Dois átrios na parte superior e dois ventrículos na parte inferior."
+  },
+  {
+    "id": 366,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantos sentidos humanos tradicionais foram descritos pelo filósofo grego Aristóteles?",
+    "answer": 5,
+    "unit": "sentidos clássicos",
+    "ducks": 1,
+    "fact": "Visão, audição, tato, paladar e olfato (hoje a ciência reconhece também propriocepção, equilíbrio, etc.)."
+  },
+  {
+    "id": 367,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantos por cento do cérebro humano é composto por água em média?",
+    "answer": 75,
+    "unit": "por cento (%)",
+    "ducks": 2,
+    "fact": "Cerca de 73% a 75% do peso do cérebro é água pura, sendo altamente sensível à desidratação!"
+  },
+  {
+    "id": 368,
+    "category": "Corpo Humano & Saúde",
+    "question": "Quantos anos de vida útil tem em média uma hemácia (glóbulo vermelho do sangue) antes de ser reciclada pelo baço?",
+    "answer": 120,
+    "unit": "dias",
+    "ducks": 2,
+    "fact": "Elas circulam cerca de 120 dias transportando oxigênio e cobrem centenas de quilômetros de vasos sanguíneos!"
+  },
+  {
+    "id": 369,
+    "category": "Esportes",
+    "question": "Quantos minutos tem cada tempo de uma prorrogação no futebol internacional?",
+    "answer": 15,
+    "unit": "minutos",
+    "ducks": 1,
+    "fact": "Dois tempos de 15 minutos, totalizando 30 minutos extras antes das disputas de pênaltis."
+  },
+  {
+    "id": 370,
+    "category": "Esportes",
+    "question": "Quantos pontos é preciso fazer para vencer um set tradicional de vôlei de quadra (com vantagem de 2)?",
+    "answer": 25,
+    "unit": "pontos",
+    "ducks": 1,
+    "fact": "Os primeiros quatro sets vão até 25 pontos; o quinto set (tie-break) vai até 15 pontos."
+  },
+  {
+    "id": 371,
+    "category": "Esportes",
+    "question": "Quantos anéis entrelaçados formam o símbolo oficial dos Jogos Olímpicos?",
+    "answer": 5,
+    "unit": "anéis olímpicos",
+    "ducks": 1,
+    "fact": "Azul, amarelo, preto, verde e vermelho, representando a união dos cinco continentes habitados do mundo."
+  },
+  {
+    "id": 372,
+    "category": "Esportes",
+    "question": "Quantos strikes consecutivos um jogador de boliche precisa acertar para alcançar a partida perfeita de 300 pontos?",
+    "answer": 12,
+    "unit": "strikes seguidos",
+    "ducks": 2,
+    "fact": "Um strike em cada um dos primeiros 9 frames e 3 strikes no 10º frame, totalizando os lendários 300 pontos!"
+  },
+  {
+    "id": 373,
+    "category": "Esportes",
+    "question": "Quantas bolas compõem um jogo oficial de bocha tradicional?",
+    "answer": 8,
+    "unit": "bochas",
+    "ducks": 2,
+    "fact": "4 bochas para cada equipe mais o 'bolim' (a pequena bola alvo lançada no início)."
+  },
+  {
+    "id": 374,
+    "category": "Games & Tecnologia",
+    "question": "Quantos caracteres tem um endereço de carteira pública da criptomoeda Bitcoin no formato clássico legado (Base58)?",
+    "answer": 34,
+    "unit": "caracteres",
+    "ducks": 2,
+    "fact": "Endereços legados começam com o dígito '1' e possuem entre 26 e 35 caracteres alfanuméricos."
+  },
+  {
+    "id": 375,
+    "category": "Games & Tecnologia",
+    "question": "Quantos anos durou a pioneira rede social Orkut (fundada pelo Google em 2004 até seu encerramento em 2014)?",
+    "answer": 10,
+    "unit": "anos",
+    "ducks": 1,
+    "fact": "Febre absoluta no Brasil, que chegou a concentrar mais de 50% de todos os usuários mundiais da rede!"
+  },
+  {
+    "id": 376,
+    "category": "Games & Tecnologia",
+    "question": "Quantos botões tem o mouse de computador ergonômico padrão mais básico de escritório (incluindo o clique da rodinha)?",
+    "answer": 3,
+    "unit": "botões",
+    "ducks": 1,
+    "fact": "Botão esquerdo, botão direito e o clique central integrado à rodinha de rolagem (scroll wheel)."
+  },
+  {
+    "id": 377,
+    "category": "Games & Tecnologia",
+    "question": "Quantos GHz de frequência atinge a rede Wi-Fi convencional de alta velocidade mais comum (2.4 GHz e ...)?",
+    "answer": 5,
+    "unit": "GHz",
+    "ducks": 1,
+    "fact": "Roteadores dual-band operam nas faixas de 2.4 GHz (maior alcance) e 5 GHz (maior velocidade)."
+  },
+  {
+    "id": 378,
+    "category": "Games & Tecnologia",
+    "question": "Quantos pinos tem um conector de rede de internet RJ-45 padrão?",
+    "answer": 8,
+    "unit": "pinos",
+    "ducks": 1,
+    "fact": "Conecta os 4 pares de fios trançados do cabo Ethernet UTP de rede."
+  },
+  {
+    "id": 379,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos mililitros (ml) tem um litro de água?",
+    "answer": 1000,
+    "unit": "ml",
+    "ducks": 1,
+    "fact": "Pelo sistema métrico internacional decimal, 1 litro equivale exatamente a 1.000 mililitros ou 1 decímetro cúbico."
+  },
+  {
+    "id": 380,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos centímetros tem uma régua escolar padrão vendida em papelarias?",
+    "answer": 30,
+    "unit": "centímetros",
+    "ducks": 1,
+    "fact": "A régua clássica de 30 cm cabe na maioria das mochilas e estojos escolares."
+  },
+  {
+    "id": 381,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos dias tem o mês de abril no calendário civil?",
+    "answer": 30,
+    "unit": "dias",
+    "ducks": 1,
+    "fact": "A famosa rima: 'Trinta dias tem novembro, abril, junho e setembro; com vinte e oito só há um e os demais têm trinta e um'!"
+  },
+  {
+    "id": 382,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos graus Celsius de febre uma pessoa atinge para ser considerada em estado febril preocupante alto?",
+    "answer": 39,
+    "unit": "graus Celsius",
+    "ducks": 1,
+    "fact": "A temperatura corporal normal é 36,5°C; febre moderada é 38°C e febre alta atinge 39°C ou mais."
+  },
+  {
+    "id": 383,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos centavos formam 1 Real brasileiro?",
+    "answer": 100,
+    "unit": "centavos",
+    "ducks": 1,
+    "fact": "O Real foi lançado em 1º de julho de 1994 no governo de Itamar Franco e substituiu o Cruzeiro Real."
+  },
+  {
+    "id": 384,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos anos comemora um jubileu de ouro?",
+    "answer": 50,
+    "unit": "anos",
+    "ducks": 1,
+    "fact": "Comemorações de 50 anos de reinado, casamento ou fundação de uma instituição."
+  },
+  {
+    "id": 385,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos dentes de leite uma criança saudável tem na dentição decídua completa?",
+    "answer": 20,
+    "unit": "dentes de leite",
+    "ducks": 2,
+    "fact": "São 10 dentes na arcada superior e 10 na inferior, que começam a cair por volta dos 6 anos."
+  },
+  {
+    "id": 386,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos quilos pesa uma saca de café padrão exportada pelo Brasil?",
+    "answer": 60,
+    "unit": "quilos",
+    "ducks": 2,
+    "fact": "A saca de 60 kg é a medida padrão internacional histórica do mercado cafeeiro mundial."
+  },
+  {
+    "id": 387,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos minutos dura em média um ciclo completo de sono humano (passando por sono leve, profundo e REM)?",
+    "answer": 90,
+    "unit": "minutos",
+    "ducks": 2,
+    "fact": "Uma noite de descanso saudável costuma ter de 4 a 6 ciclos completos de 90 minutos."
+  },
+  {
+    "id": 388,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas casas decimais tem uma nota de dinheiro do Real para centavos?",
+    "answer": 2,
+    "unit": "casas decimais",
+    "ducks": 1,
+    "fact": "Exemplo: R$ 10,50 possui duas casas decimais representando os centavos de real."
+  },
+  {
+    "id": 389,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos ovos vêm em uma 'grosa' tradicional no comércio atacadista (12 dúzias)?",
+    "answer": 144,
+    "unit": "ovos",
+    "ducks": 2,
+    "fact": "Uma dúzia de dúzias: 12 vezes 12 = 144 unidades!"
+  },
+  {
+    "id": 390,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas patas tem um escorpião marrom comum (aracnídeo)?",
+    "answer": 8,
+    "unit": "patas",
+    "ducks": 1,
+    "fact": "Como todos os aracnídeos, escorpiões têm 4 pares de patas locomotoras, além dos pedipalpos que formam as garras!"
+  },
+  {
+    "id": 391,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas cores tem a bandeira nacional da Itália?",
+    "answer": 3,
+    "unit": "cores",
+    "ducks": 1,
+    "fact": "Verde, branco e vermelho em três faixas verticais de mesma largura."
+  },
+  {
+    "id": 392,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas teclas brancas (naturais) existem em um piano de concerto de 88 teclas?",
+    "answer": 52,
+    "unit": "teclas brancas",
+    "ducks": 2,
+    "fact": "São 52 brancas e 36 teclas pretas, totalizando 88 teclas."
+  },
+  {
+    "id": 393,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos lados tem um octógono de MMA?",
+    "answer": 8,
+    "unit": "lados",
+    "ducks": 1,
+    "fact": "O formato de 8 lados foi patenteado pelo UFC para evitar que lutadores ficassem presos em cantos de 90° como no boxe."
+  },
+  {
+    "id": 394,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos anos de história tem a Bíblia de Gutenberg desde sua primeira impressão por volta de 1455 até hoje?",
+    "answer": 570,
+    "unit": "anos",
+    "ducks": 3,
+    "fact": "Foi o primeiro grande livro impresso com tipos móveis metálicos na Europa ocidental."
+  },
+  {
+    "id": 395,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos metros tem 1 quilômetro?",
+    "answer": 1000,
+    "unit": "metros",
+    "ducks": 1,
+    "fact": "O prefixo grego 'quilo' significa exatamente mil (1.000) vezes a unidade base."
+  },
+  {
+    "id": 396,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantos anos dura o ciclo do zodíaco chinês completo antes de reiniciar no mesmo animal?",
+    "answer": 12,
+    "unit": "anos (12 animais)",
+    "ducks": 1,
+    "fact": "Rato, Boi, Tigre, Coelho, Dragão, Serpente, Cavalo, Cabra, Macaco, Galo, Cão e Porco!"
+  },
+  {
+    "id": 397,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas fases principais a Lua passa ao longo de um mês lunar completo?",
+    "answer": 4,
+    "unit": "fases principais",
+    "ducks": 1,
+    "fact": "Nova, Crescente, Cheia e Minguante, ao longo de um ciclo de aproximadamente 29,5 dias."
+  },
+  {
+    "id": 398,
+    "category": "Curiosidades & Cotidiano",
+    "question": "Quantas semanas dura o período de quarentena sanitária tradicional histórica?",
+    "answer": 6,
+    "unit": "semanas (40 dias)",
+    "ducks": 2,
+    "fact": "O termo surgiu em Veneza no século XIV: navios que chegavam deviam esperar 40 dias ('quaranta giorni') para evitar peste."
+  },
+  {
+    "id": 399,
+    "category": "História & Sociedade",
+    "question": "Quantas engrenagens de bronze compunham o mecanismo de Anticítera (o primeiro computador analógico da humanidade)?",
+    "answer": 30,
+    "unit": "engrenagens de bronze",
+    "ducks": 3,
+    "fact": "Descoberto em um naufrágio grego de mais de 2.000 anos, calculava eclipses e fases da lua com incrível precisão mecânica!"
+  },
+  {
+    "id": 400,
+    "category": "Cultura Pop & Música",
+    "question": "Quantas teclas tem o teclado melódico da mão direita de um acordeom clássico de 120 baixos?",
+    "answer": 41,
+    "unit": "teclas",
+    "ducks": 2,
+    "fact": "O acordeom de 120 baixos padrão de concerto possui 41 teclas (cobrindo mais de três oitavas completas de Fá a Lá)."
   }
 ]
