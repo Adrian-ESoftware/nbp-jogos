@@ -79,17 +79,17 @@ export function createTrucoTable(canvas) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
   const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(40, 1.6, 0.1, 100)
-  camera.position.set(0, 6.8, 8.4)
-  camera.lookAt(0, 0, -0.45)
+  const camera = new THREE.PerspectiveCamera(44, 1.6, 0.1, 100)
+  camera.position.set(0, 6.6, 3.7)
+  camera.lookAt(0, 0, -0.35)
   scene.add(camera)
 
-  // Iluminação
-  const ambientLight = new THREE.HemisphereLight(0xdcfce7, 0x052e16, 2.2)
+  // Iluminação com alto contraste e clareza para leitura das cartas
+  const ambientLight = new THREE.HemisphereLight(0xffffff, 0x064e3b, 2.5)
   scene.add(ambientLight)
 
-  const sunLight = new THREE.DirectionalLight(0xffedd5, 2.8)
-  sunLight.position.set(-3.5, 11, 5.5)
+  const sunLight = new THREE.DirectionalLight(0xfffbeb, 2.6)
+  sunLight.position.set(-2.5, 11, 4.0)
   sunLight.castShadow = true
   sunLight.shadow.mapSize.set(1024, 1024)
   sunLight.shadow.camera.left = sunLight.shadow.camera.bottom = -7
@@ -154,8 +154,8 @@ export function createTrucoTable(canvas) {
   )
   scene.add(particles)
 
-  // Geometria e texturas de cartas em escala de mesa
-  const cardGeo = new THREE.PlaneGeometry(0.92, 1.34)
+  // Geometria e texturas de cartas em escala cinematográfica (ampliada para nitidez total)
+  const cardGeo = new THREE.PlaneGeometry(1.26, 1.82)
   const texturesCache = new Map()
 
   function getCardTexture(card, isCovered = false) {
@@ -222,36 +222,40 @@ export function createTrucoTable(canvas) {
   }
 
   function drawCanvasCardFace(ctx, w, h, card) {
+    // Fundo branco com borda sutil de cartão
     ctx.fillStyle = '#ffffff'
     ctx.beginPath()
     ctx.roundRect(0, 0, w, h, 28)
     ctx.fill()
+    ctx.strokeStyle = '#cbd5e1'
+    ctx.lineWidth = 4
+    ctx.stroke()
 
     const isRed = card.suit === 'hearts' || card.suit === 'diamonds'
     const color = isRed ? '#dc2626' : '#0f172a'
     const suitSymbol =
       card.suit === 'spades' ? '♠' : card.suit === 'hearts' ? '♥' : card.suit === 'diamonds' ? '♦' : '♣'
 
-    // Cantos (índice + naipe)
+    // Cantos superiores (índice grande + naipe)
     ctx.fillStyle = color
-    ctx.font = '900 64px sans-serif'
-    ctx.textAlign = 'left'
+    ctx.font = '900 82px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.fillText(card.value, 28, 22)
+    ctx.fillText(card.value, 56, 22)
 
-    ctx.font = '54px sans-serif'
-    ctx.fillText(suitSymbol, 30, 96)
+    ctx.font = '68px sans-serif'
+    ctx.fillText(suitSymbol, 56, 108)
 
     // Canto inferior invertido
     ctx.save()
     ctx.translate(w, h)
     ctx.rotate(Math.PI)
-    ctx.font = '900 64px sans-serif'
-    ctx.textAlign = 'left'
+    ctx.font = '900 82px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.fillText(card.value, 28, 22)
-    ctx.font = '54px sans-serif'
-    ctx.fillText(suitSymbol, 30, 96)
+    ctx.fillText(card.value, 56, 22)
+    ctx.font = '68px sans-serif'
+    ctx.fillText(suitSymbol, 56, 108)
     ctx.restore()
 
     // Centro: Pips reais posicionados exatamente como em baralho de cartas real
@@ -259,7 +263,7 @@ export function createTrucoTable(canvas) {
     ctx.textBaseline = 'middle'
     const pipsList = PIP_CONFIGS[card.value]
     if (pipsList && pipsList.length > 0) {
-      ctx.font = '52px sans-serif'
+      ctx.font = '68px sans-serif'
       pipsList.forEach((p) => {
         ctx.save()
         const px = p.x * w
@@ -270,7 +274,7 @@ export function createTrucoTable(canvas) {
         ctx.restore()
       })
     } else {
-      ctx.font = '72px sans-serif'
+      ctx.font = '118px sans-serif'
       ctx.fillText(suitSymbol, w / 2, h / 2)
     }
   }
@@ -282,18 +286,18 @@ export function createTrucoTable(canvas) {
   const deckBackTexture = getCardTexture(null, true)
   const deckTopMat = new THREE.MeshStandardMaterial({
     map: deckBackTexture,
-    roughness: 0.45,
-    metalness: 0.1,
+    roughness: 0.35,
+    metalness: 0.05,
     side: THREE.DoubleSide,
   })
 
-  // Bloco volumétrico do maço de cartas
+  // Bloco volumétrico do maço de cartas (escala real compatível com as cartas)
   const deckBlock = new THREE.Mesh(
-    new THREE.BoxGeometry(0.94, 0.08, 1.36),
+    new THREE.BoxGeometry(1.28, 0.12, 1.84),
     new THREE.MeshStandardMaterial({ color: 0xf5eedc, roughness: 0.7 })
   )
-  deckBlock.position.set(-1.8, 0.10, -0.45)
-  deckBlock.rotation.y = 0.1
+  deckBlock.position.set(-2.4, 0.12, -0.35)
+  deckBlock.rotation.y = 0.08
   deckBlock.castShadow = true
   deckBlock.receiveShadow = true
   deckGroup.add(deckBlock)
@@ -301,8 +305,8 @@ export function createTrucoTable(canvas) {
   // Carta do topo do monte
   const deckTopCard = new THREE.Mesh(cardGeo, deckTopMat)
   deckTopCard.rotation.x = -Math.PI / 2
-  deckTopCard.rotation.z = -0.1
-  deckTopCard.position.set(-1.8, 0.145, -0.45)
+  deckTopCard.rotation.z = -0.08
+  deckTopCard.position.set(-2.4, 0.185, -0.35)
   deckTopCard.castShadow = true
   deckGroup.add(deckTopCard)
   scene.add(deckGroup)
@@ -321,23 +325,23 @@ export function createTrucoTable(canvas) {
   // Posições dos jogadores na borda e das cartas pousadas perfeitamente no centro do feltro
   function getSeatCoords(seatIndex, totalSeats) {
     if (totalSeats === 2) {
-      // 1v1: Cartas lado a lado centralizadas no meio do feltro (em y=0.10, z=-0.42)
+      // 1v1: Cartas lado a lado centralizadas no meio do feltro com amplo espaçamento
       if (seatIndex === 0) {
-        return { x: 0, z: 2.4, rotY: 0, cardX: -0.54, cardZ: -0.42, cardRot: 0.04 }
+        return { x: 0, z: 2.4, rotY: 0, cardX: -0.74, cardZ: -0.35, cardRot: 0.04 }
       }
-      return { x: 0, z: -2.4, rotY: Math.PI, cardX: 0.54, cardZ: -0.42, cardRot: -0.04 }
+      return { x: 0, z: -2.4, rotY: Math.PI, cardX: 0.74, cardZ: -0.35, cardRot: -0.04 }
     }
 
-    // 2v2: 4 cartas formando uma disputa central na mesa
+    // 2v2: 4 cartas formando uma disputa central nítida na mesa
     const angles = [0, -Math.PI / 2, Math.PI, Math.PI / 2]
     const rad = 2.3
     const a = angles[seatIndex % 4]
 
     const cardSpots = [
-      { x: -0.38, z: -0.15, rot: 0.04 },  // Jogador 0 (Sul)
-      { x: 0.48, z: -0.45, rot: -0.10 },  // Jogador 1 (Leste)
-      { x: 0.38, z: -0.75, rot: 0.08 },   // Jogador 2 (Norte)
-      { x: -0.48, z: -0.45, rot: -0.04 }, // Jogador 3 (Oeste)
+      { x: -0.65, z: 0.10, rot: 0.04 },   // Jogador 0 (Sul)
+      { x: 0.78, z: -0.35, rot: -0.08 },  // Jogador 1 (Leste)
+      { x: 0.50, z: -0.78, rot: 0.06 },   // Jogador 2 (Norte)
+      { x: -0.78, z: -0.35, rot: -0.04 }, // Jogador 3 (Oeste)
     ]
     const spot = cardSpots[seatIndex % 4]
 
@@ -354,12 +358,12 @@ export function createTrucoTable(canvas) {
   // Lança a carta voando da mão / assento até o centro da mesa
   function throwCardToTable(item, coords, playIdx, isLocal, key) {
     const origin = isLocal
-      ? new THREE.Vector3(0, 1.4, 3.8)
+      ? new THREE.Vector3(0, 1.4, 3.4)
       : new THREE.Vector3(coords.x * 0.9, 1.0, coords.z * 0.9)
 
-    // Altura y = 0.10 garante que repousa BEM SOBRE o feltro (que fica em y = 0.06)
-    const targetPos = new THREE.Vector3(coords.cardX, 0.10 + playIdx * 0.012, coords.cardZ)
-    const rotZ = coords.cardRot + (Math.random() - 0.5) * 0.06
+    // Altura y = 0.11 garante que repousa BEM SOBRE o feltro verde
+    const targetPos = new THREE.Vector3(coords.cardX, 0.11 + playIdx * 0.015, coords.cardZ)
+    const rotZ = coords.cardRot + (Math.random() - 0.5) * 0.05
     const targetQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, rotZ))
     const startQuat = isLocal
       ? new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.4, 0, 0))
@@ -369,8 +373,8 @@ export function createTrucoTable(canvas) {
     const tex = getCardTexture(item.card, isCovered)
     const mat = new THREE.MeshStandardMaterial({
       map: tex,
-      roughness: 0.45,
-      metalness: 0.1,
+      roughness: 0.35,
+      metalness: 0.02,
       side: THREE.DoubleSide,
     })
     const mesh = new THREE.Mesh(cardGeo, mat)
@@ -431,15 +435,15 @@ export function createTrucoTable(canvas) {
             const tex = getCardTexture(item.card, isCovered)
             const mat = new THREE.MeshStandardMaterial({
               map: tex,
-              roughness: 0.45,
-              metalness: 0.1,
+              roughness: 0.35,
+              metalness: 0.02,
               side: THREE.DoubleSide,
             })
             const mesh = new THREE.Mesh(cardGeo, mat)
             mesh.userData.key = key
             mesh.rotation.x = -Math.PI / 2
             mesh.rotation.z = coords.cardRot
-            mesh.position.set(coords.cardX, 0.10 + playIdx * 0.012, coords.cardZ)
+            mesh.position.set(coords.cardX, 0.11 + playIdx * 0.015, coords.cardZ)
             mesh.castShadow = true
             mesh.receiveShadow = true
             tableCardsGroup.add(mesh)
