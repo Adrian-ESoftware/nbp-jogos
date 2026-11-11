@@ -933,6 +933,16 @@
         } else {
           p2pStatus.innerHTML = `<i data-lucide="wifi-off" class="inline-icon text-red"></i> Offline · ${st.roomCode || ''}`
         }
+        if (st.connected && st.roomCode) {
+          try {
+            if (window.parent && window.parent !== window) {
+              const pUrl = new URL(window.parent.location.href)
+              pUrl.searchParams.set('sala', st.roomCode)
+              pUrl.searchParams.set('room', st.roomCode)
+              window.parent.history.replaceState({}, '', pUrl.toString())
+            }
+          } catch (_) {}
+        }
         refreshLucideIcons()
       },
       onError(err) {
@@ -1040,7 +1050,13 @@
     })
 
     playerNameInput.value = room.profile.name
-    const params = new URLSearchParams(window.location.search)
+    let searchStr = window.location.search
+    try {
+      if (!searchStr && window.parent && window.parent !== window && window.parent.location.search) {
+        searchStr = window.parent.location.search
+      }
+    } catch (_) {}
+    const params = new URLSearchParams(searchStr)
     const joinParam = params.get('sala') || params.get('room')
     if (joinParam) {
       roomCodeInput.value = joinParam.toUpperCase()
@@ -1094,8 +1110,19 @@
 
     btnCopyRoom.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(gameState.roomCode)
-      showToast(`Código ${gameState.roomCode} copiado! Envie para seus amigos 📋`)
+      let baseOrigin = window.location.origin
+      let basePath = '/jogos/corrente-nbp'
+      try {
+        if (window.parent && window.parent !== window) {
+          baseOrigin = window.parent.location.origin
+          if (window.parent.location.pathname.startsWith('/jogos/')) {
+            basePath = window.parent.location.pathname
+          }
+        }
+      } catch (_) {}
+      const shareUrl = `${baseOrigin}${basePath}?room=${gameState.roomCode}&sala=${gameState.roomCode}`
+      await navigator.clipboard.writeText(shareUrl)
+      showToast(`Link da sala ${gameState.roomCode} copiado! 📋`)
     } catch {
       showToast(`Código da sala: ${gameState.roomCode}`)
     }

@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowLeft, Maximize, RotateCcw } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getGame, withBase } from '../lib/catalog'
 import { NemAPatoGame } from '../games/nem-a-pato/NemAPatoGame'
 
@@ -13,6 +13,13 @@ function GamePage() {
   const nativeRef = useRef<HTMLDivElement>(null)
   const [instance, setInstance] = useState(0)
   const [message, setMessage] = useState('')
+  const [querySearch, setQuerySearch] = useState('')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.search) {
+      setQuerySearch(window.location.search)
+    }
+  }, [])
 
   if (!game) return <main className="player-empty"><h1>Jogo não encontrado</h1><p>Este jogo não está disponível no catálogo.</p><Link className="play-button" to="/"><ArrowLeft size={16} aria-hidden="true" /> Voltar ao catálogo</Link></main>
 
@@ -24,6 +31,16 @@ function GamePage() {
       setMessage('')
     } catch { setMessage('Não foi possível abrir em tela cheia neste navegador.') }
   }
+
+  // Encaminha os parâmetros de busca (?room=... ou ?sala=...) para o iframe do jogo
+  const frameSrc = (() => {
+    if (!querySearch) return game.entry
+    const cleanSearch = querySearch.startsWith('?') ? querySearch.slice(1) : querySearch
+    if (!cleanSearch) return game.entry
+    const separator = game.entry.includes('?') ? '&' : '?'
+    return `${game.entry}${separator}${cleanSearch}`
+  })()
+
   return <main className="player-page">
     <header className="player-header"><Link className="player-back" to="/"><ArrowLeft size={18} aria-hidden="true" /> Voltar ao catálogo</Link><img src={withBase('/images/nbp-games-logo-dark.svg')} alt="NBP Games" /></header>
     <section className="player-content" aria-labelledby="player-title">
@@ -43,7 +60,7 @@ function GamePage() {
           <NemAPatoGame key={instance} />
         </div>
       ) : (
-        <iframe key={instance} ref={frame} className="player-frame" src={game.entry} title={`Jogar ${game.title}`} allow="fullscreen; autoplay; gamepad" />
+        <iframe key={`${instance}-${querySearch}`} ref={frame} className="player-frame" src={frameSrc} title={`Jogar ${game.title}`} allow="fullscreen; autoplay; gamepad" />
       )}
       {message && <p className="player-message" role="status">{message}</p>}
       <div className="player-footer">

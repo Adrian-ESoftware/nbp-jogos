@@ -1221,7 +1221,17 @@
 
   function copyRoomShareLink() {
     const code = (local.roomCode || el.roomCodeInput.value.trim() || 'WOS-0000').toUpperCase();
-    const url = `${window.location.origin}${window.location.pathname}?sala=${code}`;
+    let baseOrigin = window.location.origin;
+    let basePath = '/jogos/wos-nbp';
+    try {
+      if (window.parent && window.parent !== window) {
+        baseOrigin = window.parent.location.origin;
+        if (window.parent.location.pathname.startsWith('/jogos/')) {
+          basePath = window.parent.location.pathname;
+        }
+      }
+    } catch (_) {}
+    const url = `${baseOrigin}${basePath}?room=${code}&sala=${code}`;
     navigator.clipboard.writeText(url).then(() => {
       if (el.btnCopyLinkRoom) el.btnCopyLinkRoom.textContent = '✅ Link Copiado!';
       if (el.btnLobbyCopyLink) el.btnLobbyCopyLink.textContent = '✅ Link Copiado!';
@@ -1235,7 +1245,7 @@
         if (el.btnLobbyCopyLink) el.btnLobbyCopyLink.textContent = '📋 Copiar Link';
       }, 2000);
     }).catch(() => {
-      navigator.clipboard.writeText(code);
+      navigator.clipboard.writeText(url);
     });
   }
 
@@ -1692,7 +1702,17 @@
           try {
             const url = new URL(window.location.href);
             url.searchParams.set('sala', st.roomCode);
+            url.searchParams.set('room', st.roomCode);
             window.history.replaceState({}, '', url.toString());
+          } catch (_) {}
+
+          try {
+            if (window.parent && window.parent !== window) {
+              const pUrl = new URL(window.parent.location.href);
+              pUrl.searchParams.set('sala', st.roomCode);
+              pUrl.searchParams.set('room', st.roomCode);
+              window.parent.history.replaceState({}, '', pUrl.toString());
+            }
           } catch (_) {}
 
           if (st.isHost) {
@@ -1873,11 +1893,7 @@
     el.btnJoinRoom.addEventListener('click', () => setupMultiplayer('join'));
 
     el.btnCopyRoom.addEventListener('click', () => {
-      if (!local.roomCode) return;
-      navigator.clipboard.writeText(local.roomCode).then(() => {
-        el.btnCopyRoom.textContent = '✅ Copiado!';
-        setTimeout(() => { el.btnCopyRoom.textContent = '📋 Copiar Código'; }, 1800);
-      });
+      copyRoomShareLink();
     });
 
     el.btnLeaveRoom.addEventListener('click', () => leaveRoomToSolo());
@@ -1964,8 +1980,15 @@
     await loadDictionary();
     readHostOptions();
 
-    // Código da sala predefinido (via query string ?sala= ou ?room=, ou gerado automaticamente)
-    const params = new URLSearchParams(window.location.search);
+    // Código da sala predefinido (via query string ?sala= ou ?room=, no iframe ou na janela pai)
+    let searchStr = window.location.search;
+    try {
+      if (!searchStr && window.parent && window.parent !== window && window.parent.location.search) {
+        searchStr = window.parent.location.search;
+      }
+    } catch (_) {}
+
+    const params = new URLSearchParams(searchStr);
     const urlRoom = (params.get('sala') || params.get('room') || '').trim().toUpperCase();
 
     const defaultCode = urlRoom || randomRoomCode();

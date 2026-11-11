@@ -1458,6 +1458,16 @@
         } else {
           vsP2pStatus.textContent = `🔴 Offline · ${st.roomCode || ''}`
         }
+        if (st.connected && st.roomCode) {
+          try {
+            if (window.parent && window.parent !== window) {
+              const pUrl = new URL(window.parent.location.href)
+              pUrl.searchParams.set('sala', st.roomCode)
+              pUrl.searchParams.set('room', st.roomCode)
+              window.parent.history.replaceState({}, '', pUrl.toString())
+            }
+          } catch (_) {}
+        }
       },
       onError(err) {
         if (err && err.message) showToast(`⚠️ ${err.message}`, 3400)
@@ -1551,7 +1561,22 @@
     })
 
     vsPlayerNameInput.value = vsRoom.profile.name
-    setupVersusAsHost(`VS-${Math.floor(1000 + Math.random() * 9000)}`)
+    let searchStr = window.location.search
+    try {
+      if (!searchStr && window.parent && window.parent !== window && window.parent.location.search) {
+        searchStr = window.parent.location.search
+      }
+    } catch (_) {}
+    const params = new URLSearchParams(searchStr)
+    const joinParam = params.get('sala') || params.get('room')
+    if (joinParam) {
+      const code = joinParam.trim().toUpperCase()
+      vsRoomCodeInput.value = code
+      vsRoom.joinRoom(code)
+      showToast(`Conectando à sala ${code}...`)
+    } else {
+      setupVersusAsHost(`VS-${Math.floor(1000 + Math.random() * 9000)}`)
+    }
   }
 
   btnVsAddBot.addEventListener('click', () => {
@@ -1621,8 +1646,19 @@
 
   btnVsCopy.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(vsState.roomCode)
-      showToast(`Código ${vsState.roomCode} copiado! 📋`)
+      let baseOrigin = window.location.origin
+      let basePath = '/jogos/bandeiras-nbp'
+      try {
+        if (window.parent && window.parent !== window) {
+          baseOrigin = window.parent.location.origin
+          if (window.parent.location.pathname.startsWith('/jogos/')) {
+            basePath = window.parent.location.pathname
+          }
+        }
+      } catch (_) {}
+      const shareUrl = `${baseOrigin}${basePath}?room=${vsState.roomCode}&sala=${vsState.roomCode}`
+      await navigator.clipboard.writeText(shareUrl)
+      showToast(`Link da sala ${vsState.roomCode} copiado! 📋`)
     } catch {
       showToast(`Sala: ${vsState.roomCode}`)
     }
