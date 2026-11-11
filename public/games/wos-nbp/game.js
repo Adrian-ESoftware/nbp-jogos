@@ -232,7 +232,9 @@
     status: 'lobby', // 'lobby' | 'playing' | 'revealing_end' | 'intermission' | 'gameover'
     timeLeft: 120,
     roundDuration: 120,
-    revealTime: 22,    // segundos restantes em que as letras falsas e '?' são reveladas
+    revealTime: 22,    // segundos restantes em que as letras falsas são reveladas na reta final
+    firstLetterHintRevealed: false,
+    lastLetterHintRevealed: false,
     rootWord: '',
     baseLetters: [],   // letras reais da palavra-raiz
     wheelTiles: [],    // [{ id, char, displayChar, points, isMystery, mysteryIndex, isFake, fakeRevealed }]
@@ -744,6 +746,8 @@
     state.roundDuration = config.roundDuration;
     state.timeLeft = config.roundDuration;
     state.revealTime = Math.max(15, Math.round(config.roundDuration * 0.2));
+    state.firstLetterHintRevealed = false;
+    state.lastLetterHintRevealed = false;
     state.rootWord = board.rootWord;
     state.baseLetters = board.baseLetters;
     state.wheelTiles = board.wheelTiles;
@@ -800,6 +804,8 @@
     state.roundDuration = config.roundDuration;
     state.timeLeft = config.roundDuration;
     state.revealTime = Math.max(15, Math.round(config.roundDuration * 0.2));
+    state.firstLetterHintRevealed = false;
+    state.lastLetterHintRevealed = false;
     state.rootWord = board.rootWord;
     state.baseLetters = board.baseLetters;
     state.wheelTiles = board.wheelTiles;
@@ -840,49 +846,77 @@
     renderWheel(true);
   }
 
-  // Revela letras falsas, letras escondidas (?) e dicas na reta final
+  // Revela letras ocultas (no meio do tempo), letras falsas e dicas com o decorrer da rodada
   function applyTimedReveals() {
     let changed = false;
 
-    // Quando chega no revealTime (ex: últimos 22s), revela as Letras Falsas (em vermelho) e as Letras Escondidas (?)
-    if (state.timeLeft === state.revealTime) {
-      let revealedAnyMod = false;
+    // No meio do tempo (50% da rodada): revela a(s) Letra(s) Oculta(s) / Escondida(s) (?) da roda
+    const halfTime = Math.round(state.roundDuration * 0.5);
+    if (state.timeLeft <= halfTime) {
+      let revealedMystery = false;
+      let countRevealed = 0;
+      state.wheelTiles.forEach((t) => {
+        if (t.isMystery && t.displayChar !== t.char) {
+          t.displayChar = t.char;
+          changed = true;
+          revealedMystery = true;
+          countRevealed++;
+        }
+      });
+      if (revealedMystery) {
+        SoundFX.play('reveal');
+        const msg = countRevealed > 1
+          ? '💡 Meio do tempo: As letras ocultas (?) foram reveladas!'
+          : '💡 Meio do tempo: A letra oculta (?) foi revelada!';
+        pushFeed(msg, 'system');
+      }
+    }
+
+    // Na reta final (revealTime, ex: últimos 18-22s): revela as Letras Falsas (em vermelho) e a 1ª letra de palavras não descobertas
+    if (state.timeLeft <= state.revealTime) {
+      let revealedFake = false;
       state.wheelTiles.forEach((t) => {
         if (t.isFake && !t.fakeRevealed) {
           t.fakeRevealed = true;
           changed = true;
-          revealedAnyMod = true;
+          revealedFake = true;
         }
+        // Garante que qualquer letra oculta restante seja revelada
         if (t.isMystery && t.displayChar !== t.char) {
           t.displayChar = t.char;
           changed = true;
-          revealedAnyMod = true;
         }
       });
-      if (revealedAnyMod) {
+      if (revealedFake) {
         SoundFX.play('reveal');
-        pushFeed('🔍 Reta final: Letras Falsas e Letras Escondidas (?) foram reveladas!', 'system');
+        pushFeed('🔍 Reta final: Letras Falsas reveladas em vermelho!', 'system');
       }
 
       // Também revela a 1ª letra de palavras ainda não descobertas
-      state.slots.forEach((s) => {
-        if (!s.solvedBy && !s.revealedPositions.includes(0)) {
-          s.revealedPositions.push(0);
-          changed = true;
-        }
-      });
+      if (!state.firstLetterHintRevealed) {
+        state.firstLetterHintRevealed = true;
+        state.slots.forEach((s) => {
+          if (!s.solvedBy && !s.revealedPositions.includes(0)) {
+            s.revealedPositions.push(0);
+            changed = true;
+          }
+        });
+      }
     }
 
     // Aos 12s restantes: revela a última letra das palavras não resolvidas
-    if (state.timeLeft === 12) {
+    if (state.timeLeft <= 12 && !state.lastLetterHintRevealed) {
+      state.lastLetterHintRevealed = true;
+      let revealedLast = false;
       state.slots.forEach((s) => {
         const lastIdx = s.word.length - 1;
         if (!s.solvedBy && !s.revealedPositions.includes(lastIdx)) {
           s.revealedPositions.push(lastIdx);
           changed = true;
+          revealedLast = true;
         }
       });
-      if (changed) {
+      if (revealedLast) {
         pushFeed('💡 Dica final: última letra revelada nas palavras restantes!', 'system');
       }
     }
