@@ -1,9 +1,9 @@
 ;(() => {
   const BOT_NAMES = [
-    { name: 'Bot Clarice 🤖', color: '#a855f7' },
-    { name: 'Bot Machado 🤖', color: '#f59e0b' },
-    { name: 'Bot Drummond 🤖', color: '#10b981' },
-    { name: 'Bot Cecília 🤖', color: '#ec4899' },
+    { name: 'Bot Clarice', color: '#a855f7' },
+    { name: 'Bot Machado', color: '#f59e0b' },
+    { name: 'Bot Drummond', color: '#10b981' },
+    { name: 'Bot Cecília', color: '#ec4899' },
   ]
 
   const STARTER_POOL = 'abcdefghijlmnoprstuvz'.split('')
@@ -91,6 +91,32 @@
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z]/g, '')
+  }
+
+  function renderHearts(lives, eliminated) {
+    if (eliminated) {
+      return `<span class="eliminated-badge"><i data-lucide="skull" class="inline-icon"></i> Eliminado</span>`
+    }
+    let html = '<div class="hearts-row">'
+    for (let i = 0; i < 3; i++) {
+      if (i < lives) {
+        html += `<span class="heart-icon active" title="Vida ativa"><i data-lucide="heart" class="inline-icon"></i></span>`
+      } else {
+        html += `<span class="heart-icon lost" title="Vida perdida"><i data-lucide="heart-crack" class="inline-icon"></i></span>`
+      }
+    }
+    html += '</div>'
+    return html
+  }
+
+  function refreshLucideIcons() {
+    if (typeof window.lucide !== 'undefined' && typeof window.lucide.createIcons === 'function') {
+      try {
+        window.lucide.createIcons()
+      } catch {
+        // ignore
+      }
+    }
   }
 
   function playTone(freq, duration = 0.08, type = 'sine', gainVal = 0.08) {
@@ -230,15 +256,20 @@
       card.className = `player-card${isTurn ? ' active-turn' : ''}${p.eliminated ? ' eliminated' : ''}`
       card.id = `pcard-${p.id}`
 
-      const hearts = p.eliminated ? '💀 Eliminado' : '❤️'.repeat(p.lives) + '🖤'.repeat(Math.max(0, 3 - p.lives))
+      const hearts = renderHearts(p.lives, p.eliminated)
       const youTag = p.id === room?.profile.id ? ' (Você)' : ''
+      const turnSubtitle = isTurn
+        ? '<span class="status-turn"><i data-lucide="bomb" class="inline-icon"></i> Na vez agora!</span>'
+        : p.eliminated
+          ? 'Fora da rodada'
+          : 'Aguardando vez'
 
       card.innerHTML = `
         <div class="player-left">
           <div class="avatar-dot" style="background:${p.color}">${p.name.charAt(0).toUpperCase()}</div>
           <div class="player-meta">
             <strong>${p.name}${youTag}</strong>
-            <small>${isTurn ? '💣 Na vez agora!' : p.eliminated ? 'Fora da rodada' : 'Aguardando vez'}</small>
+            <small>${turnSubtitle}</small>
           </div>
         </div>
         <div class="player-right">
@@ -301,7 +332,7 @@
       }
 
       requiredPrefixPill.textContent = gameState.requiredPrefix.toUpperCase()
-      possibleWordsCount.textContent = `📚 ${gameState.possibleCount.toLocaleString('pt-BR')} palavras possíveis`
+      possibleWordsCount.innerHTML = `<i data-lucide="book-open" class="inline-icon"></i> ${gameState.possibleCount.toLocaleString('pt-BR')} palavras possíveis`
     } else {
       starterLettersBox.hidden = true
       prefixChallengeBox.hidden = true
@@ -366,6 +397,8 @@
       }
       chainTrail.scrollTop = chainTrail.scrollHeight
     }
+
+    refreshLucideIcons()
   }
 
   // ==================== HOST GAME LOOP ====================
@@ -687,12 +720,13 @@
   function showWinnerModal(winner) {
     launchConfetti()
     playChord([523.25, 659.25, 783.99, 1046.5], 80)
-    document.getElementById('winner-title').textContent = `🏆 ${winner.name} Venceu!`
+    document.getElementById('winner-title').innerHTML = `<i data-lucide="trophy" class="inline-icon"></i> ${winner.name} Venceu!`
     document.getElementById('winner-subtitle').textContent =
       `Sobreviveu a uma corrente de ${gameState.chain.length} palavras sem repetir!`
     document.getElementById('winner-stats').textContent =
       `Pontuação: ${winner.score} pts · Nível máximo: Fase ${gameState.chainLevel}`
     modalWinner.hidden = false
+    refreshLucideIcons()
   }
 
   function launchConfetti() {
@@ -891,16 +925,15 @@
       defaultPrefix: 'ELO',
       onStatus(st) {
         if (st.connecting) {
-          p2pStatus.textContent = st.isHost
-            ? `🟡 Abrindo Sala ${st.roomCode}...`
-            : `🟡 Conectando a ${st.roomCode}...`
+          p2pStatus.innerHTML = `<i data-lucide="loader" class="inline-icon spin"></i> ${st.isHost ? `Abrindo ${st.roomCode}...` : `Conectando a ${st.roomCode}...`}`
         } else if (st.isHost && st.connected) {
-          p2pStatus.textContent = `🟢 Host Online · ${st.roomCode}`
+          p2pStatus.innerHTML = `<i data-lucide="wifi" class="inline-icon text-green"></i> Host Online · ${st.roomCode}`
         } else if (!st.isHost && st.connected) {
-          p2pStatus.textContent = `🟢 Conectado · ${st.roomCode}`
+          p2pStatus.innerHTML = `<i data-lucide="wifi" class="inline-icon text-green"></i> Conectado · ${st.roomCode}`
         } else {
-          p2pStatus.textContent = `🔴 Offline · ${st.roomCode || ''}`
+          p2pStatus.innerHTML = `<i data-lucide="wifi-off" class="inline-icon text-red"></i> Offline · ${st.roomCode || ''}`
         }
+        refreshLucideIcons()
       },
       onError(err) {
         if (err && err.message) {
@@ -1100,7 +1133,10 @@
   btnSound.addEventListener('click', () => {
     soundEnabled = !soundEnabled
     btnSound.setAttribute('aria-pressed', String(soundEnabled))
-    btnSound.textContent = soundEnabled ? '🔊' : '🔇'
+    btnSound.innerHTML = soundEnabled
+      ? '<i data-lucide="volume-2" class="inline-icon"></i>'
+      : '<i data-lucide="volume-x" class="inline-icon"></i>'
+    refreshLucideIcons()
   })
 
   wordInput.addEventListener('input', () => {
@@ -1175,4 +1211,5 @@
 
   initP2P()
   loadDictionary()
+  refreshLucideIcons()
 })()

@@ -1,13 +1,15 @@
 :root {
-  --bg: #130d26;
-  --surface: #1e1638;
-  --surface-2: #2d2250;
+  --bg: #110b24;
+  --surface: #1a1236;
+  --surface-2: #261a4c;
   --text: #f8fafc;
   --muted: #a39bbb;
   --accent: #f43f5e;
   --gold: #fbbf24;
   --green: #10b981;
   --cyan: #38bdf8;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
 }
 
 * {
@@ -21,13 +23,36 @@
 html,
 body {
   height: 100%;
-  background: radial-gradient(circle at 50% 0%, #2e1065 0%, #130d26 72%);
+  background: radial-gradient(circle at 50% 0%, #2e1065 0%, #110b24 72%);
   color: var(--text);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
+
+/* Lucide Icon integration */
+.inline-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1em;
+  stroke-width: 2.25px;
+  stroke: currentColor;
+  fill: none;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.text-green { color: #34d399; }
+.text-red { color: #f87171; }
 
 #confetti-canvas {
   position: fixed;
@@ -419,17 +444,64 @@ body {
 }
 
 .player-right {
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
 }
 
 .player-hearts {
-  font-size: 0.85rem;
-  letter-spacing: 1px;
+  font-size: 0.9rem;
+}
+
+.hearts-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.heart-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+.heart-icon.active {
+  color: #f43f5e;
+  filter: drop-shadow(0 0 4px rgba(244, 63, 94, 0.45));
+}
+
+.heart-icon.lost {
+  color: #475569;
+  opacity: 0.55;
+}
+
+.eliminated-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #fca5a5;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+
+.status-turn {
+  color: #fbbf24;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .player-pts {
   display: block;
-  font-size: 0.74rem;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
   color: var(--cyan);
   font-weight: 800;
 }
@@ -514,22 +586,34 @@ body {
   width: 62px;
   height: 62px;
   border-radius: 14px;
-  border: 2px solid rgba(251, 191, 36, 0.5);
-  background: rgba(19, 13, 38, 0.9);
+  border: 2px solid #fbbf24;
+  background: linear-gradient(180deg, #26194a 0%, #170d30 100%);
   color: #fff;
-  font-size: 1.75rem;
+  font-family: var(--font-display);
+  font-size: 1.85rem;
   font-weight: 900;
   cursor: pointer;
-  transition: all 0.16s ease;
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.2), 0 4px 0 #92400e, 0 6px 14px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.4, 1), box-shadow 0.12s ease, background 0.16s ease;
 }
 
-.starter-letter-btn:hover,
+.starter-letter-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, #322260 0%, #1f1240 100%);
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.3), 0 6px 0 #92400e, 0 10px 20px rgba(251, 191, 36, 0.35);
+}
+
 .starter-letter-btn.selected {
-  background: var(--gold);
+  background: linear-gradient(180deg, #fef08a 0%, #fbbf24 100%);
   color: #130d26;
-  border-color: #fff;
-  transform: translateY(-3px) scale(1.06);
-  box-shadow: 0 8px 22px rgba(251, 191, 36, 0.4);
+  border-color: #fde047;
+  box-shadow: inset 0 1.5px 0 #ffffff, 0 4px 0 #b45309, 0 0 18px rgba(251, 191, 36, 0.6);
+  transform: scale(1.05);
+}
+
+.starter-letter-btn:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 2px 0 #92400e;
 }
 
 /* Prefix Challenge Box */
