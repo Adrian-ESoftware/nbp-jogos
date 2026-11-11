@@ -509,13 +509,20 @@ body {
   border-color: #fbbf24;
 }
 
-/* MÃO DO JOGADOR LOCAL */
+/* MÃO DO JOGADOR LOCAL (BANDEJA INFERIOR - NÃO TAMPA O FELTRO) */
 .player-local-hand-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   z-index: 5;
+  margin-top: 14px;
+  padding: 16px 20px;
+  background: rgba(4, 20, 13, 0.9);
+  border: 2px solid rgba(16, 185, 129, 0.35);
+  border-radius: 24px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
 }
 
 .hand-cards-row {

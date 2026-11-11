@@ -80,8 +80,8 @@ export function createTrucoTable(canvas) {
 
   const scene = new THREE.Scene()
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100)
-  camera.position.set(0, 6.4, 8.8)
-  camera.lookAt(0, 0.1, -0.4)
+  camera.position.set(0, 6.8, 8.4)
+  camera.lookAt(0, 0, -0.45)
   scene.add(camera)
 
   // Iluminação de Cassino / Boteco
@@ -154,8 +154,8 @@ export function createTrucoTable(canvas) {
   )
   scene.add(particles)
 
-  // Geometria e texturas de cartas
-  const cardGeo = new THREE.PlaneGeometry(0.85, 1.25)
+  // Geometria e texturas de cartas em escala cinematográfica
+  const cardGeo = new THREE.PlaneGeometry(0.92, 1.34)
   const texturesCache = new Map()
 
   function getCardTexture(card, isCovered = false) {
@@ -285,25 +285,36 @@ export function createTrucoTable(canvas) {
   const playersGroup = new THREE.Group()
   scene.add(playersGroup)
 
-  // Posições dos jogadores na mesa conforme quantidade (1v1 ou 2v2)
+  // Posições dos jogadores na borda e das cartas pousadas perfeitamente no centro do feltro
   function getSeatCoords(seatIndex, totalSeats) {
     if (totalSeats === 2) {
-      // 0 = Sul (Local), 1 = Norte (Oponente)
-      if (seatIndex === 0) return { x: 0, z: 2.3, rotY: 0, cardX: 0, cardZ: 0.62 }
-      return { x: 0, z: -2.3, rotY: Math.PI, cardX: 0, cardZ: -0.62 }
+      // 1v1: Lado a lado centralizadas no meio do feltro (z=-0.45)
+      if (seatIndex === 0) {
+        return { x: 0, z: 2.4, rotY: 0, cardX: -0.54, cardZ: -0.42, cardRot: 0.04 }
+      }
+      return { x: 0, z: -2.4, rotY: Math.PI, cardX: 0.54, cardZ: -0.42, cardRot: -0.04 }
     }
-    // 2v2: 0 = Sul (Nós), 1 = Leste (Eles), 2 = Norte (Nós parceiro), 3 = Oeste (Eles)
+
+    // 2v2: 4 cartas formando uma roda/disputa central na mesa
     const angles = [0, -Math.PI / 2, Math.PI, Math.PI / 2]
-    const cardAngles = [0, -Math.PI / 2, Math.PI, Math.PI / 2]
-    const rad = 2.25
-    const cRad = 0.75
+    const rad = 2.3
     const a = angles[seatIndex % 4]
+
+    const cardSpots = [
+      { x: -0.38, z: -0.15, rot: 0.04 },  // Jogador 0 (Sul)
+      { x: 0.48, z: -0.45, rot: -0.10 },  // Jogador 1 (Leste)
+      { x: 0.38, z: -0.75, rot: 0.08 },   // Jogador 2 (Norte)
+      { x: -0.48, z: -0.45, rot: -0.04 }, // Jogador 3 (Oeste)
+    ]
+    const spot = cardSpots[seatIndex % 4]
+
     return {
       x: Math.sin(a) * rad * 1.35,
       z: Math.cos(a) * rad,
       rotY: a,
-      cardX: Math.sin(cardAngles[seatIndex % 4]) * cRad * 1.35,
-      cardZ: Math.cos(cardAngles[seatIndex % 4]) * cRad,
+      cardX: spot.x,
+      cardZ: spot.z,
+      cardRot: spot.rot,
     }
   }
 
@@ -313,8 +324,8 @@ export function createTrucoTable(canvas) {
       ? new THREE.Vector3(0, 1.4, 3.8)
       : new THREE.Vector3(coords.x * 0.9, 1.0, coords.z * 0.9)
 
-    const targetPos = new THREE.Vector3(coords.cardX, 0.05 + playIdx * 0.007, coords.cardZ)
-    const rotZ = (Math.random() - 0.5) * 0.35 - coords.rotY * 0.3
+    const targetPos = new THREE.Vector3(coords.cardX, 0.05 + playIdx * 0.008, coords.cardZ)
+    const rotZ = coords.cardRot + (Math.random() - 0.5) * 0.08
     const targetQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, rotZ))
     const startQuat = isLocal
       ? new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.4, 0, 0))
@@ -342,7 +353,7 @@ export function createTrucoTable(canvas) {
       startQuat,
       targetQuat,
       start: performance.now(),
-      duration: 420,
+      duration: 440,
     })
   }
 

@@ -342,11 +342,17 @@ let table3d = null
 
       // Checa se todos jogaram na vaza
       if (state.playedCardsInTrick.length === state.players.length) {
-        resolveTrick()
+        state.isResolvingTrick = true
+        syncState() // Sincroniza com as cartas repousadas na mesa para todos verem!
+
+        // Pausa de 2.6 segundos para contemplar a vaza batida (não começa instantâneo)
+        setTimeout(() => {
+          resolveTrick()
+        }, 2600)
       } else {
         state.turn = (state.turn + 1) % state.players.length
+        syncState()
       }
-      syncState()
       return
     }
 
@@ -453,15 +459,15 @@ let table3d = null
 
   // --- RESOLUÇÃO DE VAZA (QUEDA) ---
   function resolveTrick() {
+    if (!room.isHost) return
     const trickCards = [...state.playedCardsInTrick]
-    state.playedCardsInTrick = []
 
     let highestPower = -1
     let winnerCard = null
     let isTied = false
 
     trickCards.forEach((item) => {
-      const power = getCardPower(item.card, state.manilha)
+      const power = getCardPower(item.card)
       if (power > highestPower) {
         highestPower = power
         winnerCard = item
@@ -485,14 +491,22 @@ let table3d = null
     // Checa se a mão foi decidida
     const handWinner = evaluateHandWinner(state.tricksHistory)
     if (handWinner) {
+      syncState()
+      // Pausa confortável antes de limpar a mão decidida e pontuar
       setTimeout(() => {
+        state.playedCardsInTrick = []
+        state.isResolvingTrick = false
         if (handWinner === 'tied_hand') {
-          // Empatou tudo: ninguém pontua
           startNewHand()
         } else {
           awardHandToTeam(handWinner, state.stake)
         }
-      }, 1200)
+      }, 2400)
+    } else {
+      // Avança para a próxima vaza da mesma rodada
+      state.playedCardsInTrick = []
+      state.isResolvingTrick = false
+      syncState()
     }
   }
 
@@ -548,9 +562,10 @@ let table3d = null
       syncState()
     } else {
       syncState()
+      // Pausa de 3 segundos para celebrar os tentos antes de embaralhar a próxima mão
       setTimeout(() => {
         startNewHand()
-      }, 1500)
+      }, 3000)
     }
   }
 
@@ -819,7 +834,7 @@ let table3d = null
 
       cardsRow.querySelectorAll('[data-card-id]').forEach((slot) => {
         slot.onclick = () => {
-          if (!isMyTurn || state.pendingBet) return
+          if (!isMyTurn || state.pendingBet || state.isResolvingTrick) return
           const cardId = slot.getAttribute('data-card-id')
           sendAction({
             type: 'PLAY_CARD',
