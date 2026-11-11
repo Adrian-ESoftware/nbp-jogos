@@ -156,19 +156,21 @@ test('Carta Coberta / Cega: tem força 0 e perde qualquer disputa', () => {
 })
 
 test('Regra de Melhor de 3 com empates (canga)', () => {
-  // Caso 1: 2 vitórias diretas
+  // Caso 1: 2 vitórias diretas (ganhou 1ª e 2ª rodada, fecha a mão na hora e NÃO joga a 3ª)
   assert.equal(evaluateHandWinner(['us', 'us']), 'us')
   assert.equal(evaluateHandWinner(['them', 'them']), 'them')
 
-  // Caso 2: Empate na 1ª vaza -> Quem ganha a 2ª leva
+  // Caso 2: Empate na 1ª vaza -> Quem ganha a 2ª leva imediatamente (sem 3ª rodada)
   assert.equal(evaluateHandWinner(['tied', 'us']), 'us')
   assert.equal(evaluateHandWinner(['tied', 'them']), 'them')
 
-  // Caso 3: Empate na 2ª vaza -> Quem fez a 1ª leva
+  // Caso 3: Empate na 2ª vaza -> Quem fez a 1ª leva imediatamente (sem 3ª rodada)
   assert.equal(evaluateHandWinner(['us', 'tied']), 'us')
   assert.equal(evaluateHandWinner(['them', 'tied']), 'them')
 
-  // Caso 4: 1x1 decidindo na 3ª
+  // Caso 4: 1x1 decidindo na 3ª (único cenário em que a 3ª rodada precisa ser jogada)
+  assert.equal(evaluateHandWinner(['us', 'them']), null)
+  assert.equal(evaluateHandWinner(['them', 'us']), null)
   assert.equal(evaluateHandWinner(['us', 'them', 'us']), 'us')
   assert.equal(evaluateHandWinner(['them', 'us', 'them']), 'them')
 })

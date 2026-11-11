@@ -163,6 +163,8 @@ let table3d = null
     currentTrick: 0, // 0, 1, 2
     tricksHistory: [], // ['us', 'them', 'tied']
     playedCardsInTrick: [], // [{ playerId, card, covered, rot }]
+    isResolvingTrick: false,
+    handWinner: null,
     winner: null,
   }
 
@@ -266,6 +268,8 @@ let table3d = null
     state.currentTrick = 0
     state.tricksHistory = []
     state.playedCardsInTrick = []
+    state.isResolvingTrick = false
+    state.handWinner = null
 
     // Distribui 3 cartas para cada jogador
     state.players.forEach((p) => {
@@ -319,7 +323,7 @@ let table3d = null
 
     // 1. Jogar Carta na Vaza
     if (action.type === 'PLAY_CARD') {
-      if (state.pendingBet) return // Não pode jogar se há aposta pendente
+      if (state.pendingBet || state.isResolvingTrick || state.handWinner) return // Não pode jogar se há aposta pendente ou mão/vaza decidida
       const active = state.players[state.turn]
       if (!active || active.id !== actorId) return
 
@@ -343,6 +347,7 @@ let table3d = null
       // Checa se todos jogaram na vaza
       if (state.playedCardsInTrick.length === state.players.length) {
         state.isResolvingTrick = true
+        clearTimeout(botActionTimer)
         syncState() // Sincroniza com as cartas repousadas na mesa para todos verem!
 
         // Pausa de 2.6 segundos para contemplar a vaza batida (não começa instantâneo)
@@ -358,7 +363,7 @@ let table3d = null
 
     // 2. Pedir Truco / Aumentar
     if (action.type === 'SHOUT_TRUCO') {
-      if (state.pendingBet) return
+      if (state.pendingBet || state.isResolvingTrick || state.handWinner) return
       const myTeam = player.team
       if (state.lastRaiseTeam === myTeam) return // Não pode aumentar sobre si mesmo
 
@@ -401,6 +406,9 @@ let table3d = null
       const winningTeam = state.pendingBet.challengerTeam
       const pointsWon = getFoldPoints(state.pendingBet.level)
       state.pendingBet = null
+      state.handWinner = winningTeam
+      state.isResolvingTrick = true
+      clearTimeout(botActionTimer)
       awardHandToTeam(winningTeam, pointsWon)
       return
     }
@@ -480,30 +488,33 @@ let table3d = null
     const result = isTied ? 'tied' : winnerCard.team
     state.tricksHistory.push(result)
 
-    // Quem ganhou joga primeiro na próxima vaza
-    if (!isTied) {
-      const winnerIdx = state.players.findIndex((p) => p.id === winnerCard.playerId)
-      if (winnerIdx >= 0) state.turn = winnerIdx
-    }
-
-    state.currentTrick++
-
-    // Checa se a mão foi decidida
+    // Checa se a mão já foi decidida (ex: ganhou 1ª e 2ª vazas, ou canga)
     const handWinner = evaluateHandWinner(state.tricksHistory)
     if (handWinner) {
+      // Mão encerrada: NÃO avança nem joga a 3ª rodada!
+      state.handWinner = handWinner
+      state.isResolvingTrick = true
+      clearTimeout(botActionTimer)
       syncState()
-      // Pausa confortável antes de limpar a mão decidida e pontuar
+
+      // Pausa confortável para contemplar a vitória da mão antes de pontuar e embaralhar a próxima
       setTimeout(() => {
         state.playedCardsInTrick = []
-        state.isResolvingTrick = false
         if (handWinner === 'tied_hand') {
+          state.isResolvingTrick = false
+          state.handWinner = null
           startNewHand()
         } else {
           awardHandToTeam(handWinner, state.stake)
         }
-      }, 2400)
+      }, 2600)
     } else {
-      // Avança para a próxima vaza da mesma rodada
+      // Mão ainda em disputa: quem ganhou a vaza começa jogando a próxima
+      if (!isTied) {
+        const winnerIdx = state.players.findIndex((p) => p.id === winnerCard.playerId)
+        if (winnerIdx >= 0) state.turn = winnerIdx
+      }
+      state.currentTrick++
       state.playedCardsInTrick = []
       state.isResolvingTrick = false
       syncState()
@@ -515,13 +526,13 @@ let table3d = null
     const [t1, t2, t3] = tricks
     if (!t1) return null
 
-    // Caso 1: Alguém fez 2 vazas
+    // Caso 1: Alguém fez 2 vazas (se ganhou 1ª e 2ª, fecha a mão imediatamente sem jogar a 3ª)
     const usWins = tricks.filter((t) => t === 'us').length
     const themWins = tricks.filter((t) => t === 'them').length
     if (usWins >= 2) return 'us'
     if (themWins >= 2) return 'them'
 
-    // Caso 2: Empate na 1ª vaza -> Quem fizer a 2ª ganha
+    // Caso 2: Empate na 1ª vaza -> Quem fizer a 2ª ganha a mão imediatamente
     if (t1 === 'tied' && t2) {
       if (t2 !== 'tied') return t2
       // Empate na 1ª e na 2ª -> Quem fizer a 3ª ganha
@@ -529,7 +540,7 @@ let table3d = null
       if (t3 === 'tied') return 'tied_hand'
     }
 
-    // Caso 3: Empate na 2ª vaza -> Quem fez a 1ª ganha
+    // Caso 3: Empate na 2ª vaza -> Quem fez a 1ª ganha a mão imediatamente
     if (t2 === 'tied') {
       return t1
     }
@@ -554,25 +565,32 @@ let table3d = null
       state.scoreTeamThem += points
     }
 
+    state.isResolvingTrick = true
+    clearTimeout(botActionTimer)
+
     // Checa vitória da partida (12 pontos)
     if (state.scoreTeamUs >= 12 || state.scoreTeamThem >= 12) {
       state.phase = 'finished'
       state.winner = state.scoreTeamUs >= 12 ? 'us' : 'them'
+      state.handWinner = null
+      state.isResolvingTrick = false
       sound.playWin()
       syncState()
     } else {
       syncState()
-      // Pausa de 3 segundos para celebrar os tentos antes de embaralhar a próxima mão
+      // Pausa de 2.4s para celebrar os tentos antes de embaralhar a próxima mão
       setTimeout(() => {
+        state.isResolvingTrick = false
+        state.handWinner = null
         startNewHand()
-      }, 3000)
+      }, 2400)
     }
   }
 
   // --- INTELIGÊNCIA ARTIFICIAL DOS BOTS TRUQUEIROS ---
   function scheduleBots() {
     clearTimeout(botActionTimer)
-    if (!room.isHost || state.phase !== 'playing') return
+    if (!room.isHost || state.phase !== 'playing' || state.isResolvingTrick || state.handWinner) return
 
     // 1. Bot respondendo a Truco
     if (state.pendingBet) {
@@ -809,11 +827,28 @@ let table3d = null
     const coveredBtn = document.getElementById('btn-toggle-covered')
 
     if (!me) return
-    const isMyTurn = state.players[state.turn]?.id === me.id
+    const isMyTurn =
+      state.phase === 'playing' &&
+      state.players[state.turn]?.id === me.id &&
+      !state.pendingBet &&
+      !state.isResolvingTrick &&
+      !state.handWinner
 
     if (turnInd) {
-      turnInd.textContent = isMyTurn ? '👉 SUA VEZ! Clique em uma carta para jogar' : `Aguardando ${state.players[state.turn]?.name}...`
-      turnInd.style.color = isMyTurn ? '#fde68a' : '#94a3b8'
+      if (state.handWinner) {
+        const winnerName = state.handWinner === 'us' ? 'NÓS' : state.handWinner === 'them' ? 'ELES' : 'EMPATE'
+        turnInd.textContent =
+          state.handWinner === 'tied_hand'
+            ? '🤝 Mão empatada! Embaralhando nova mão...'
+            : `🎉 Equipe ${winnerName} venceu a mão (+${state.stake} tentos)!`
+        turnInd.style.color = '#34d399'
+      } else if (state.isResolvingTrick) {
+        turnInd.textContent = '🃏 Conferindo vaza...'
+        turnInd.style.color = '#60a5fa'
+      } else {
+        turnInd.textContent = isMyTurn ? '👉 SUA VEZ! Clique em uma carta para jogar' : `Aguardando ${state.players[state.turn]?.name}...`
+        turnInd.style.color = isMyTurn ? '#fde68a' : '#94a3b8'
+      }
     }
 
     if (cardsRow && window.NBPDeck) {
@@ -834,7 +869,7 @@ let table3d = null
 
       cardsRow.querySelectorAll('[data-card-id]').forEach((slot) => {
         slot.onclick = () => {
-          if (!isMyTurn || state.pendingBet || state.isResolvingTrick) return
+          if (!isMyTurn || state.pendingBet || state.isResolvingTrick || state.handWinner) return
           const cardId = slot.getAttribute('data-card-id')
           sendAction({
             type: 'PLAY_CARD',
@@ -855,7 +890,12 @@ let table3d = null
         trucoBtn.innerHTML = `<i data-lucide="shield-alert"></i> MÃO DE 11: NÃO PODE TRUCAR`
       } else {
         const nextLevel = getNextBetLevel(state.stake)
-        trucoBtn.disabled = !nextLevel || state.lastRaiseTeam === me.team || state.pendingBet !== null
+        trucoBtn.disabled =
+          !nextLevel ||
+          state.lastRaiseTeam === me.team ||
+          state.pendingBet !== null ||
+          state.isResolvingTrick ||
+          !!state.handWinner
         trucoBtn.title = 'Pedir Truco / Aumentar aposta'
         trucoBtn.innerHTML = `<i data-lucide="flame"></i> ${nextLevel ? (nextLevel === 3 ? 'TRUCO!' : `PEDIR ${nextLevel}!`) : 'DOZE MÁXIMO'}`
       }
