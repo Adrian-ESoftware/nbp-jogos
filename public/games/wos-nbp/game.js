@@ -1269,7 +1269,7 @@
         }
       }
     } catch (_) {}
-    const url = `${baseOrigin}${basePath}?room=${code}&sala=${code}`;
+    const url = `${baseOrigin}${basePath}?room=${code}`;
     navigator.clipboard.writeText(url).then(() => {
       if (el.btnCopyLinkRoom) el.btnCopyLinkRoom.textContent = '✅ Link Copiado!';
       if (el.btnLobbyCopyLink) el.btnLobbyCopyLink.textContent = '✅ Link Copiado!';

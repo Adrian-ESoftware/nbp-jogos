@@ -848,7 +848,17 @@
 
   function copyRoomShareLink() {
     const code = (local.roomCode || el.roomCodeInput.value.trim() || 'PATO-0000').toUpperCase();
-    const url = `${window.location.origin}${window.location.pathname}?sala=${code}`;
+    let baseOrigin = window.location.origin;
+    let basePath = '/jogos/nem-a-pato';
+    try {
+      if (window.parent && window.parent !== window) {
+        baseOrigin = window.parent.location.origin;
+        if (window.parent.location.pathname.startsWith('/jogos/')) {
+          basePath = window.parent.location.pathname;
+        }
+      }
+    } catch (_) {}
+    const url = `${baseOrigin}${basePath}?room=${code}`;
     navigator.clipboard.writeText(url).then(() => {
       if (el.btnLobbyCopyLink) el.btnLobbyCopyLink.textContent = '✅ Link Copiado!';
       if (el.btnCopyCode) el.btnCopyCode.textContent = '✅ Copiado!';

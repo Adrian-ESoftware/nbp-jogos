@@ -1656,7 +1656,7 @@
           }
         }
       } catch (_) {}
-      const shareUrl = `${baseOrigin}${basePath}?room=${vsState.roomCode}&sala=${vsState.roomCode}`
+      const shareUrl = `${baseOrigin}${basePath}?room=${vsState.roomCode}`
       await navigator.clipboard.writeText(shareUrl)
       showToast(`Link da sala ${vsState.roomCode} copiado! 📋`)
     } catch {
