@@ -56,6 +56,14 @@ function evaluateHandWinner(tricks) {
   return null
 }
 
+function getFoldPoints(pendingLevel) {
+  if (pendingLevel === 3) return 1
+  if (pendingLevel === 6) return 3
+  if (pendingLevel === 9) return 6
+  if (pendingLevel === 12) return 9
+  return 1
+}
+
 test('Baralho do Truco Goiano: 46 cartas, sem 7 de copas nem 7 de ouros', () => {
   const deck = createTrucoDeck()
   assert.equal(deck.length, 46)
@@ -156,4 +164,18 @@ test('Regra de Melhor de 3 com empates (canga)', () => {
   // Caso 4: 1x1 decidindo na 3ª
   assert.equal(evaluateHandWinner(['us', 'them', 'us']), 'us')
   assert.equal(evaluateHandWinner(['them', 'us', 'them']), 'them')
+})
+
+test('Pontos ao Correr do Truco: correr do Truco dá apenas 1 tento (e não 2)', () => {
+  // Correr de Truco (3) -> 1 tento
+  assert.equal(getFoldPoints(3), 1)
+
+  // Correr de Seis (6) -> 3 tentos
+  assert.equal(getFoldPoints(6), 3)
+
+  // Correr de Nove (9) -> 6 tentos
+  assert.equal(getFoldPoints(9), 6)
+
+  // Correr de Doze (12) -> 9 tentos
+  assert.equal(getFoldPoints(12), 9)
 })

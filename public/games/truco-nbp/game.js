@@ -382,7 +382,8 @@ let table3d = null
     if (action.type === 'FOLD_BET') {
       if (!state.pendingBet || state.pendingBet.challengerTeam === player.team) return
       const winningTeam = state.pendingBet.challengerTeam
-      const pointsWon = state.stake // Ganha os pontos do nível anterior
+      const pointsWon = getFoldPoints(state.pendingBet.level)
+      state.pendingBet = null
       awardHandToTeam(winningTeam, pointsWon)
       return
     }
@@ -410,6 +411,15 @@ let table3d = null
       state.phase = 'lobby'
       syncState()
     }
+  }
+
+  function getFoldPoints(pendingLevel) {
+    // No Truco Goiano, quando correm do Truco dá apenas 1 tento (e não 2)
+    if (pendingLevel === 3) return 1
+    if (pendingLevel === 6) return 3
+    if (pendingLevel === 9) return 6
+    if (pendingLevel === 12) return 9
+    return 1
   }
 
   function getNextBetLevel(current) {
@@ -767,10 +777,11 @@ let table3d = null
 
       if (isMyTeamChallenged && actions) {
         const nextLevel = getNextBetLevel(state.pendingBet.level)
+        const foldPts = getFoldPoints(state.pendingBet.level)
         actions.innerHTML = `
-          <button type="button" class="btn-accept" id="btn-accept-bet">Aceitar</button>
+          <button type="button" class="btn-accept" id="btn-accept-bet">Aceitar (${state.pendingBet.level} Tentos)</button>
           ${nextLevel ? `<button type="button" class="btn-raise" id="btn-raise-bet">Pedir ${nextLevel}!</button>` : ''}
-          <button type="button" class="btn-fold" id="btn-fold-bet">Correr</button>
+          <button type="button" class="btn-fold" id="btn-fold-bet">Correr (Dá ${foldPts} ${foldPts === 1 ? 'Tento' : 'Tentos'})</button>
         `
 
         document.getElementById('btn-accept-bet').onclick = () => sendAction({ type: 'ACCEPT_BET' })
