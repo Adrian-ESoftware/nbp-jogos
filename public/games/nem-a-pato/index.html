@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nem a Pato! · O Party Game de Trivia e Blefe</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Topbar Header -->
+    <header class="topbar">
+      <div class="brand-group">
+        <span class="duck-logo-badge">🦆</span>
+        <div class="brand-titles">
+          <h1>NEM A PATO!</h1>
+          <span class="brand-sub">Blefe &amp; Trivia Numérica · NBP Games</span>
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <div class="round-indicator" id="round-indicator">
+          <span class="round-label">RODADA</span>
+          <strong id="current-round-text">1 / 10</strong>
+        </div>
+        <button type="button" class="room-pill-quick" id="btn-quick-room-copy" title="Clique para copiar o link da sala">
+          <span class="pulse-dot"></span>
+          <span>SALA:</span>
+          <strong id="quick-room-code">PATO-0000</strong>
+          <span class="copy-icon">📋</span>
+        </button>
+      </div>
+
+      <div class="topbar-actions">
+        <button type="button" class="btn btn-top-go" id="btn-top-go" hidden>
+          ▶ DAR GO!
+        </button>
+        <button type="button" class="btn btn-icon" id="btn-sound-toggle" title="Ligar/Desligar Efeitos Sonoros">
+          🔊
+        </button>
+        <button type="button" class="btn btn-icon" id="btn-room-drawer" title="Configurações da Sala">
+          ⚙️
+        </button>
+        <button type="button" class="btn btn-icon" id="btn-fullscreen" title="Tela Cheia">
+          ⛶
+        </button>
+      </div>
+    </header>
+
+    <!-- Drawer de Configurações da Sala P2P -->
+    <aside class="room-drawer" id="room-drawer" hidden>
+      <div class="drawer-header">
+        <h3>⚙️ Configurações da Sala</h3>
+        <button type="button" class="btn-close-drawer" id="btn-close-drawer">✕</button>
+      </div>
+      <div class="drawer-content">
+        <div class="form-group">
+          <label for="player-name-input">Seu Nome / Apelido:</label>
+          <input type="text" id="player-name-input" maxlength="18" placeholder="Ex: Pato Maroto" />
+        </div>
+        <div class="form-group">
+          <label for="player-avatar-select">Seu Pato Avatar:</label>
+          <select id="player-avatar-select">
+            <option value="🦆">🦆 Pato Clássico</option>
+            <option value="🕶️">🕶️ Pato Blefador</option>
+            <option value="🕵️">🕵️ Pato Detetive</option>
+            <option value="🎩">🎩 Pato Cartola</option>
+            <option value="🤿">🤿 Pato Mergulhador</option>
+            <option value="👑">👑 Pato Majestoso</option>
+            <option value="🤖">🤖 Pato Robô</option>
+            <option value="🤠">🤠 Pato Xerife</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="room-code-input">Código da Sala:</label>
+          <div class="input-with-button">
+            <input type="text" id="room-code-input" uppercase placeholder="PATO-0000" />
+            <button type="button" class="btn btn-sm btn-ghost" id="btn-copy-code">Copiar</button>
+          </div>
+        </div>
+        <div class="room-actions-row">
+          <button type="button" class="btn btn-primary" id="btn-create-room">Criar Sala</button>
+          <button type="button" class="btn btn-secondary" id="btn-join-room">Entrar na Sala</button>
+        </div>
+        <div class="drawer-divider"></div>
+        <h4>Opções de Partida (Host):</h4>
+        <div class="form-group">
+          <label for="opt-rounds">Quantidade de Rodadas:</label>
+          <select id="opt-rounds">
+            <option value="5">5 Rodadas (Rápida)</option>
+            <option value="7">7 Rodadas (Média)</option>
+            <option value="10" selected>10 Rodadas (Oficial)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="opt-mode">Sistema de Penalidade:</label>
+          <select id="opt-mode">
+            <option value="advanced" selected>🦆 Patos das Cartas (1 a 3 patos por carta)</option>
+            <option value="classic">🃏 Cartas Acumuladas (1 carta = 1 ponto)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="opt-turn-time">Tempo do Turno de Chute:</label>
+          <select id="opt-turn-time">
+            <option value="25" selected>25 segundos</option>
+            <option value="40">40 segundos</option>
+            <option value="60">60 segundos</option>
+            <option value="0">Sem tempo limite</option>
+          </select>
+        </div>
+        <div class="drawer-footer-actions">
+          <button type="button" class="btn btn-ghost" id="btn-add-bot">🤖 Adicionar Bot</button>
+          <button type="button" class="btn btn-danger" id="btn-restart-game">🔄 Reiniciar Jogo</button>
+          <button type="button" class="btn btn-secondary" id="btn-leave-room" hidden>Sair da Sala</button>
+        </div>
+        <p class="drawer-status" id="drawer-status-text">Conectado à sala.</p>
+      </div>
+    </aside>
+
+    <!-- Main Game Arena -->
+    <main class="game-stage">
+      <!-- Waiting Room / Lobby Overlay -->
+      <div class="lobby-overlay" id="lobby-overlay">
+        <div class="lobby-card">
+          <div class="lobby-badge">LAGO DOS PATOS</div>
+          <h2>NEM A PATO!</h2>
+          <p class="lobby-desc">
+            Cada jogador deve chutar um número <strong>maior</strong> que o anterior sem ultrapassar a resposta real.
+            Acha que o amigo exagerou? Grite <strong>NEM A PATO!</strong>
+          </p>
+
+          <div class="lobby-room-box">
+            <span class="lobby-room-label">CÓDIGO DA SALA:</span>
+            <strong class="lobby-room-code" id="lobby-room-code">PATO-0000</strong>
+            <button type="button" class="btn btn-sm btn-ghost" id="btn-lobby-copy-link">
+              📋 Copiar Link de Convite
+            </button>
+          </div>
+
+          <div class="lobby-roster-box">
+            <h4>Patos no Lago (<span id="lobby-players-count">1</span>):</h4>
+            <div class="lobby-players-tags" id="lobby-players-tags"></div>
+          </div>
+
+          <div class="lobby-actions">
+            <button type="button" class="btn btn-primary btn-lg btn-go-pulse" id="btn-start-game">
+              ▶ INICIAR PARTIDA (GO!)
+            </button>
+            <div class="guest-waiting-box" id="guest-waiting-box" hidden>
+              <div class="spinner-dot"></div>
+              <p>Aguardando o <strong>Host</strong> dar GO para começar...</p>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-lobby-add-bot">
+              + Adicionar Bot ao Lago
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Pond Playmat (A Mesa do Jogo) -->
+      <div class="pond-table">
+        <!-- Center Theme Card -->
+        <div class="theme-card-wrapper">
+          <div class="theme-card" id="active-card">
+            <div class="card-top-row">
+              <span class="card-category-badge" id="card-category">CIÊNCIA &amp; NATUREZA</span>
+              <span class="card-penalty-ducks" id="card-penalty-ducks" title="Patos de penalidade desta carta">🦆🦆</span>
+            </div>
+
+            <div class="card-body">
+              <p class="card-question-text" id="card-question">
+                Quantos ossos tem o corpo humano adulto?
+              </p>
+            </div>
+
+            <div class="card-footer-info">
+              <span class="card-unit-label">RESPOSTA EM:</span>
+              <strong class="card-unit-text" id="card-unit">ossos</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Escalada / Termômetro de Chutes da Rodada Atual -->
+        <div class="bids-track-container">
+          <div class="bids-track-header">
+            <span>📈 ESCALADA DE PALPITES DA RODADA:</span>
+            <span class="bids-count" id="bids-count">0 palpites</span>
+          </div>
+          <div class="bids-scroll-area" id="bids-scroll-area">
+            <div class="empty-bids-hint" id="empty-bids-hint">
+              Nenhum palpite ainda. O primeiro jogador pode chutar qualquer número inteiro positivo!
+            </div>
+          </div>
+        </div>
+
+        <!-- Destaque do Palpite Atual e Jogador da Vez -->
+        <div class="current-turn-banner" id="current-turn-banner">
+          <div class="turn-player-info">
+            <span class="turn-avatar" id="turn-player-avatar">🦆</span>
+            <div class="turn-text-group">
+              <span class="turn-sub" id="turn-sub-text">VEZ DE:</span>
+              <strong class="turn-player-name" id="turn-player-name">Você</strong>
+            </div>
+          </div>
+
+          <div class="turn-current-value-box">
+            <span class="current-val-label">PALPITE A SUPERAR:</span>
+            <strong class="current-val-number" id="current-val-number">—</strong>
+            <span class="current-val-unit" id="current-val-unit"></span>
+          </div>
+
+          <div class="turn-timer-pill" id="turn-timer-pill">
+            ⏱️ <strong id="turn-timer-seconds">25s</strong>
+          </div>
+        </div>
+
+        <!-- Player Action Controls Panel (Active when it's player's turn) -->
+        <div class="action-controls-card" id="action-controls-card">
+          <div class="action-header-alert" id="action-header-alert">
+            É a sua vez! Diga um número <strong>maior</strong> que o anterior ou duvide!
+          </div>
+
+          <form class="bid-input-form" id="bid-form">
+            <div class="bid-input-row">
+              <input
+                type="number"
+                id="bid-input"
+                class="bid-input"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                min="1"
+                placeholder="Seu palpite..."
+                autocomplete="off"
+              />
+              <button type="submit" class="btn btn-bid-submit" id="btn-submit-bid">
+                Confirmar Chute ↵
+              </button>
+            </div>
+
+            <!-- Quick Add Helpers -->
+            <div class="quick-helpers-row" id="quick-helpers-row">
+              <button type="button" class="btn btn-helper" data-add="1">+1</button>
+              <button type="button" class="btn btn-helper" data-add="5">+5</button>
+              <button type="button" class="btn btn-helper" data-add="10">+10</button>
+              <button type="button" class="btn btn-helper" data-add="50">+50</button>
+              <button type="button" class="btn btn-helper" data-add="100">+100</button>
+              <button type="button" class="btn btn-helper btn-double-helper" id="btn-double-bid" title="Dobre o valor anterior para ganhar a carta Dobrei!">
+                🔥 DOBREI! (2x)
+              </button>
+            </div>
+          </form>
+
+          <!-- The Big "NEM A PATO!" Challenge Button -->
+          <div class="challenge-button-wrapper">
+            <button type="button" class="btn-nem-a-pato" id="btn-nem-a-pato">
+              <span class="duck-shout-icon">🦆🚨</span>
+              <span class="shout-text-group">
+                <strong class="shout-main">NEM A PATO!</strong>
+                <span class="shout-sub">Passou do ponto! Eu duvido deste chute!</span>
+              </span>
+            </button>
+          </div>
+          <div class="guess-feedback-toast" id="guess-feedback-toast" hidden></div>
+        </div>
+      </div>
+
+      <!-- Right/Bottom Roster & Live Game Log -->
+      <aside class="sidebar-roster">
+        <div class="roster-card">
+          <div class="roster-header">
+            <h3>🦆 Jogadores no Lago</h3>
+            <span class="roster-badge" id="roster-mode-badge">Penalidade por Patos</span>
+          </div>
+          <div class="roster-list" id="roster-list"></div>
+        </div>
+
+        <div class="history-card">
+          <div class="history-header">
+            <h3>⚡ Acontecimentos</h3>
+            <span class="history-pill">Ao vivo</span>
+          </div>
+          <div class="history-list" id="history-list"></div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Modal Dramático de Revelação ("Nem a Pato!") -->
+    <div class="reveal-modal-overlay" id="reveal-modal" hidden>
+      <div class="reveal-modal-card">
+        <div class="reveal-stamp-banner" id="reveal-stamp-banner">
+          🚨 DESAFIO "NEM A PATO!" LANÇADO!
+        </div>
+
+        <div class="reveal-challengers-row">
+          <div class="challenger-col">
+            <span class="challenger-label">CHUTOU:</span>
+            <strong class="challenger-name" id="reveal-bidder-name">Jogador 1</strong>
+            <div class="challenger-val-box">
+              <span class="val-num" id="reveal-bid-val">150</span>
+              <span class="val-unit" id="reveal-bid-unit">ossos</span>
+            </div>
+          </div>
+
+          <div class="versus-col">
+            <span class="versus-icon">VS</span>
+            <span class="versus-sub">RESPOSTA REAL</span>
+          </div>
+
+          <div class="challenger-col">
+            <span class="challenger-label">DESAFIOU:</span>
+            <strong class="challenger-name" id="reveal-challenger-name">Você</strong>
+            <div class="challenger-val-box val-shout">
+              <span class="val-num">"NEM A PATO!"</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Answer Unveiled -->
+        <div class="answer-reveal-box" id="answer-reveal-box">
+          <div class="answer-reveal-header">A RESPOSTA REAL É:</div>
+          <div class="answer-giant-number" id="answer-giant-number">???</div>
+          <div class="answer-fact-text" id="answer-fact-text">
+            Ao nascer temos cerca de 270 ossos, mas muitos se fundem ao longo da vida!
+          </div>
+        </div>
+
+        <!-- Veredito Final -->
+        <div class="verdict-box" id="verdict-box">
+          <div class="verdict-title" id="verdict-title">EXAGEROU! PASSOU DO PONTO!</div>
+          <p class="verdict-desc" id="verdict-desc">
+            Fulano chutou 150, mas a resposta era 32! Quem leva a carta de penalidade (+2 patos) é Fulano!
+          </p>
+        </div>
+
+        <div class="reveal-modal-footer">
+          <button type="button" class="btn btn-primary btn-lg" id="btn-next-round">
+            Próxima Rodada ▶
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Fim de Jogo (10 Rodadas Concluídas) -->
+    <div class="gameover-modal-overlay" id="gameover-modal" hidden>
+      <div class="gameover-modal-card">
+        <div class="gameover-badge">FIM DAS 10 RODADAS</div>
+        <h2>🏆 RESULTADO DA PARTIDA</h2>
+        <p class="gameover-subtitle">
+          Em <em>Nem a Pato!</em>, quem acumula <strong>mais patos</strong> é o grande perdedor!
+        </p>
+
+        <!-- Big Loser / Grande Pato Highlight -->
+        <div class="loser-spotlight" id="loser-spotlight">
+          <span class="loser-crown">🦆👑</span>
+          <span class="loser-title">O GRANDE PATO DA VEZ:</span>
+          <strong class="loser-name" id="loser-name">Jogador X</strong>
+          <span class="loser-score" id="loser-score">Acumulou 8 patos e 4 cartas!</span>
+          <p class="loser-quack-joke">"Quac quac quac... pagou o pato nesta rodada!"</p>
+        </div>
+
+        <!-- All Players Final Table -->
+        <div class="final-scores-table" id="final-scores-table"></div>
+
+        <div class="gameover-actions">
+          <button type="button" class="btn btn-primary btn-lg" id="btn-play-again">
+            Jogar Novamente 🔄
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vendors & Game Scripts -->
+  <script src="/vendor/peerjs.min.js"></script>
+  <script src="/vendor/nbp-p2p.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

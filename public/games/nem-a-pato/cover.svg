@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0369a1"/>
+      <stop offset="50%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="duckGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="25%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+    <linearGradient id="beakGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fb923c"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fef3c7"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="400" rx="28" fill="url(#bg)"/>
+
+  <!-- Water Ripples -->
+  <ellipse cx="300" cy="350" rx="270" ry="45" fill="#38bdf8" opacity="0.15"/>
+  <ellipse cx="300" cy="350" rx="200" ry="30" fill="#38bdf8" opacity="0.25"/>
+
+  <!-- Left Trivia Card -->
+  <g filter="url(#glow)" transform="translate(80, 70) rotate(-12)">
+    <rect width="160" height="230" rx="16" fill="url(#cardGrad)" stroke="#f59e0b" stroke-width="4"/>
+    <rect x="14" y="16" width="132" height="32" rx="8" fill="#f59e0b"/>
+    <text x="80" y="38" font-family="'Arial Black', sans-serif" font-size="13" font-weight="900" fill="#fff" text-anchor="middle">CURIOSIDADE</text>
+    <text x="80" y="85" font-family="sans-serif" font-size="14" font-weight="700" fill="#1e293b" text-anchor="middle">Quantos dentes</text>
+    <text x="80" y="105" font-family="sans-serif" font-size="14" font-weight="700" fill="#1e293b" text-anchor="middle">tem um adulto?</text>
+    <circle cx="80" cy="155" r="30" fill="#fef08a" stroke="#eab308" stroke-width="3"/>
+    <text x="80" y="166" font-family="'Arial Black', sans-serif" font-size="28" font-weight="900" fill="#ea580c" text-anchor="middle">32</text>
+    <text x="80" y="210" font-family="sans-serif" font-size="11" font-weight="800" fill="#94a3b8" text-anchor="middle">🦆🦆 2 PATOS</text>
+  </g>
+
+  <!-- Giant Animated Duck Character (Right) -->
+  <g filter="url(#glow)">
+    <!-- Body -->
+    <path d="M260,260 C260,195 330,170 395,170 C420,170 455,178 475,198 C520,185 545,215 530,255 C518,285 475,310 395,310 C305,310 260,295 260,260 Z" fill="url(#duckGrad)"/>
+    <!-- Wing -->
+    <path d="M320,240 C320,215 370,205 405,218 C420,225 425,250 405,268 C370,285 320,270 320,240 Z" fill="#fde047" stroke="#ca8a04" stroke-width="4"/>
+    
+    <!-- Duck Head -->
+    <circle cx="430" cy="150" r="70" fill="url(#duckGrad)"/>
+    <!-- Crest feathers -->
+    <path d="M420,80 C410,55 435,55 430,80 Z" fill="#facc15"/>
+    <path d="M435,82 C430,50 455,58 445,82 Z" fill="#eab308"/>
+
+    <!-- Duck Eye -->
+    <circle cx="460" cy="132" r="16" fill="#fff"/>
+    <circle cx="465" cy="132" r="9" fill="#0f172a"/>
+    <circle cx="468" cy="128" r="3.5" fill="#fff"/>
+
+    <!-- Eyebrow -->
+    <path d="M445,115 Q465,110 480,122" stroke="#854d0e" stroke-width="6" stroke-linecap="round" fill="none"/>
+
+    <!-- Beak -->
+    <path d="M485,140 C540,135 550,165 490,172 C480,173 478,155 485,140 Z" fill="url(#beakGrad)" stroke="#c2410c" stroke-width="3"/>
+
+    <!-- Cool Sun Glasses / Shouts -->
+    <g transform="translate(438, 120)">
+      <rect x="0" y="0" width="48" height="26" rx="8" fill="#1e1b4b" opacity="0.95"/>
+      <path d="M4,4 L18,22" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Title Badge -->
+  <g filter="url(#glow)">
+    <rect x="50" y="30" width="300" height="66" rx="20" fill="#facc15" stroke="#fff" stroke-width="4"/>
+    <text x="200" y="75" font-family="'Arial Black', Impact, sans-serif" font-size="34" font-weight="900" fill="#78350f" text-anchor="middle" letter-spacing="1">NEM A PATO!</text>
+  </g>
+
+  <!-- Subtitle Pill -->
+  <g filter="url(#glow)">
+    <rect x="50" y="325" width="500" height="48" rx="14" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+    <text x="300" y="356" font-family="sans-serif" font-size="16" font-weight="700" fill="#f8fafc" text-anchor="middle">
+      🎲 Chute números sem passar · Duvide com <tspan fill="#facc15">NEM A PATO!</tspan>
+    </text>
+  </g>
+</svg>

@@ -118,6 +118,31 @@
         "icon": "/games/wos-nbp/icon.svg"
       },
       "entry": "/games/wos-nbp/index.html"
+    },
+    {
+      "id": "nem-a-pato",
+      "title": "Nem a Pato!",
+      "description": "O jogo de blefe e curiosidades numéricas mais divertido da mesa! Dê palpites crescentes sem estourar o valor real, use a jogada Dobrei! e grite NEM A PATO! quando achar que seu amigo exagerou. Quem acumular mais patos após 10 rodadas é o Grande Pato!",
+      "developer": "NBP Games",
+      "genres": [
+        "Trivia",
+        "Party",
+        "Blefe",
+        "Multiplayer"
+      ],
+      "modes": [
+        "singleplayer",
+        "multiplayer"
+      ],
+      "status": "published",
+      "featured": true,
+      "engine": "html5",
+      "assets": {
+        "cover": "/games/nem-a-pato/cover.svg",
+        "banner": "/games/nem-a-pato/banner.svg",
+        "icon": "/games/nem-a-pato/icon.svg"
+      },
+      "entry": "/games/nem-a-pato/index.html"
     }
   ]
 }
