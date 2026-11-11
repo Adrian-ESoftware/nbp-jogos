@@ -51,3 +51,29 @@ export interface HistoryItem {
   text: string
   timestamp: number
 }
+
+export interface GameStateSync {
+  roomCode: string
+  phase: 'lobby' | 'playing' | 'revealing' | 'gameover'
+  round: number
+  totalRounds: number
+  turnDuration: number
+  penaltyMode: 'ducks' | 'cards'
+  players: Player[]
+  activeCard: TriviaCard
+  bids: Bid[]
+  currentTurnIndex: number
+  timeLeft: number
+  revealInfo: RevealInfo | null
+  history: HistoryItem[]
+}
+
+export type P2PGameAction =
+  | { type: 'JOIN_REQUEST'; profile: { id: string; name: string; avatar?: DuckAvatar } }
+  | { type: 'HEARTBEAT'; profile: { id: string; name: string; avatar?: DuckAvatar } }
+  | { type: 'PEER_CONNECTED'; profile?: { id: string; name: string; avatar?: DuckAvatar } }
+  | { type: 'PLAYER_LEFT'; playerId: string }
+  | { type: 'UPDATE_PROFILE'; profile: { id: string; name: string; avatar: DuckAvatar } }
+  | { type: 'BID'; value: number; isDouble: boolean; playerId?: string; playerName?: string }
+  | { type: 'CHALLENGE'; playerId?: string; playerName?: string }
+  | { type: 'TOAST'; message: string }
