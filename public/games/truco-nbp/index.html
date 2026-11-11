@@ -135,30 +135,11 @@
               <!-- Renderizado dinamicamente -->
             </div>
 
-            <!-- CENTRO DA MESA: O VIRA, RASTREADOR DE VAZAS E CARTAS BATIDAS -->
-            <div class="table-center-truco">
-              <!-- O VIRA -->
-              <div class="vira-box" id="vira-container">
-                <div class="vira-label-tag" id="manilha-hint">VIRA</div>
-                <div class="vira-card-wrapper" id="vira-card-slot">
-                  <!-- Carta do Vira gerada pelo real-deck -->
-                </div>
-              </div>
-
-              <!-- DISPUTA DAS VAZAS -->
-              <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-                <!-- Rastreamento de quedas (melhor de 3) -->
-                <div class="round-tricks-tracker">
-                  <div class="trick-dot" id="trick-dot-1" title="1ª Vaza"></div>
-                  <div class="trick-dot" id="trick-dot-2" title="2ª Vaza"></div>
-                  <div class="trick-dot" id="trick-dot-3" title="3ª Vaza"></div>
-                </div>
-
-                <!-- Arena de cartas jogadas -->
-                <div class="trick-cards-arena" id="trick-cards-arena">
-                  <span style="font-size:0.8rem; color:#6ee7b7; opacity:0.7;">Aguardando jogada...</span>
-                </div>
-              </div>
+            <!-- RASTREAMENTO DE VAZAS (MELHOR DE 3) -->
+            <div class="round-tricks-tracker" title="Vazas da Rodada (Melhor de 3)">
+              <div class="trick-dot" id="trick-dot-1" title="1ª Vaza"></div>
+              <div class="trick-dot" id="trick-dot-2" title="2ª Vaza"></div>
+              <div class="trick-dot" id="trick-dot-3" title="3ª Vaza"></div>
             </div>
 
             <!-- BANNER DE TRUCO / APOSTA -->

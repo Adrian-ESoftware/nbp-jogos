@@ -53,7 +53,7 @@ const PIP_CONFIGS = {
     { x: 0.28, y: 0.40 },
     { x: 0.28, y: 0.60, invert: true },
     { x: 0.28, y: 0.80, invert: true },
-    // 2 na coluna do centro
+    // 2 na coluna do centro (superior e inferior invertido)
     { x: 0.50, y: 0.30 },
     { x: 0.50, y: 0.70, invert: true },
     // 4 na coluna da direita
@@ -67,7 +67,7 @@ const PIP_CONFIGS = {
 /**
  * Mesa 3D do Truco Goiano (Three.js)
  * Feltro verde de alta densidade, aros dourados/mogno, iluminação suave e sombras dinâmicas.
- * Renderiza o Vira no centro, o monte do baralho e as cartas jogadas na vaza em 3D.
+ * Animação fluida de descarte da carta na mesa (igual ao Burro), com feltro limpo e desobstruído.
  */
 export function createTrucoTable(canvas) {
   if (!canvas) return { update: () => {}, destroy: () => {} }
@@ -79,16 +79,16 @@ export function createTrucoTable(canvas) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
   const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100)
-  camera.position.set(0, 6.2, 8.4)
-  camera.lookAt(0, 0.1, -0.45)
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100)
+  camera.position.set(0, 6.4, 8.8)
+  camera.lookAt(0, 0.1, -0.4)
   scene.add(camera)
 
-  // Iluminação ambiente e direcional de cassino
-  const ambientLight = new THREE.HemisphereLight(0xdcfce7, 0x052e16, 1.9)
+  // Iluminação de Cassino / Boteco
+  const ambientLight = new THREE.HemisphereLight(0xdcfce7, 0x052e16, 2.0)
   scene.add(ambientLight)
 
-  const sunLight = new THREE.DirectionalLight(0xffedd5, 2.6)
+  const sunLight = new THREE.DirectionalLight(0xffedd5, 2.7)
   sunLight.position.set(-3.5, 11, 5.5)
   sunLight.castShadow = true
   sunLight.shadow.mapSize.set(1024, 1024)
@@ -124,11 +124,11 @@ export function createTrucoTable(canvas) {
   felt.receiveShadow = true
   scene.add(felt)
 
-  // Aros da borda (dourado e couro)
+  // Aros dourados da borda
   const rims = [
-    [4.96, 0.065, 0xd97706, 0.65], // Aro Dourado externo
-    [4.65, 0.02, 0x10b981, 0.3],  // Friso esmeralda sutil
-    [4.5, 0.012, 0xf59e0b, 0.8],  // Friso dourado interno
+    [4.96, 0.065, 0xd97706, 0.65],
+    [4.65, 0.02, 0x10b981, 0.3],
+    [4.5, 0.012, 0xf59e0b, 0.8],
   ]
   rims.forEach(([radius, tube, color, metal]) => {
     const rim = new THREE.Mesh(
@@ -154,31 +154,8 @@ export function createTrucoTable(canvas) {
   )
   scene.add(particles)
 
-  // Monte do Baralho virado para baixo no centro
-  const deckGroup = new THREE.Group()
-  const cardGeo = new THREE.PlaneGeometry(0.72, 1.05)
-  const cardBackTexture = createCardBackTexture()
-  const cardBackMat = new THREE.MeshStandardMaterial({
-    map: cardBackTexture,
-    roughness: 0.5,
-    metalness: 0.1,
-    side: THREE.DoubleSide,
-  })
-
-  // Pilha de cartas simulada
-  for (let i = 0; i < 10; i++) {
-    const layer = new THREE.Mesh(cardGeo, cardBackMat)
-    layer.rotation.x = -Math.PI / 2
-    layer.position.set(-0.95, 0.06 + i * 0.007, 0.05)
-    layer.rotation.z = 0.08 + (Math.random() - 0.5) * 0.03
-    layer.castShadow = true
-    layer.receiveShadow = true
-    deckGroup.add(layer)
-  }
-  scene.add(deckGroup)
-
-  // O Vira (carta revelada virada na mesa, ao lado do monte de compra)
-  let viraMesh = null
+  // Geometria e texturas de cartas
+  const cardGeo = new THREE.PlaneGeometry(0.85, 1.25)
   const texturesCache = new Map()
 
   function getCardTexture(card, isCovered = false) {
@@ -199,17 +176,6 @@ export function createTrucoTable(canvas) {
     const tex = new THREE.CanvasTexture(c)
     tex.colorSpace = THREE.SRGBColorSpace
     texturesCache.set(key, tex)
-    return tex
-  }
-
-  function createCardBackTexture() {
-    const c = document.createElement('canvas')
-    c.width = 256
-    c.height = 384
-    const ctx = c.getContext('2d')
-    drawCanvasCardBack(ctx, 256, 384)
-    const tex = new THREE.CanvasTexture(c)
-    tex.colorSpace = THREE.SRGBColorSpace
     return tex
   }
 
@@ -255,7 +221,6 @@ export function createTrucoTable(canvas) {
   }
 
   function drawCanvasCardFace(ctx, w, h, card) {
-    // Fundo branco
     ctx.fillStyle = '#ffffff'
     ctx.beginPath()
     ctx.roundRect(0, 0, w, h, 20)
@@ -309,9 +274,12 @@ export function createTrucoTable(canvas) {
     }
   }
 
-  // Grupo de cartas jogadas no feltro 3D
+  // Grupo de cartas pousadas no feltro 3D
   const tableCardsGroup = new THREE.Group()
   scene.add(tableCardsGroup)
+
+  // Grupo de cartas atualmente voando / animando para a mesa (como no Burro)
+  const flyingCards = []
 
   // Grupo dos marcadores de jogadores 3D em torno da mesa
   const playersGroup = new THREE.Group()
@@ -321,116 +289,118 @@ export function createTrucoTable(canvas) {
   function getSeatCoords(seatIndex, totalSeats) {
     if (totalSeats === 2) {
       // 0 = Sul (Local), 1 = Norte (Oponente)
-      if (seatIndex === 0) return { x: 0, z: 2.1, rotY: 0, cardX: 0, cardZ: 0.65 }
-      return { x: 0, z: -2.1, rotY: Math.PI, cardX: 0, cardZ: -0.65 }
+      if (seatIndex === 0) return { x: 0, z: 2.3, rotY: 0, cardX: 0, cardZ: 0.62 }
+      return { x: 0, z: -2.3, rotY: Math.PI, cardX: 0, cardZ: -0.62 }
     }
     // 2v2: 0 = Sul (Nós), 1 = Leste (Eles), 2 = Norte (Nós parceiro), 3 = Oeste (Eles)
     const angles = [0, -Math.PI / 2, Math.PI, Math.PI / 2]
     const cardAngles = [0, -Math.PI / 2, Math.PI, Math.PI / 2]
-    const rad = 2.15
-    const cRad = 0.8
+    const rad = 2.25
+    const cRad = 0.75
     const a = angles[seatIndex % 4]
     return {
       x: Math.sin(a) * rad * 1.35,
       z: Math.cos(a) * rad,
       rotY: a,
-      cardX: Math.sin(cardAngles[seatIndex % 4]) * cRad * 1.3,
+      cardX: Math.sin(cardAngles[seatIndex % 4]) * cRad * 1.35,
       cardZ: Math.cos(cardAngles[seatIndex % 4]) * cRad,
     }
   }
 
-  let lastViraId = null
-  let lastPlayedSignature = ''
+  // Lança a carta voando da mão / assento até o centro da mesa
+  function throwCardToTable(item, coords, playIdx, isLocal) {
+    const origin = isLocal
+      ? new THREE.Vector3(0, 1.4, 3.8)
+      : new THREE.Vector3(coords.x * 0.9, 1.0, coords.z * 0.9)
+
+    const targetPos = new THREE.Vector3(coords.cardX, 0.05 + playIdx * 0.007, coords.cardZ)
+    const rotZ = (Math.random() - 0.5) * 0.35 - coords.rotY * 0.3
+    const targetQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, rotZ))
+    const startQuat = isLocal
+      ? new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.4, 0, 0))
+      : new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.25, coords.rotY, 0))
+
+    const isCovered = item.covered || item.card?.covered
+    const tex = getCardTexture(item.card, isCovered)
+    const mat = new THREE.MeshStandardMaterial({
+      map: tex,
+      roughness: 0.45,
+      metalness: 0.1,
+      side: THREE.DoubleSide,
+    })
+    const mesh = new THREE.Mesh(cardGeo, mat)
+    mesh.castShadow = true
+    mesh.receiveShadow = true
+    mesh.position.copy(origin)
+    mesh.quaternion.copy(startQuat)
+    scene.add(mesh)
+
+    flyingCards.push({
+      mesh,
+      origin,
+      targetPos,
+      startQuat,
+      targetQuat,
+      start: performance.now(),
+      duration: 420,
+    })
+  }
+
+  let knownPlayedKeys = new Set()
 
   function update(state, localPlayerId) {
     if (!state) return
 
-    // 1. Atualizar o VIRA na mesa
-    if (state.vira) {
-      const viraId = `${state.vira.value}_${state.vira.suit}`
-      if (viraId !== lastViraId || !viraMesh) {
-        lastViraId = viraId
-        if (viraMesh) scene.remove(viraMesh)
-
-        const viraTex = getCardTexture(state.vira, false)
-        const viraMat = new THREE.MeshStandardMaterial({
-          map: viraTex,
-          roughness: 0.45,
-          metalness: 0.1,
-          side: THREE.DoubleSide,
-        })
-        viraMesh = new THREE.Mesh(cardGeo, viraMat)
-        viraMesh.rotation.x = -Math.PI / 2
-        viraMesh.rotation.z = -0.35 // Inclinada sobre o feltro
-        viraMesh.position.set(-0.2, 0.05, 0.05)
-        viraMesh.castShadow = true
-        viraMesh.receiveShadow = true
-        scene.add(viraMesh)
+    const played = state.playedCardsInTrick || []
+    
+    // Se a vaza foi recolhida/zerada
+    if (played.length === 0) {
+      if (knownPlayedKeys.size > 0) {
+        tableCardsGroup.clear()
+        flyingCards.forEach((f) => scene.remove(f.mesh))
+        flyingCards.length = 0
+        knownPlayedKeys.clear()
       }
-    } else if (viraMesh) {
-      scene.remove(viraMesh)
-      viraMesh = null
-      lastViraId = null
     }
 
-    // 2. Atualizar cartas jogadas na vaza atual
-    const played = state.playedCardsInTrick || state.currentTrick?.cards || []
-    const sig = played.map((c) => `${c.playerId}:${c.card?.value}:${c.card?.suit}:${c.covered || c.card?.covered}`).join('|')
-    if (sig !== lastPlayedSignature) {
-      lastPlayedSignature = sig
-      tableCardsGroup.clear()
+    // Detecta cartas recém-jogadas para lançar com animação estilo Burro
+    const totalPlayers = state.players?.length || 2
+    const myIdx = Math.max(0, state.players?.findIndex((p) => p.id === localPlayerId))
 
-      const totalPlayers = state.players?.length || 2
-      const myIdx = Math.max(0, state.players?.findIndex((p) => p.id === localPlayerId))
+    played.forEach((item, playIdx) => {
+      const key = `${item.playerId}:${item.card?.value}:${item.card?.suit}:${playIdx}`
+      if (!knownPlayedKeys.has(key)) {
+        knownPlayedKeys.add(key)
 
-      played.forEach((item, playIdx) => {
         const pIdx = state.players?.findIndex((p) => p.id === item.playerId)
         const relativeSeat = pIdx >= 0 ? (pIdx - myIdx + totalPlayers) % totalPlayers : playIdx
         const coords = getSeatCoords(relativeSeat, totalPlayers)
+        const isLocal = item.playerId === localPlayerId
 
-        const isCovered = item.covered || item.card?.covered
-        const tex = getCardTexture(item.card, isCovered)
-        const mat = new THREE.MeshStandardMaterial({
-          map: tex,
-          roughness: 0.45,
-          metalness: 0.1,
-          side: THREE.DoubleSide,
-        })
-        const mesh = new THREE.Mesh(cardGeo, mat)
-        mesh.rotation.x = -Math.PI / 2
-        mesh.rotation.z = (Math.random() - 0.5) * 0.25 - coords.rotY * 0.4
-        mesh.position.set(coords.cardX, 0.06 + playIdx * 0.008, coords.cardZ)
-        mesh.castShadow = true
-        mesh.receiveShadow = true
-        tableCardsGroup.add(mesh)
-      })
-    }
+        throwCardToTable(item, coords, playIdx, isLocal)
+      }
+    })
 
-    // 3. Atualizar marcadores 3D dos jogadores ao redor da mesa
+    // Atualizar anéis luminosos dos jogadores ao redor da mesa
     playersGroup.clear()
     const all = state.players || []
-    const myIndex = Math.max(0, all.findIndex((p) => p.id === localPlayerId))
-    const total = all.length || 2
-
     all.forEach((player, idx) => {
-      const rel = (idx - myIndex + total) % total
-      const coords = getSeatCoords(rel, total)
-
-      const isUs = idx % 2 === myIndex % 2
+      const rel = (idx - myIdx + totalPlayers) % totalPlayers
+      const coords = getSeatCoords(rel, totalPlayers)
+      const isUs = idx % 2 === myIdx % 2
       const teamColor = isUs ? 0x10b981 : 0xf59e0b
 
-      // Anel no feltro onde o jogador está sentado
       const ring = new THREE.Mesh(
         new THREE.RingGeometry(0.24, 0.28, 32),
         new THREE.MeshBasicMaterial({ color: teamColor, side: THREE.DoubleSide, transparent: true, opacity: 0.6 })
       )
       ring.rotation.x = Math.PI / 2
-      ring.position.set(coords.x * 0.85, 0.04, coords.z * 0.85)
+      ring.position.set(coords.x * 0.88, 0.04, coords.z * 0.88)
       playersGroup.add(ring)
     })
   }
 
-  // Loop de Animação
+  // Loop de Animação e Renderização
   let animId = null
   function animate(t) {
     const width = canvas.clientWidth
@@ -440,6 +410,26 @@ export function createTrucoTable(canvas) {
       renderer.setSize(width, height, false)
       camera.aspect = width / height
       camera.updateProjectionMatrix()
+    }
+
+    // Animação de cartas sendo jogadas na mesa (voo parabólico igual ao Burro)
+    for (let i = flyingCards.length - 1; i >= 0; i--) {
+      const f = flyingCards[i]
+      const elapsed = t - f.start
+      const progress = Math.min(1, elapsed / f.duration)
+      const eased = 1 - Math.pow(1 - progress, 3)
+
+      f.mesh.position.copy(f.origin).lerp(f.targetPos, eased)
+      f.mesh.position.y += Math.sin(Math.PI * progress) * 0.72 // Arco no ar
+      f.mesh.quaternion.copy(f.startQuat).slerp(f.targetQuat, eased)
+
+      if (progress >= 1) {
+        f.mesh.position.copy(f.targetPos)
+        f.mesh.quaternion.copy(f.targetQuat)
+        scene.remove(f.mesh)
+        tableCardsGroup.add(f.mesh)
+        flyingCards.splice(i, 1)
+      }
     }
 
     particles.rotation.y = t * 0.00008

@@ -704,19 +704,6 @@ let table3d = null
     if (themElem) themElem.textContent = state.scoreTeamThem
     if (stakeElem) stakeElem.textContent = `VALE ${state.stake} ${state.stake === 1 ? 'TENTO' : 'TENTOS'}`
 
-    // Manilhas Fixas
-    const viraSlot = document.getElementById('vira-card-slot')
-    const manilhaHint = document.getElementById('manilha-hint')
-    if (viraSlot && window.NBPDeck) {
-      viraSlot.innerHTML = window.NBPDeck.renderCard('10', 'clubs', {
-        isManilha: true,
-        manilhaLabel: 'ZAP (10♣)',
-      })
-    }
-    if (manilhaHint) {
-      manilhaHint.innerHTML = `<strong>MANILHAS FIXAS: OS 10</strong><br/><span style="font-size:0.68rem; color:#6ee7b7;">Zap ♣ &gt; Copeta ♥ &gt; Espadilha ♠ &gt; Pica-fumo ♦</span>`
-    }
-
     // Vazas (Melhor de 3)
     ;[1, 2, 3].forEach((idx) => {
       const dot = document.getElementById(`trick-dot-${idx}`)
@@ -751,34 +738,6 @@ let table3d = null
           `
         })
         .join('')
-    }
-
-    // Arena de Cartas Jogadas na Vaza
-    const arena = document.getElementById('trick-cards-arena')
-    if (arena) {
-      if (state.playedCardsInTrick.length === 0) {
-        arena.innerHTML = `<span style="font-size:0.8rem; color:#6ee7b7; opacity:0.7;">Aguardando jogadas...</span>`
-      } else {
-        arena.innerHTML = state.playedCardsInTrick
-          .map((item) => {
-            const isManilha = item.card.value === state.manilha
-            const manilhaName = isManilha ? getManilhaName(item.card.suit) : ''
-            const cardHtml = item.covered
-              ? window.NBPDeck.renderCardBack()
-              : window.NBPDeck.renderCard(item.card.value, item.card.suit, {
-                  isManilha,
-                  manilhaLabel: manilhaName,
-                })
-
-            return `
-              <div class="played-trick-card" style="--rot:${item.rot}deg; text-align:center;">
-                <div style="font-size:0.7rem; font-weight:800; color:#fde68a; margin-bottom:4px;">${item.playerName}</div>
-                ${cardHtml}
-              </div>
-            `
-          })
-          .join('')
-      }
     }
 
     // Banner de Desafio de Truco
