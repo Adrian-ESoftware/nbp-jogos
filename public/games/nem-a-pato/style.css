@@ -256,10 +256,13 @@ body {
 .game-stage {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 16px;
   padding: 16px;
   position: relative;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Mesa da Lagoa (Playmat) */
@@ -273,6 +276,10 @@ body {
   gap: 16px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 0 60px rgba(56, 189, 248, 0.06);
   position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Carta de Tema Central (Real Card Aesthetics) */
@@ -367,6 +374,9 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
   padding: 12px 14px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .bids-track-header {
@@ -374,24 +384,48 @@ body {
   font-weight: 800;
   color: var(--pond-cyan);
   display: flex;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
 }
 
 .bids-scroll-area {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 6px;
+  gap: 8px 10px;
+  max-height: 140px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 2px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .bids-scroll-area::-webkit-scrollbar {
-  height: 6px;
+  width: 6px;
 }
 .bids-scroll-area::-webkit-scrollbar-thumb {
   background: var(--border-strong);
   border-radius: 3px;
+}
+
+.bid-arrow {
+  color: var(--pond-cyan);
+  font-weight: 900;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  user-select: none;
+}
+
+.bid-order-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--pond-cyan);
+  background: rgba(56, 189, 248, 0.15);
+  padding: 1px 6px;
+  border-radius: 6px;
 }
 
 .empty-bids-hint {
@@ -406,7 +440,7 @@ body {
   border: 2px solid var(--border-strong);
   border-radius: 14px;
   padding: 6px 12px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   white-space: nowrap;
@@ -711,6 +745,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 340px;
+  min-width: 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .roster-card,
@@ -1374,6 +1412,10 @@ body {
     grid-template-columns: 1fr;
     padding: 10px;
     gap: 12px;
+  }
+  
+  .sidebar-roster {
+    width: 100%;
   }
   
   .topbar {

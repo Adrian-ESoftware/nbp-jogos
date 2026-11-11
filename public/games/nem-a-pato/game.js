@@ -933,9 +933,17 @@
     el.emptyBidsHint.hidden = true;
 
     state.bids.forEach((bid, idx) => {
+      if (idx > 0) {
+        const arrow = document.createElement('span');
+        arrow.className = 'bid-arrow';
+        arrow.textContent = '➔';
+        arrow.setAttribute('aria-hidden', 'true');
+        el.bidsScrollArea.appendChild(arrow);
+      }
       const bubble = document.createElement('div');
       bubble.className = `bid-bubble ${bid.isDouble ? 'is-double' : ''}`;
       bubble.innerHTML = `
+        <span class="bid-order-badge">#${idx + 1}</span>
         <span class="bid-bubble-avatar">${bid.avatar || '🦆'}</span>
         <span class="bid-bubble-name">${escapeHtml(bid.playerName)}:</span>
         <strong class="bid-bubble-num">${bid.value}</strong>
@@ -944,8 +952,8 @@
       el.bidsScrollArea.appendChild(bubble);
     });
 
-    // Rola para o final da lista de chutes
-    el.bidsScrollArea.scrollLeft = el.bidsScrollArea.scrollWidth;
+    // Rola para o final da lista (agora em fluxo com wrap suave)
+    el.bidsScrollArea.scrollTop = el.bidsScrollArea.scrollHeight;
   }
 
   function renderTurnBanner() {
