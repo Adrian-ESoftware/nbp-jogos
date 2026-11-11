@@ -2,6 +2,7 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowLeft, Maximize, RotateCcw } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { getGame, withBase } from '../lib/catalog'
+import { NemAPatoGame } from '../games/nem-a-pato/NemAPatoGame'
 
 export const Route = createFileRoute('/jogos/$gameId')({ component: GamePage })
 
@@ -9,6 +10,7 @@ function GamePage() {
   const { gameId } = Route.useParams()
   const game = getGame(gameId)
   const frame = useRef<HTMLIFrameElement>(null)
+  const nativeRef = useRef<HTMLDivElement>(null)
   const [instance, setInstance] = useState(0)
   const [message, setMessage] = useState('')
 
@@ -16,8 +18,9 @@ function GamePage() {
 
   async function fullscreen() {
     try {
-      if (!frame.current?.requestFullscreen) throw new Error('indisponível')
-      await frame.current.requestFullscreen()
+      const target = gameId === 'nem-a-pato' ? nativeRef.current : frame.current
+      if (!target?.requestFullscreen) throw new Error('indisponível')
+      await target.requestFullscreen()
       setMessage('')
     } catch { setMessage('Não foi possível abrir em tela cheia neste navegador.') }
   }
@@ -35,7 +38,13 @@ function GamePage() {
           <button type="button" aria-label="Tela cheia" title="Tela cheia" onClick={fullscreen}><Maximize size={16} aria-hidden="true" /><span>Tela cheia</span></button>
         </div>
       </div>
-      <iframe key={instance} ref={frame} className="player-frame" src={game.entry} title={`Jogar ${game.title}`} allow="fullscreen; autoplay; gamepad" />
+      {gameId === 'nem-a-pato' ? (
+        <div ref={nativeRef} className="player-native-frame">
+          <NemAPatoGame key={instance} />
+        </div>
+      ) : (
+        <iframe key={instance} ref={frame} className="player-frame" src={game.entry} title={`Jogar ${game.title}`} allow="fullscreen; autoplay; gamepad" />
+      )}
       {message && <p className="player-message" role="status">{message}</p>}
       <div className="player-footer">
         <details className="player-description"><summary>Sobre o jogo</summary><p>{game.description}</p></details>
