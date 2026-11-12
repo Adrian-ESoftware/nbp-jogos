@@ -542,7 +542,7 @@ body {
 
 .ek-card-slot {
   position: relative;
-  width: clamp(86px, 13vh, 118px);
+  width: clamp(104px, 16vh, 144px);
   aspect-ratio: var(--card-aspect);
   border-radius: 11px;
 }
@@ -705,9 +705,10 @@ body {
 }
 
 .ek-hint-text {
-  font-size: 0.76rem;
-  color: var(--muted-ivory);
-  font-weight: 600;
+  font-size: 0.84rem;
+  color: #fde68a;
+  font-weight: 700;
+  flex: 1 1 240px;
 }
 
 .ek-dock-buttons {
@@ -719,21 +720,21 @@ body {
 .ek-player-hand {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
+  gap: 10px;
   overflow-x: auto;
-  padding: 18px 4px 4px;
-  min-height: clamp(128px, 19vh, 170px);
+  padding: 20px 6px 6px;
+  min-height: clamp(175px, 26vh, 238px);
 }
 
 .ek-hand-card {
   position: relative;
   flex: 0 0 auto;
-  width: clamp(78px, 11.5vh, 106px);
+  width: clamp(108px, 16.5vh, 152px);
   aspect-ratio: var(--card-aspect);
-  border-radius: 9px;
+  border-radius: 11px;
   cursor: pointer;
   transition: transform 0.14s ease, box-shadow 0.14s ease;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.65);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
   user-select: none;
 }
 
@@ -741,7 +742,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 9px;
+  border-radius: 11px;
   display: block;
   pointer-events: none;
 }
@@ -749,7 +750,7 @@ body {
 .ek-hand-card .card-specular-sheen {
   position: absolute;
   inset: 0;
-  border-radius: 9px;
+  border-radius: 11px;
   pointer-events: none;
   opacity: 0;
 }
@@ -942,7 +943,12 @@ body {
     padding: 8px 8px 10px;
   }
   .ek-hint-text {
-    display: none;
+    order: 3;
+    flex-basis: 100%;
+    font-size: 0.78rem;
+  }
+  .ek-hand-card {
+    width: clamp(94px, 15vh, 126px);
   }
   .ek-zoom-card {
     flex-direction: column;

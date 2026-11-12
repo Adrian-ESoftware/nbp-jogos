@@ -1000,35 +1000,41 @@
     const selectedCards = me.hand.filter((c) => selectedCardIds.has(c.id))
     dom.btnClearSelection.hidden = selectedCards.length === 0
     dom.btnPlaySelected.hidden = selectedCards.length === 0
+    let currentHintText = 'Passe o mouse ou clique em uma carta para ver o que ela faz'
     if (selectedCards.length === 0) {
-      dom.selectionHint.textContent = 'Clique nas cartas para jogar (2x amplia) ou no baralho para comprar'
       dom.btnPlaySelected.disabled = true
     } else {
       const check = Engine.validateSelection(selectedCards, gameState.discardPile.length)
       if (!isMyTurn) {
-        dom.selectionHint.textContent = `${selectedCards.length} selecionada(s) — aguarde seu turno`
+        const meta = selectedCards.length === 1 ? Engine.CARD_TYPES[selectedCards[0].type] : null
+        currentHintText = meta
+          ? `${meta.name}: ${meta.description}`
+          : `${selectedCards.length} selecionada(s) — aguarde seu turno`
         dom.btnPlaySelected.disabled = true
         dom.btnPlaySelected.textContent = 'Aguarde'
       } else if (check.valid) {
-        dom.selectionHint.textContent =
+        const meta = check.kind === 'single' ? Engine.CARD_TYPES[check.cardType] : null
+        currentHintText =
           check.kind === 'single'
-            ? `${Engine.CARD_TYPES[check.cardType].name}`
+            ? `${meta.name}: ${meta.description}`
             : check.kind === 'combo2'
-              ? 'Par (Roubar Aleatória)'
+              ? 'Par (2 iguais): Roube 1 carta aleatória de um oponente!'
               : check.kind === 'combo3'
-                ? 'Trio (Pedir Carta)'
-                : '5 Diferentes (Pegar do Descarte)'
+                ? 'Trio (3 iguais): Peça uma carta específica de um oponente!'
+                : '5 Diferentes: Escolha e pegue qualquer carta da Pilha de Descartes!'
         dom.btnPlaySelected.disabled = false
         dom.btnPlaySelected.textContent =
           check.kind === 'single' ? `Jogar ${Engine.CARD_TYPES[check.cardType].shortName}` : 'Jogar Combo'
       } else {
-        dom.selectionHint.textContent = check.reason
+        const meta = selectedCards.length === 1 ? Engine.CARD_TYPES[selectedCards[0].type] : null
+        currentHintText = meta ? `${meta.name}: ${meta.description}` : check.reason
         dom.btnPlaySelected.disabled = true
         dom.btnPlaySelected.textContent = 'Seleção Inválida'
       }
     }
+    dom.selectionHint.textContent = currentHintText
 
-    // Hand (cartas limpas, sem botão + poluindo; clique seleciona, duplo clique ou botão direito amplia)
+    // Hand (cartas limpas e maiores; hover/clique mostra o que faz, duplo clique amplia)
     dom.playerHand.innerHTML = ''
     me.hand.forEach((card) => {
       const cardEl = document.createElement('div')
@@ -1042,6 +1048,17 @@
       cardEl.appendChild(img)
 
       setupCard3DTilt(cardEl)
+
+      cardEl.addEventListener('pointerenter', () => {
+        const meta = Engine.CARD_TYPES[card.type]
+        if (meta) {
+          dom.selectionHint.textContent = `${meta.name}: ${meta.description}`
+        }
+      })
+
+      cardEl.addEventListener('pointerleave', () => {
+        dom.selectionHint.textContent = currentHintText
+      })
 
       cardEl.addEventListener('click', () => {
         if (selectedCardIds.has(card.id)) {
