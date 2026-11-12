@@ -578,8 +578,12 @@
       gameId: 'pokemon-nbp',
       defaultPrefix: 'POK',
       onStateSync: (remoteState) => {
-        // Sync full game state from Host
+        const wasLobby = vsState.status === 'lobby' && vsState.roomCode !== remoteState.roomCode
         Object.assign(vsState, remoteState)
+        roomCodeInput.value = vsState.roomCode
+        if (wasLobby) {
+          showToast(`Conectado à sala ${vsState.roomCode}!`, 'success')
+        }
         renderMultiplayerUI()
       },
       onAction: (actionData, profile) => {
@@ -595,36 +599,62 @@
         if (status.connected && !multiRoom.isHost) {
           multiRoom.sendToHost({ type: 'JOIN_REQUEST', profile: multiRoom.profile })
         }
+        if (status.connected && status.roomCode) {
+          try {
+            if (window.parent && window.parent !== window) {
+              const pUrl = new URL(window.parent.location.href)
+              pUrl.searchParams.set('sala', status.roomCode)
+              pUrl.searchParams.set('room', status.roomCode)
+              window.parent.history.replaceState({}, '', pUrl.toString())
+            }
+          } catch (_) {}
+        }
       },
       onError: (err) => {
         console.error('Erro de rede P2P:', err)
-        showToast('Erro de conexão P2P.', 'error')
+        if (err && err.message) {
+          showToast(`⚠️ ${err.message}`, 'error')
+        }
       },
     })
   }
 
   function updateMultiStatusUI(status) {
     const dot = multiP2pStatus.querySelector('.status-dot')
-    if (status.connected) {
+    if (status.connecting) {
+      dot.classList.remove('connected')
+      dot.style.background = '#eab308'
+      multiStatusText.textContent = status.isHost ? `Abrindo ${status.roomCode}...` : `Conectando a ${status.roomCode}...`
+    } else if (status.connected) {
       dot.classList.add('connected')
-      multiStatusText.textContent = 'Conectado P2P'
+      dot.style.background = '#22c55e'
+      multiStatusText.textContent = status.isHost ? `Host Online · ${status.roomCode}` : `Conectado · ${status.roomCode}`
     } else {
       dot.classList.remove('connected')
-      multiStatusText.textContent = 'Aguardando P2P...'
+      dot.style.background = '#ef4444'
+      multiStatusText.textContent = `Offline · ${status.roomCode || ''}`
     }
   }
 
   function initHostMultiRoom(customCode = '') {
     initMultiplayerRoom()
-    const code = (customCode || `POK-${Math.floor(1000 + Math.random() * 9000)}`).toUpperCase()
-    multiRoom.hostRoom(code)
+    const code = (customCode || roomCodeInput.value.trim() || `POK-${Math.floor(1000 + Math.random() * 9000)}`).toUpperCase()
 
-    vsState.roomCode = code
+    if (multiRoom.isHost && code === vsState.roomCode && multiRoom.mqttClients.some((c) => c.ready)) {
+      showToast(`Sala ${code} já está ativa!`, 'info')
+      return
+    }
+
+    multiRoom.hostRoom(code)
+    const normalized = multiRoom.roomCode || code
+    vsState.roomCode = normalized
     vsState.arenaType = state.mode === 'royale' ? 'royale' : 'versus'
     vsState.maxPlayers = vsState.arenaType === 'royale' ? 6 : 2
     vsState.generation = multiGenSelect ? multiGenSelect.value : 'all'
     vsState.status = 'lobby'
     vsState.roundIndex = 0
+
+    const initialBots = vsState.arenaType === 'royale' ? 3 : 1
     vsState.players = [
       {
         id: multiRoom.profile.id,
@@ -639,30 +669,58 @@
       },
     ]
 
+    for (let b = 0; b < initialBots; b++) {
+      vsState.players.push({
+        id: `bot-init-${b}`,
+        name: BOT_NAMES[b % BOT_NAMES.length],
+        isHost: false,
+        isBot: true,
+        score: 0,
+        hearts: 3,
+        eliminated: false,
+        answered: false,
+        hit: false,
+      })
+    }
+
+    roomCodeInput.value = normalized
     syncMultiState()
     renderMultiplayerUI()
-    showToast(`Sala ${code} criada com sucesso!`, 'success')
+    showToast(`Sala ${normalized} criada! Envie o link para os amigos.`, 'success')
   }
 
   function joinMultiRoom(code) {
     if (!code) return
     initMultiplayerRoom()
     const cleanCode = code.trim().toUpperCase()
-    multiRoom.joinRoom(cleanCode)
+    roomCodeInput.value = cleanCode
     vsState.roomCode = cleanCode
-    multiRoom.sendToHost({ type: 'JOIN_REQUEST', profile: multiRoom.profile })
+    multiRoom.joinRoom(cleanCode)
+    showToast(`Conectando à sala ${cleanCode}...`, 'info')
     renderMultiplayerUI()
   }
 
   function handleHostAction(action, profile) {
     if (!action) return
 
-    if (action.type === 'JOIN_REQUEST') {
-      const existing = vsState.players.find((p) => p.id === profile.id)
-      if (!existing && vsState.players.length < vsState.maxPlayers) {
-        vsState.players.push({
-          id: profile.id,
-          name: profile.name || `Treinador #${vsState.players.length + 1}`,
+    // 1. Peer conectado via WebRTC/DataChannel: sincroniza estado instantaneamente!
+    if (action.type === 'PEER_CONNECTED') {
+      syncMultiState()
+      return
+    }
+
+    // 2. Requisição de entrada ou presença Heartbeat:
+    if ((action.type === 'JOIN_REQUEST' || action.type === 'HEARTBEAT') && (action.profile || profile)) {
+      const p = action.profile || profile
+      if (p.id === multiRoom.profile.id) return
+
+      const existing = vsState.players.find((pl) => pl.id === p.id)
+      if (!existing) {
+        const maxAllowed = vsState.arenaType === 'royale' ? 6 : 2
+        const botIdx = vsState.players.findIndex((pl) => pl.isBot)
+        const newPlayer = {
+          id: p.id,
+          name: p.name || `Treinador #${vsState.players.length + 1}`,
           isHost: false,
           isBot: false,
           score: 0,
@@ -670,11 +728,52 @@
           eliminated: false,
           answered: false,
           hit: false,
-        })
-        appendFeed(`${profile.name || 'Um novo treinador'} entrou na sala!`)
+        }
+
+        if (vsState.players.length < maxAllowed) {
+          if (maxAllowed === 2 && botIdx !== -1) {
+            vsState.players[botIdx] = newPlayer
+          } else {
+            vsState.players.push(newPlayer)
+          }
+        } else if (botIdx !== -1) {
+          // Substitui um bot pelo amigo real
+          vsState.players[botIdx] = newPlayer
+        } else if (vsState.players.length < 6) {
+          // Expande para Battle Royale caso um 3º humano entre na sala
+          vsState.arenaType = 'royale'
+          vsState.maxPlayers = 6
+          vsState.players.push(newPlayer)
+        } else {
+          return
+        }
+
+        const joinMsg = `👋 ${p.name || 'Um novo treinador'} entrou na sala!`
+        showToast(joinMsg)
+        appendFeed(joinMsg)
+        syncMultiState()
+      } else {
+        // Jogador já conhecido: atualiza nome e SEMPRE sincroniza para destravar o cliente
+        if (p.name) existing.name = p.name
         syncMultiState()
       }
-    } else if (action.type === 'SUBMIT_ANSWER') {
+      return
+    }
+
+    // 3. Jogador saiu da sala
+    if (action.type === 'PLAYER_LEFT') {
+      const leftId = action.playerId || profile?.id
+      const leftIdx = vsState.players.findIndex((pl) => pl.id === leftId)
+      if (leftIdx !== -1) {
+        const leftPlayer = vsState.players.splice(leftIdx, 1)[0]
+        appendFeed(`🚪 ${leftPlayer.name} saiu da sala.`, 'system')
+        syncMultiState()
+      }
+      return
+    }
+
+    // 4. Submissão de resposta
+    if (action.type === 'SUBMIT_ANSWER') {
       const player = vsState.players.find((p) => p.id === action.playerId)
       if (player && !player.eliminated && !player.answered && vsState.status === 'playing') {
         player.answered = true
@@ -1050,7 +1149,13 @@
           soloHudPills.hidden = true
           vsState.arenaType = selectedMode === 'royale' ? 'royale' : 'versus'
           vsState.maxPlayers = selectedMode === 'royale' ? 6 : 2
-          initHostMultiRoom()
+
+          initMultiplayerRoom()
+          if (!multiRoom.roomCode) {
+            initHostMultiRoom()
+          } else {
+            renderMultiplayerUI()
+          }
         }
       })
     })
@@ -1148,23 +1253,48 @@
 
     // Multiplayer Buttons
     btnMultiHost.addEventListener('click', () => {
+      initMultiplayerRoom()
+      const code = roomCodeInput.value.trim().toUpperCase() || `POK-${Math.floor(1000 + Math.random() * 9000)}`
+      if (multiRoom.isHost && code === vsState.roomCode && multiRoom.mqttClients.some((c) => c.ready)) {
+        showToast(`Sala ${code} já está ativa! Código copiado 📋`, 'info')
+        navigator.clipboard?.writeText(code).catch(() => {})
+        return
+      }
       const name = playerNameInput.value.trim()
       if (name && multiRoom) multiRoom.setPlayerName(name)
-      initHostMultiRoom()
+      initHostMultiRoom(code)
     })
 
     btnMultiJoin.addEventListener('click', () => {
+      initMultiplayerRoom()
       const code = roomCodeInput.value.trim().toUpperCase()
+      if (!code) {
+        showToast('Digite o código da sala!', 'error')
+        return
+      }
       const name = playerNameInput.value.trim()
       if (name && multiRoom) multiRoom.setPlayerName(name)
       joinMultiRoom(code)
     })
 
-    btnCopyRoom.addEventListener('click', () => {
-      const url = `${window.location.origin}${window.location.pathname}?room=${vsState.roomCode}`
-      navigator.clipboard.writeText(url).then(() => {
-        showToast('Link da sala copiado!', 'success')
-      })
+    btnCopyRoom.addEventListener('click', async () => {
+      try {
+        let baseOrigin = window.location.origin
+        let basePath = '/jogos/pokemon-nbp'
+        try {
+          if (window.parent && window.parent !== window) {
+            baseOrigin = window.parent.location.origin
+            if (window.parent.location.pathname.startsWith('/jogos/')) {
+              basePath = window.parent.location.pathname
+            }
+          }
+        } catch (_) {}
+        const shareUrl = `${baseOrigin}${basePath}?room=${vsState.roomCode}`
+        await navigator.clipboard.writeText(shareUrl)
+        showToast(`Link da sala ${vsState.roomCode} copiado! 📋`, 'success')
+      } catch {
+        showToast(`Código da Sala: ${vsState.roomCode}`)
+      }
     })
 
     btnAddBot.addEventListener('click', () => {
@@ -1279,8 +1409,15 @@
 
       setupEventListeners()
 
-      // Check URL parameters for invites
-      const params = new URLSearchParams(window.location.search)
+      // Check URL parameters for invites (both iframe and parent)
+      let searchStr = window.location.search
+      try {
+        if (!searchStr && window.parent && window.parent !== window && window.parent.location.search) {
+          searchStr = window.parent.location.search
+        }
+      } catch (_) {}
+
+      const params = new URLSearchParams(searchStr)
       const roomParam = params.get('room') || params.get('sala')
       const nickParam = params.get('nick') || params.get('nome')
 
@@ -1289,11 +1426,17 @@
       }
 
       if (roomParam) {
-        // Automatically switch to multiplayer
-        const tabVersus = document.querySelector('.mode-tab[data-mode="versus"]')
-        if (tabVersus) tabVersus.click()
-        roomCodeInput.value = roomParam.trim().toUpperCase()
-        joinMultiRoom(roomParam.trim().toUpperCase())
+        const cleanCode = roomParam.trim().toUpperCase()
+        state.mode = 'versus'
+        viewSolo.hidden = true
+        viewMultiplayer.hidden = false
+        soloHudPills.hidden = true
+        document.querySelectorAll('.mode-tab').forEach((t) => {
+          const isActive = t.dataset.mode === 'versus'
+          t.classList.toggle('active', isActive)
+          t.setAttribute('aria-selected', String(isActive))
+        })
+        joinMultiRoom(cleanCode)
       } else {
         startSoloQuiz()
       }
