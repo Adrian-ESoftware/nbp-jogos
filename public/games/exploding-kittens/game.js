@@ -11,8 +11,9 @@
     btnBackLobby: document.getElementById('btn-back-lobby'),
 
     lobbyView: document.getElementById('lobby-view'),
+    lobbySetupStep: document.getElementById('lobby-setup-step'),
     playerNameInput: document.getElementById('player-name-input'),
-    soloCountSelect: document.getElementById('solo-count-select'),
+    soloCountPills: document.getElementById('solo-count-pills'),
     btnStartSolo: document.getElementById('btn-start-solo'),
     btnCreateRoom: document.getElementById('btn-create-room'),
     joinCodeInput: document.getElementById('join-code-input'),
@@ -25,7 +26,6 @@
     btnLeaveRoom: document.getElementById('btn-leave-room'),
     p2pPlayerCount: document.getElementById('p2p-player-count'),
     p2pPlayersList: document.getElementById('p2p-players-list'),
-    p2pHostControls: document.getElementById('p2p-host-controls'),
     btnStartP2p: document.getElementById('btn-start-p2p'),
     p2pWaitMsg: document.getElementById('p2p-wait-msg'),
 
@@ -69,6 +69,7 @@
   }
 
   let mode = 'solo' // 'solo' | 'p2p'
+  let selectedSoloCount = 4
   let room = null
   let lobbyPlayers = []
   let gameState = null
@@ -266,7 +267,7 @@
   // ==================== START & LOBBY ====================
   function startSoloMatch() {
     mode = 'solo'
-    const count = parseInt(dom.soloCountSelect.value, 10) || 4
+    const count = selectedSoloCount || 4
     const profiles = [{ id: 'local_me', name: getMyName(), isHost: true, isBot: false }]
     for (let i = 0; i < count - 1; i++) {
       profiles.push({
@@ -861,13 +862,14 @@
 
   function renderLobby() {
     const inP2P = mode === 'p2p' && room && room.roomCode
+    dom.lobbySetupStep.hidden = inP2P
     dom.p2pLobbyPanel.hidden = !inP2P
     if (!inP2P) return
 
     dom.p2pRoomCode.textContent = room.roomCode
     dom.p2pPlayerCount.textContent = String(lobbyPlayers.length)
     dom.btnAddBotP2p.hidden = !(room.isHost && lobbyPlayers.length < 5)
-    dom.p2pHostControls.hidden = !room.isHost
+    dom.btnStartP2p.hidden = !room.isHost
     dom.p2pWaitMsg.hidden = room.isHost
     dom.btnStartP2p.disabled = lobbyPlayers.length < 2
 
@@ -928,7 +930,7 @@
     const eksLeft = Math.max(0, gameState.players.filter((p) => p.alive).length - 1)
     const riskPct = deckCount > 0 ? Math.min(100, Math.round((eksLeft / deckCount) * 100)) : 0
     dom.drawCountBadge.textContent = String(deckCount)
-    dom.ekRiskLabel.textContent = `Risco EK: ${riskPct}%`
+    dom.ekRiskLabel.textContent = `${riskPct}% EK`
     dom.btnDrawCard.disabled = !isMyTurn || deckCount === 0
     dom.btnEndDraw.disabled = !isMyTurn || deckCount === 0
 
@@ -944,20 +946,21 @@
       dom.discardEmpty.hidden = false
     }
 
-    // Turn Banner
+    // Turn Banner (inclui última ação de forma limpa)
+    const lastEvent = gameState.log?.[0] || ''
     dom.turnBanner.classList.toggle('is-my-turn', isMyTurn)
     if (gameState.phase === 'finished') {
       const w = gameState.players.find((p) => p.id === gameState.winnerId)
       dom.turnBanner.textContent = `Fim de Jogo! Vencedor: ${w?.name || '---'}`
     } else if (!me.alive) {
-      dom.turnBanner.textContent = 'Você explodiu! Assistindo ao restante da partida...'
+      dom.turnBanner.textContent = `Você explodiu! ${lastEvent}`
     } else if (isMyTurn) {
       dom.turnBanner.textContent =
         gameState.turnsRemaining > 1
-          ? `SEU TURNO (${gameState.turnsRemaining} turnos restantes)! Jogue ou compre.`
-          : 'SEU TURNO! Jogue cartas ou compre 1 carta para terminar.'
+          ? `SEU TURNO (${gameState.turnsRemaining}x) · ${lastEvent}`
+          : `SEU TURNO · Jogue cartas ou compre para terminar`
     } else {
-      dom.turnBanner.textContent = `Vez de ${current?.name || '...'}`
+      dom.turnBanner.textContent = `Vez de ${current?.name || '...'} · ${lastEvent}`
     }
 
     // Nope Window
@@ -981,14 +984,6 @@
       dom.btnPlayNope.disabled = !canINope
     }
 
-    // Log
-    dom.gameLog.innerHTML = ''
-    gameState.log.slice(0, 8).forEach((entry) => {
-      const li = document.createElement('li')
-      li.textContent = entry
-      dom.gameLog.appendChild(li)
-    })
-
     // Me status
     dom.meNameLabel.textContent = me.name
     dom.meTurnPill.hidden = !isMyTurn
@@ -1001,37 +996,39 @@
       if (!myIds.has(id)) selectedCardIds.delete(id)
     }
 
-    // Selection bar
+    // Selection bar (limpa: só mostra botões de jogar/limpar quando seleciona algo)
     const selectedCards = me.hand.filter((c) => selectedCardIds.has(c.id))
     dom.btnClearSelection.hidden = selectedCards.length === 0
+    dom.btnPlaySelected.hidden = selectedCards.length === 0
     if (selectedCards.length === 0) {
-      dom.selectionHint.textContent = 'Selecione 1 ação, 2/3 iguais ou 5 diferentes'
+      dom.selectionHint.textContent = 'Clique nas cartas para jogar (2x amplia) ou no baralho para comprar'
       dom.btnPlaySelected.disabled = true
-      dom.btnPlaySelected.textContent = 'Jogar'
     } else {
       const check = Engine.validateSelection(selectedCards, gameState.discardPile.length)
       if (!isMyTurn) {
         dom.selectionHint.textContent = `${selectedCards.length} selecionada(s) — aguarde seu turno`
         dom.btnPlaySelected.disabled = true
+        dom.btnPlaySelected.textContent = 'Aguarde'
       } else if (check.valid) {
         dom.selectionHint.textContent =
           check.kind === 'single'
-            ? `Pronto: ${Engine.CARD_TYPES[check.cardType].name}`
+            ? `${Engine.CARD_TYPES[check.cardType].name}`
             : check.kind === 'combo2'
-              ? 'Pronto: Par (Roubar Aleatória)'
+              ? 'Par (Roubar Aleatória)'
               : check.kind === 'combo3'
-                ? 'Pronto: Trio (Pedir Carta)'
-                : 'Pronto: 5 Diferentes (Pegar do Descarte)'
+                ? 'Trio (Pedir Carta)'
+                : '5 Diferentes (Pegar do Descarte)'
         dom.btnPlaySelected.disabled = false
         dom.btnPlaySelected.textContent =
           check.kind === 'single' ? `Jogar ${Engine.CARD_TYPES[check.cardType].shortName}` : 'Jogar Combo'
       } else {
         dom.selectionHint.textContent = check.reason
         dom.btnPlaySelected.disabled = true
+        dom.btnPlaySelected.textContent = 'Seleção Inválida'
       }
     }
 
-    // Hand
+    // Hand (cartas limpas, sem botão + poluindo; clique seleciona, duplo clique ou botão direito amplia)
     dom.playerHand.innerHTML = ''
     me.hand.forEach((card) => {
       const cardEl = document.createElement('div')
@@ -1044,17 +1041,6 @@
       img.draggable = false
       cardEl.appendChild(img)
 
-      const zoomBtn = document.createElement('button')
-      zoomBtn.type = 'button'
-      zoomBtn.className = 'ek-card-zoom-btn'
-      zoomBtn.title = 'Ampliar e ver regra'
-      zoomBtn.textContent = '+'
-      zoomBtn.addEventListener('click', (e) => {
-        e.stopPropagation()
-        openZoom(card)
-      })
-      cardEl.appendChild(zoomBtn)
-
       setupCard3DTilt(cardEl)
 
       cardEl.addEventListener('click', () => {
@@ -1064,6 +1050,11 @@
           selectedCardIds.add(card.id)
         }
         renderTable()
+      })
+
+      cardEl.addEventListener('dblclick', (e) => {
+        e.preventDefault()
+        openZoom(card)
       })
 
       cardEl.addEventListener('contextmenu', (e) => {
@@ -1111,6 +1102,15 @@
   })
   dom.zoomBackdrop.addEventListener('click', (e) => {
     if (e.target === dom.zoomBackdrop) dom.zoomBackdrop.hidden = true
+  })
+
+  dom.soloCountPills.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ek-count-pill')
+    if (!btn) return
+    selectedSoloCount = parseInt(btn.dataset.count, 10) || 4
+    dom.soloCountPills.querySelectorAll('.ek-count-pill').forEach((b) => {
+      b.classList.toggle('is-active', b === btn)
+    })
   })
 
   dom.btnStartSolo.addEventListener('click', startSoloMatch)
