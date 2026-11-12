@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>Quem é esse Pokémon? · NBP Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Space+Grotesk:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css?v=20261112v1" />
+  </head>
+  <body>
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+    <!-- Topbar / Pokédex Header Bar -->
+    <header class="topbar">
+      <div class="topbar-main">
+        <!-- Lens & Indicators -->
+        <div class="pokedex-sensor" aria-hidden="true">
+          <div class="sensor-lens" id="sensor-lens">
+            <div class="sensor-glare"></div>
+          </div>
+          <div class="sensor-leds">
+            <span class="led led-red" id="led-red"></span>
+            <span class="led led-yellow" id="led-yellow"></span>
+            <span class="led led-green" id="led-green"></span>
+          </div>
+        </div>
+
+        <!-- Mode Selector Tabs -->
+        <div class="mode-tabs" role="tablist" aria-label="Modo de jogo">
+          <button type="button" class="mode-tab active" data-mode="solo" role="tab" aria-selected="true">
+            ⚡ Solo Quiz
+          </button>
+          <button type="button" class="mode-tab" data-mode="versus" role="tab" aria-selected="false">
+            ⚔️ Duelo 1v1
+          </button>
+          <button type="button" class="mode-tab" data-mode="royale" role="tab" aria-selected="false">
+            👑 Battle Royale (6P)
+          </button>
+        </div>
+
+        <!-- Top Right Controls -->
+        <div class="topbar-right">
+          <!-- Visual Mode Toggle: Silhouette vs Color -->
+          <div class="visual-toggle" title="Alternar entre Silhueta Negra e Pokémon Colorido">
+            <button type="button" id="btn-toggle-visual" class="btn-toggle-visual" aria-pressed="true">
+              <span class="vis-icon" id="vis-icon">🌑</span>
+              <span class="vis-label" id="vis-label">Silhueta</span>
+            </button>
+          </div>
+
+          <!-- Solo HUD Pills (Score & Streak) -->
+          <div id="solo-hud-pills" class="hud-pills">
+            <span class="hud-pill">Pts: <strong id="hud-score">0</strong></span>
+            <span class="hud-pill streak">🔥 <strong id="hud-streak">0</strong></span>
+          </div>
+
+          <!-- Audio Toggle -->
+          <button type="button" id="btn-sound" class="btn-icon" title="Ativar/Desativar Sons" aria-label="Som">
+            <span id="sound-icon">🔊</span>
+          </button>
+
+          <!-- Drawer Options Button -->
+          <button
+            type="button"
+            id="btn-toggle-drawer"
+            class="btn-subtle"
+            aria-expanded="false"
+            title="Dificuldade e Configurações"
+          >
+            ⚙️ Opções
+          </button>
+        </div>
+      </div>
+
+      <!-- Config Drawer -->
+      <div id="config-drawer" class="config-drawer" hidden>
+        <div class="drawer-grid">
+          <div class="drawer-field">
+            <label for="tier-select">Filtrar por Geração (1.025 Pokémon):</label>
+            <select id="tier-select" class="form-select">
+              <option value="all" selected>🌟 Todas as Gerações (1.025 Pokémon)</option>
+              <option value="retro">👑 Clássicos · Gens 1 a 3 (386 Pokémon)</option>
+              <option value="1">Geração 1 · Kanto (#001 - #151)</option>
+              <option value="2">Geração 2 · Johto (#152 - #251)</option>
+              <option value="3">Geração 3 · Hoenn (#252 - #386)</option>
+              <option value="4">Geração 4 · Sinnoh (#387 - #493)</option>
+              <option value="5">Geração 5 · Unova (#494 - #649)</option>
+              <option value="6">Geração 6 · Kalos (#650 - #721)</option>
+              <option value="7">Geração 7 · Alola (#722 - #809)</option>
+              <option value="8">Geração 8 · Galar &amp; Hisui (#810 - #905)</option>
+              <option value="9">Geração 9 · Paldea (#906 - #1025)</option>
+            </select>
+          </div>
+
+          <div class="drawer-field">
+            <label>Tipo de Entrada:</label>
+            <div class="segmented-control">
+              <button type="button" id="opt-input-choices" class="seg-btn active">4 Alternativas</button>
+              <button type="button" id="opt-input-text" class="seg-btn">Digitar Nome</button>
+            </div>
+          </div>
+
+          <div class="drawer-field">
+            <label>Modo Visual:</label>
+            <div class="segmented-control">
+              <button type="button" id="opt-vis-silhouette" class="seg-btn active">🌑 Silhueta Preta</button>
+              <button type="button" id="opt-vis-colored" class="seg-btn">🎨 Colorido</button>
+            </div>
+          </div>
+
+          <div class="drawer-field">
+            <label for="seed-input">Código de Partida (Seed):</label>
+            <div class="input-with-button">
+              <input type="text" id="seed-input" placeholder="Ex: PIKA25" maxlength="12" />
+              <button type="button" id="btn-apply-seed" class="btn-primary-sm">Aplicar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Game Container / Physical Pokédex Enclosure -->
+    <main class="pokedex-body">
+      <!-- Toast Alert Banner -->
+      <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+      <!-- ==================== VIEW 1: SOLO QUIZ ==================== -->
+      <section id="view-solo" class="view-panel">
+        <div class="arena-card">
+          <!-- Pokédex Screen Header -->
+          <div class="screen-header">
+            <div class="screen-meta">
+              <span class="screen-dex-chip" id="solo-dex-chip">POKÉDEX #???</span>
+              <span class="screen-region-chip" id="solo-region-chip">Kanto · Gen 1</span>
+              <span class="screen-type-chip" id="solo-type-chip">???</span>
+            </div>
+            <div class="screen-badges">
+              <span class="badge-round" id="solo-round-counter">Rodada 1</span>
+            </div>
+          </div>
+
+          <!-- Main Screen / Spotlight Area -->
+          <div class="screen-monitor" id="solo-monitor">
+            <div class="screen-scanlines" aria-hidden="true"></div>
+            <div class="screen-glow" id="solo-glow" aria-hidden="true"></div>
+            <div class="screen-question-watermark" id="solo-watermark" aria-hidden="true">?</div>
+
+            <!-- Pokémon Display Container -->
+            <div class="pokemon-stage" id="solo-stage">
+              <img
+                id="solo-pokemon-img"
+                class="pokemon-sprite silhouette"
+                src=""
+                alt="Silhueta do Pokémon"
+                draggable="false"
+              />
+            </div>
+
+            <!-- Reveal Name Stamp (shown on hit/miss) -->
+            <div id="solo-reveal-banner" class="reveal-banner" hidden>
+              <span class="reveal-title" id="solo-reveal-name">PIKACHU</span>
+              <span class="reveal-subtitle" id="solo-reveal-types">Elétrico · #025</span>
+            </div>
+          </div>
+
+          <!-- Interaction Area (4 Choices or Text Input) -->
+          <div class="interaction-area">
+            <!-- 4 Multiple Choice Buttons -->
+            <div id="solo-choices-grid" class="choices-grid">
+              <button type="button" class="btn-choice" data-index="0">
+                <span class="choice-key">1</span>
+                <span class="choice-name">Opção 1</span>
+              </button>
+              <button type="button" class="btn-choice" data-index="1">
+                <span class="choice-key">2</span>
+                <span class="choice-name">Opção 2</span>
+              </button>
+              <button type="button" class="btn-choice" data-index="2">
+                <span class="choice-key">3</span>
+                <span class="choice-name">Opção 3</span>
+              </button>
+              <button type="button" class="btn-choice" data-index="3">
+                <span class="choice-key">4</span>
+                <span class="choice-name">Opção 4</span>
+              </button>
+            </div>
+
+            <!-- Text Typing Mode (Alternative) -->
+            <div id="solo-text-mode" class="text-input-mode" hidden>
+              <form id="solo-guess-form" class="guess-form" autocomplete="off">
+                <div class="input-autocomplete-wrap">
+                  <input
+                    type="text"
+                    id="solo-guess-input"
+                    class="input-guess"
+                    placeholder="Digite o nome do Pokémon..."
+                    maxlength="30"
+                    autocapitalize="none"
+                    spellcheck="false"
+                  />
+                  <div id="solo-suggestions" class="suggestions-list" hidden></div>
+                </div>
+                <button type="submit" class="btn-tactile-primary">Confirmar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 2: DUELO 1V1 & BATTLE ROYALE ==================== -->
+      <section id="view-multiplayer" class="view-panel" hidden>
+        <!-- Multiplayer Lobby & Room Bar -->
+        <div class="multi-lobby-card">
+          <div class="lobby-header-row">
+            <div class="lobby-mode-badge" id="multi-mode-badge">
+              <span id="multi-mode-icon">⚔️</span>
+              <span id="multi-mode-name">Duelo 1v1</span>
+            </div>
+
+            <div class="room-chip" id="multi-room-chip">
+              <span class="chip-label">SALA:</span>
+              <strong id="multi-room-code">---</strong>
+              <button type="button" id="btn-copy-room" class="btn-copy-chip" title="Copiar Link de Convite">📋 Copiar Link</button>
+            </div>
+
+            <div class="lobby-status-pill" id="multi-p2p-status">
+              <span class="status-dot"></span>
+              <span class="status-text" id="multi-status-text">Conectando P2P...</span>
+            </div>
+          </div>
+
+          <!-- Lobby Join / Host Inputs -->
+          <div id="multi-setup-box" class="lobby-setup-box">
+            <div class="setup-field">
+              <label for="player-name-input">Seu Nome de Treinador:</label>
+              <input type="text" id="player-name-input" maxlength="15" placeholder="Treinador Red" />
+            </div>
+
+            <div class="setup-field">
+              <label for="room-code-input">Código da Sala:</label>
+              <input type="text" id="room-code-input" maxlength="12" placeholder="POK-1234" />
+            </div>
+
+            <div class="setup-field">
+              <label for="multi-gen-select">Geração da Partida:</label>
+              <select id="multi-gen-select" class="form-select">
+                <option value="all" selected>🌟 Todas as Gerações (1.025)</option>
+                <option value="retro">👑 Clássicos · Gens 1 a 3 (386)</option>
+                <option value="1">Geração 1 · Kanto (151)</option>
+                <option value="2">Geração 2 · Johto (100)</option>
+                <option value="3">Geração 3 · Hoenn (135)</option>
+                <option value="4">Geração 4 · Sinnoh (107)</option>
+                <option value="5">Geração 5 · Unova (156)</option>
+                <option value="6">Geração 6 · Kalos (72)</option>
+                <option value="7">Geração 7 · Alola (88)</option>
+                <option value="8">Geração 8 · Galar &amp; Hisui (96)</option>
+                <option value="9">Geração 9 · Paldea (120)</option>
+              </select>
+            </div>
+
+            <div class="setup-actions">
+              <button type="button" id="btn-multi-join" class="btn-tactile-primary">Entrar na Sala</button>
+              <button type="button" id="btn-multi-host" class="btn-tactile-secondary">Criar Nova Sala</button>
+            </div>
+
+            <!-- Bot Controls (Host only) -->
+            <div id="multi-bot-bar" class="bot-bar">
+              <span class="bot-label">Treinar com Bots:</span>
+              <button type="button" id="btn-add-bot" class="btn-subtle-sm">🤖 Adicionar Bot</button>
+              <button type="button" id="btn-rem-bot" class="btn-subtle-sm">✕ Remover Bot</button>
+              <button type="button" id="btn-start-multi" class="btn-tactile-success">🔥 Iniciar Partida!</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Multiplayer Arena Layout -->
+        <div id="multi-arena-view" class="multi-arena-view">
+          <!-- Arena Header / Timer Bar -->
+          <div class="arena-top-hud">
+            <div class="arena-timer-box" id="arena-timer-box">
+              <span class="timer-label">TEMPO:</span>
+              <span class="timer-val" id="arena-timer-val">10s</span>
+              <div class="timer-progress-track">
+                <div class="timer-progress-bar" id="arena-timer-bar"></div>
+              </div>
+            </div>
+
+            <div class="arena-info-box">
+              <span class="arena-round-badge" id="arena-round-badge">Rodada 1</span>
+              <span class="arena-alive-badge" id="arena-alive-badge" hidden>Vivos: 6/6</span>
+            </div>
+          </div>
+
+          <!-- Central Dual Grid: Stage & Players -->
+          <div class="multi-grid">
+            <!-- Left / Center: The Question Screen -->
+            <div class="arena-card multi-screen-card">
+              <div class="screen-header">
+                <div class="screen-meta">
+                  <span class="screen-dex-chip" id="multi-dex-chip">POKÉDEX #???</span>
+                  <span class="screen-region-chip" id="multi-region-chip">Kanto · Gen 1</span>
+                  <span class="screen-type-chip" id="multi-type-chip">???</span>
+                </div>
+              </div>
+
+              <div class="screen-monitor" id="multi-monitor">
+                <div class="screen-scanlines" aria-hidden="true"></div>
+                <div class="screen-glow" id="multi-glow" aria-hidden="true"></div>
+                <div class="screen-question-watermark" id="multi-watermark" aria-hidden="true">?</div>
+
+                <div class="pokemon-stage" id="multi-stage">
+                  <img
+                    id="multi-pokemon-img"
+                    class="pokemon-sprite silhouette"
+                    src=""
+                    alt="Silhueta do Pokémon"
+                    draggable="false"
+                  />
+                </div>
+
+                <div id="multi-reveal-banner" class="reveal-banner" hidden>
+                  <span class="reveal-title" id="multi-reveal-name">PIKACHU</span>
+                  <span class="reveal-subtitle" id="multi-reveal-types">Elétrico · #025</span>
+                </div>
+              </div>
+
+              <!-- My Input Area -->
+              <div class="interaction-area">
+                <div id="multi-choices-grid" class="choices-grid">
+                  <button type="button" class="btn-choice multi-btn-choice" data-index="0">
+                    <span class="choice-key">1</span>
+                    <span class="choice-name">Opção 1</span>
+                  </button>
+                  <button type="button" class="btn-choice multi-btn-choice" data-index="1">
+                    <span class="choice-key">2</span>
+                    <span class="choice-name">Opção 2</span>
+                  </button>
+                  <button type="button" class="btn-choice multi-btn-choice" data-index="2">
+                    <span class="choice-key">3</span>
+                    <span class="choice-name">Opção 3</span>
+                  </button>
+                  <button type="button" class="btn-choice multi-btn-choice" data-index="3">
+                    <span class="choice-key">4</span>
+                    <span class="choice-name">Opção 4</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Players & Scoreboard / Hearts -->
+            <div class="multi-players-sidebar">
+              <div class="players-list-card">
+                <h3 class="players-card-title">Treinadores na Arena</h3>
+                <div id="multi-players-list" class="players-items">
+                  <!-- Injected via JavaScript -->
+                </div>
+              </div>
+
+              <!-- Match Log / Recent Activity -->
+              <div class="match-log-card">
+                <h4 class="log-title">Últimas Jogadas</h4>
+                <div id="multi-feed" class="log-feed">
+                  <p class="feed-entry system">Aguardando início...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== MODAL: VICTORY / GAME OVER ==================== -->
+      <dialog id="modal-summary" class="summary-modal">
+        <div class="modal-card">
+          <div class="modal-badge" id="modal-badge">🏆 VITÓRIA!</div>
+          <h2 class="modal-title" id="modal-title">Grande Mestre Pokémon!</h2>
+          <p class="modal-desc" id="modal-desc">Você acertou 15 Pokémon com uma sequência impressionante!</p>
+
+          <div class="modal-stats" id="modal-stats">
+            <div class="stat-pill">
+              <span class="stat-label">Pontuação</span>
+              <strong class="stat-val" id="modal-score">1500</strong>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-label">Maior Sequência</span>
+              <strong class="stat-val" id="modal-streak">🔥 12</strong>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-label">Precisão</span>
+              <strong class="stat-val" id="modal-acc">92%</strong>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" id="btn-modal-restart" class="btn-tactile-primary">Jogar Novamente</button>
+            <button type="button" id="btn-modal-close" class="btn-tactile-secondary">Fechar</button>
+          </div>
+        </div>
+      </dialog>
+    </main>
+
+    <!-- Dependencies -->
+    <script src="../../vendor/peerjs.min.js"></script>
+    <script src="../../vendor/nbp-p2p.js"></script>
+    <script src="game.js?v=20261112v1"></script>
+  </body>
+</html>

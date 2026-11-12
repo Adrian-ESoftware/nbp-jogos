@@ -43,7 +43,15 @@ Baseado no corpus linguístico aberto do português brasileiro (`fserb/pt-br` �
 
 ---
 
-## 4. Utilitários Compartilhados (`src/lib/datasets.ts`)
+## 4. Pokémon & Monstrinhos (`public/data/pokemon/`)
+
+| Arquivo | Conteúdo | Jogos que utiliza |
+| --- | --- | --- |
+| `/data/pokemon/pokemon.json` | Todos os **1.025 Pokémon das 9 Gerações (Kanto a Paldea)** com nomes oficiais, aliases aceitos, tipos traduzidos (Fogo, Água, Grama, Sombrio, Fada...), dex number (#001 a #1025), geração (1 a 9), região e SVGs vetoriais locais de alta definição (`/games/pokemon-nbp/sprites/<id>.svg`). | Quem é esse Pokémon? (Solo, 1v1 e Battle Royale por Geração) |
+
+---
+
+## 5. Utilitários Compartilhados (`src/lib/datasets.ts`)
 
 O módulo [`src/lib/datasets.ts`](../src/lib/datasets.ts) já exporta funções prontas para os jogos:
 - `normalizePt(text)`: remove acentos, cedilha e caixa alta para comparação.

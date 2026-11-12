@@ -96,6 +96,31 @@
       "entry": "/games/bandeiras-nbp/index.html"
     },
     {
+      "id": "pokemon-nbp",
+      "title": "Quem é esse Pokémon?",
+      "description": "O clássico desafio da TV direto no navegador! Adivinhe o monstrinho pela silhueta misteriosa ou no modo colorido vibrante. Inclui todos os 1.025 Pokémon das 9 Gerações (Kanto a Paldea), filtro por geração, modos Solo Quiz, Duelo 1v1 P2P e Battle Royale para até 6 jogadores com vidas e eliminação!",
+      "developer": "NBP Games",
+      "genres": [
+        "Quiz",
+        "Trivia",
+        "Party",
+        "Multiplayer"
+      ],
+      "modes": [
+        "singleplayer",
+        "multiplayer"
+      ],
+      "status": "published",
+      "featured": true,
+      "engine": "html5",
+      "assets": {
+        "cover": "/games/pokemon-nbp/cover.svg",
+        "banner": "/games/pokemon-nbp/banner.svg",
+        "icon": "/games/pokemon-nbp/icon.svg"
+      },
+      "entry": "/games/pokemon-nbp/index.html"
+    },
+    {
       "id": "wos-nbp",
       "title": "Palavras na Sala · Words on Stream",
       "description": "O clássico Words on Stream direto no navegador e sem precisar de live! Crie uma sala P2P com amigos, descubra palavras ocultas enquanto as letras embaralham sozinhas, salte até 3 níveis de uma vez ao encontrar 100% do quadro e enfrente Letras Falsas reveladas no final e Letras Escondidas (?)!",
