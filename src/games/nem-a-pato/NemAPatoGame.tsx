@@ -1053,7 +1053,8 @@ export function NemAPatoGame() {
           <button
             type="button"
             onClick={copyInviteLink}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border-2 border-slate-950 text-xs font-bold text-slate-200 transition-colors shadow-[2px_2px_0px_#090d16]"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 border-2 border-slate-950 text-xs font-bold transition-colors shadow-[2px_2px_0px_#090d16]"
+            style={{ color: '#f8fafc' }}
             title="Clique para copiar o link de convite da sala"
           >
             <span
@@ -1061,8 +1062,8 @@ export function NemAPatoGame() {
                 connectionStatus.connected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400 animate-ping'
               }`}
             />
-            <span className="font-mono">{roomCode}</span>
-            {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+            <span className="font-mono font-bold" style={{ color: '#f8fafc' }}>{roomCode}</span>
+            {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-300" />}
           </button>
         </div>
 
@@ -1128,10 +1129,24 @@ export function NemAPatoGame() {
                 <button
                   type="button"
                   onClick={copyInviteLink}
-                  className="w-full py-2.5 px-4 rounded-2xl bg-amber-100 hover:bg-amber-200 border-2 border-slate-950 text-xs font-black text-slate-900 flex items-center justify-center gap-2 mb-4 transition-colors shadow-[2.5px_2.5px_0px_#090d16]"
+                  className="w-full py-2.5 px-4 rounded-2xl bg-amber-400 hover:bg-amber-300 border-2 border-slate-950 text-xs font-black flex items-center justify-center gap-2 mb-4 transition-colors shadow-[2.5px_2.5px_0px_#090d16] cursor-pointer"
+                  style={{ color: '#020617' }}
                 >
-                  <Copy className="w-4 h-4 text-amber-700" />
-                  <span>Copiar link de convite para amigos</span>
+                  {copiedLink ? (
+                    <>
+                      <Check className="w-4 h-4 text-emerald-950" />
+                      <span style={{ color: '#020617' }} className="font-black">
+                        Link de convite copiado com sucesso!
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4 text-slate-950" />
+                      <span style={{ color: '#020617' }} className="font-black">
+                        Copiar link de convite para amigos
+                      </span>
+                    </>
+                  )}
                 </button>
 
                 {/* Players Roster in Lobby */}
