@@ -13,7 +13,7 @@
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Space+Grotesk:wght@600;700;800;900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css?v=20261111v3" />
+    <link rel="stylesheet" href="style.css?v=20261112v1" />
   </head>
   <body>
     <canvas id="confetti-canvas" aria-hidden="true"></canvas>
@@ -115,12 +115,15 @@
         <!-- Current Required Prefix Card (shown when continuing chain) -->
         <div id="prefix-challenge-box" class="prefix-challenge-box" hidden>
           <div class="prev-word-display">
-            <span>Palavra anterior:</span>
+            <span class="sub-label">Palavra anterior:</span>
             <strong id="prev-word-formatted">GA<em>TO</em></strong>
           </div>
           <div class="prefix-requirement">
-            <span>Sua palavra deve começar com:</span>
-            <div id="required-prefix-pill" class="required-prefix-pill">TO</div>
+            <span class="req-label">Sua palavra deve começar com:</span>
+            <div class="medallion-anchor">
+              <div class="medallion-fuse-ring"></div>
+              <div id="required-prefix-pill" class="required-prefix-pill">TO</div>
+            </div>
             <small id="possible-words-count" class="possible-count">📚 +500 palavras possíveis</small>
           </div>
         </div>
@@ -189,6 +192,6 @@
     <script src="../../vendor/peerjs.min.js?v=20261110v9"></script>
     <script src="../../vendor/nbp-p2p.js?v=20261110v9"></script>
     <script src="../../vendor/lucide.min.js?v=20261111v1"></script>
-    <script src="game.js?v=20261111v1"></script>
+    <script src="game.js?v=20261112v1"></script>
   </body>
 </html>

@@ -119,24 +119,165 @@
     }
   }
 
+  // ==================== PROCEDURAL SOUND FX (WEB AUDIO API) ====================
+  const SoundFX = {
+    ctx: null,
+    getCtx() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext
+        if (AudioCtx) this.ctx = new AudioCtx()
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {})
+      }
+      return this.ctx
+    },
+    // 1. Mechanical keyboard key tap when typing
+    keyTap() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.type = 'triangle'
+        osc.frequency.setValueAtTime(750 + Math.random() * 220, now)
+        osc.frequency.exponentialRampToValueAtTime(260, now + 0.024)
+        gain.gain.setValueAtTime(0.045, now)
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.024)
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(now)
+        osc.stop(now + 0.024)
+      } catch (_) {}
+    },
+    // 2. Ascending mechanical latch / ratchet sound when validating word and baton pass
+    latchPass() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        // Micro ratchet click 1
+        const c1 = ctx.createOscillator()
+        const g1 = ctx.createGain()
+        c1.type = 'square'
+        c1.frequency.setValueAtTime(680, now)
+        g1.gain.setValueAtTime(0.05, now)
+        g1.gain.exponentialRampToValueAtTime(0.001, now + 0.018)
+        c1.connect(g1)
+        g1.connect(ctx.destination)
+        c1.start(now)
+        c1.stop(now + 0.018)
+
+        // Micro ratchet click 2
+        const c2 = ctx.createOscillator()
+        const g2 = ctx.createGain()
+        c2.type = 'square'
+        c2.frequency.setValueAtTime(940, now + 0.035)
+        g2.gain.setValueAtTime(0.07, now + 0.035)
+        g2.gain.exponentialRampToValueAtTime(0.001, now + 0.058)
+        c2.connect(g2)
+        g2.connect(ctx.destination)
+        c2.start(now + 0.035)
+        c2.stop(now + 0.058)
+
+        // Resonant lock engate (chime)
+        const chime = ctx.createOscillator()
+        const gChime = ctx.createGain()
+        chime.type = 'sine'
+        chime.frequency.setValueAtTime(523.25, now + 0.065) // C5
+        chime.frequency.exponentialRampToValueAtTime(880, now + 0.18) // A5
+        gChime.gain.setValueAtTime(0.11, now + 0.065)
+        gChime.gain.exponentialRampToValueAtTime(0.0001, now + 0.45)
+        chime.connect(gChime)
+        gChime.connect(ctx.destination)
+        chime.start(now + 0.065)
+        chime.stop(now + 0.45)
+      } catch (_) {}
+    },
+    // 3. Short low buzz for invalid or repeated word
+    errorBuzz() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const filter = ctx.createBiquadFilter()
+        const gain = ctx.createGain()
+        osc.type = 'sawtooth'
+        osc.frequency.setValueAtTime(115, now)
+        osc.frequency.setValueAtTime(90, now + 0.05)
+        filter.type = 'lowpass'
+        filter.frequency.setValueAtTime(420, now)
+        gain.gain.setValueAtTime(0.12, now)
+        gain.gain.linearRampToValueAtTime(0.09, now + 0.05)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12)
+        osc.connect(filter)
+        filter.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(now)
+        osc.stop(now + 0.12)
+      } catch (_) {}
+    },
+    // 4. Accelerating tick-tock as time expires (< 4.5s)
+    fuseTick(pitchHigh = false) {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(pitchHigh ? 920 : 740, now)
+        gain.gain.setValueAtTime(0.075, now)
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.026)
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(now)
+        osc.stop(now + 0.026)
+      } catch (_) {}
+    },
+    // 5. Heavy impact thump on timeout / lost heart
+    explosionThump() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(145, now)
+        osc.frequency.exponentialRampToValueAtTime(32, now + 0.3)
+        gain.gain.setValueAtTime(0.24, now)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.34)
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(now)
+        osc.stop(now + 0.34)
+      } catch (_) {}
+    },
+  }
+
   function playTone(freq, duration = 0.08, type = 'sine', gainVal = 0.08) {
     if (!soundEnabled) return
     try {
-      if (!audioCtx) {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext
-        audioCtx = new AudioCtx()
-      }
-      if (audioCtx.state === 'suspended') audioCtx.resume()
-      const osc = audioCtx.createOscillator()
-      const gain = audioCtx.createGain()
+      const ctx = SoundFX.getCtx()
+      if (!ctx) return
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
       osc.type = type
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime)
-      gain.gain.setValueAtTime(gainVal, audioCtx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration)
+      osc.frequency.setValueAtTime(freq, ctx.currentTime)
+      gain.gain.setValueAtTime(gainVal, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
       osc.connect(gain)
-      gain.connect(audioCtx.destination)
+      gain.connect(ctx.destination)
       osc.start()
-      osc.stop(audioCtx.currentTime + duration)
+      osc.stop(ctx.currentTime + duration)
     } catch {}
   }
 
@@ -154,6 +295,127 @@
       el.style.transition = 'opacity 0.2s ease'
       setTimeout(() => el.remove(), 220)
     }, duration)
+  }
+
+  // ==================== GAME JUICE & BATON PASS ANIMATIONS ====================
+  let lastObservedChainLen = 0
+
+  function spawnShockwave(x, y) {
+    const wave = document.createElement('div')
+    wave.className = 'shockwave-pulse'
+    wave.style.left = `${x}px`
+    wave.style.top = `${y}px`
+    document.body.appendChild(wave)
+    setTimeout(() => wave.remove(), 650)
+  }
+
+  function spawnDebris(rect) {
+    const count = 18
+    const colors = ['#f43f5e', '#fbbf24', '#ffffff', '#ef4444', '#fda4af', '#fb7185']
+    const startX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2
+    const startY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2
+
+    for (let i = 0; i < count; i++) {
+      const shard = document.createElement('div')
+      shard.className = 'particle-shard'
+      const color = colors[i % colors.length]
+      const size = 6 + Math.random() * 8
+      shard.style.width = `${size}px`
+      shard.style.height = `${size}px`
+      shard.style.background = color
+      shard.style.left = `${startX}px`
+      shard.style.top = `${startY}px`
+      document.body.appendChild(shard)
+
+      const angle = Math.random() * Math.PI * 2
+      const speed = 70 + Math.random() * 140
+      const vx = Math.cos(angle) * speed
+      const vy = Math.sin(angle) * speed - 50
+      const rot = (Math.random() - 0.5) * 480
+
+      if (typeof shard.animate === 'function') {
+        shard.animate(
+          [
+            { transform: 'translate(-50%, -50%) scale(1.1) rotate(0deg)', opacity: 1 },
+            {
+              transform: `translate(calc(-50% + ${vx}px), calc(-50% + ${vy + 140}px)) scale(0.2) rotate(${rot}deg)`,
+              opacity: 0,
+            },
+          ],
+          {
+            duration: 600 + Math.random() * 300,
+            easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            fill: 'forwards',
+          }
+        ).onfinish = () => shard.remove()
+      } else {
+        setTimeout(() => shard.remove(), 600)
+      }
+    }
+  }
+
+  function triggerBatonPassAnimation(word, nextPrefix) {
+    if (!nextPrefix) return
+    const targetMedallion = document.getElementById('required-prefix-pill')
+    const sourceCard = document.getElementById('word-form') || document.getElementById('live-word-card')
+    if (!targetMedallion || !sourceCard) return
+
+    const tRect = targetMedallion.getBoundingClientRect()
+    const sRect = sourceCard.getBoundingClientRect()
+
+    const flyer = document.createElement('div')
+    flyer.className = 'baton-flyer'
+    flyer.textContent = nextPrefix.toUpperCase()
+    document.body.appendChild(flyer)
+
+    const startX = sRect.left + sRect.width * 0.45
+    const startY = sRect.top + sRect.height * 0.35
+    const endX = tRect.left + tRect.width * 0.5
+    const endY = tRect.top + tRect.height * 0.5
+
+    const duration = 540
+    const startTime = performance.now()
+
+    function easeBackOut(t) {
+      const s = 1.70158
+      t = t - 1
+      return t * t * ((s + 1) * t + s) + 1
+    }
+
+    function frame(now) {
+      const elapsed = now - startTime
+      const progress = Math.min(1, elapsed / duration)
+
+      // Parabolic vertical arc (letter lifts high above table then drops)
+      const arcRise = -85 * Math.sin(progress * Math.PI)
+      const currentX = startX + (endX - startX) * progress
+      const currentY = startY + (endY - startY) * progress + arcRise
+
+      // Scale up to 1.35x at peak then lands
+      const scale = 1.0 + 0.35 * Math.sin(progress * Math.PI)
+      const rot = -10 + 20 * progress
+
+      flyer.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%) scale(${scale}) rotate(${rot}deg)`
+
+      if (progress < 1) {
+        requestAnimationFrame(frame)
+      } else {
+        flyer.remove()
+
+        // 1. Elastic bounce on central medallion
+        targetMedallion.classList.remove('medallion-impact')
+        void targetMedallion.offsetWidth
+        targetMedallion.classList.add('medallion-impact')
+
+        // 2. Shockwave pulse
+        spawnShockwave(endX, endY)
+
+        // 3. Audio: ascending mechanical latch
+        SoundFX.latchPass()
+      }
+    }
+
+    requestAnimationFrame(frame)
   }
 
   function randomRoomCode() {
@@ -382,20 +644,41 @@
     // Chain trail
     chainCount.textContent = String(gameState.chain.length)
     if (gameState.chain.length === 0) {
-      chainTrail.innerHTML = '<span class="chain-empty">Nenhuma palavra usada ainda nesta partida.</span>'
+      chainTrail.innerHTML = '<span class="chain-empty">Nenhuma palavra usada ainda nesta partida. Inicie a partida para girar as letras!</span>'
     } else {
       chainTrail.innerHTML = ''
-      const recent = gameState.chain.slice(-18)
-      for (const item of recent) {
-        const pill = document.createElement('span')
-        pill.className = 'chain-pill'
+      const recent = gameState.chain.slice(-16)
+      recent.forEach((item, idx) => {
+        const chit = document.createElement('div')
+        chit.className = 'chain-chit'
         const pLen = item.nextPrefix ? item.nextPrefix.length : 1
         const head = item.word.slice(0, item.word.length - pLen).toUpperCase()
         const tail = item.word.slice(-pLen).toUpperCase()
-        pill.innerHTML = `${head}<span class="link-highlight">${tail}</span> <small>(${item.playerName})</small>`
-        chainTrail.appendChild(pill)
-      }
+        chit.innerHTML = `
+          <span class="chit-head">${head}</span><span class="chit-tail">${tail}</span>
+          <span class="chit-author">${item.playerName}</span>
+        `
+        chainTrail.appendChild(chit)
+
+        if (idx < recent.length - 1) {
+          const arrow = document.createElement('span')
+          arrow.className = 'chain-arrow'
+          arrow.setAttribute('aria-hidden', 'true')
+          arrow.innerHTML = '➔'
+          chainTrail.appendChild(arrow)
+        }
+      })
       chainTrail.scrollTop = chainTrail.scrollHeight
+    }
+
+    if (gameState.chain.length > lastObservedChainLen) {
+      if (lastObservedChainLen > 0) {
+        const latest = gameState.chain[gameState.chain.length - 1]
+        if (latest) {
+          triggerBatonPassAnimation(latest.word, latest.nextPrefix)
+        }
+      }
+      lastObservedChainLen = gameState.chain.length
     }
 
     refreshLucideIcons()
@@ -426,6 +709,7 @@
     gameState.selectedStarter = gameState.starterLetters[0]
     gameState.liveTyping = ''
     gameState.winner = null
+    lastObservedChainLen = 0
 
     for (const p of gameState.players) {
       p.lives = 3
@@ -484,10 +768,52 @@
     }, 80)
   }
 
+  let lastTickTime = 0
+  let altTick = false
+
   function updateTimerVisuals() {
     const pct = Math.max(0, (gameState.turnRemainingMs / gameState.turnDurationMs) * 100)
     timerBarFill.style.width = `${pct}%`
-    timerSeconds.textContent = `${(gameState.turnRemainingMs / 1000).toFixed(1)}s`
+    const sec = Math.max(0, gameState.turnRemainingMs / 1000)
+    timerSeconds.textContent = `${sec.toFixed(1)}s`
+
+    let fuseColor = '#10b981'
+    if (pct <= 25) {
+      fuseColor = '#ef4444'
+    } else if (pct <= 50) {
+      fuseColor = '#f59e0b'
+    }
+
+    const turnBanner = document.getElementById('turn-banner')
+    if (turnBanner) {
+      turnBanner.style.setProperty('--fuse-color', fuseColor)
+    }
+    timerBarFill.style.backgroundColor = fuseColor
+
+    const angle = `${(pct / 100) * 360}deg`
+    const prefixBox = document.getElementById('prefix-challenge-box')
+    if (prefixBox) {
+      prefixBox.style.setProperty('--fuse-angle', angle)
+      prefixBox.style.setProperty('--fuse-color', fuseColor)
+    }
+
+    // Accelerating procedural tick and heartbeat warning when time is critical (<= 4.5s)
+    if (gameState.status === 'playing' && gameState.turnRemainingMs > 0 && gameState.turnRemainingMs <= 4500) {
+      turnBanner?.classList.add('fuse-panic')
+      prefixBox?.classList.add('fuse-panic')
+
+      const now = Date.now()
+      const tickInterval =
+        gameState.turnRemainingMs > 2500 ? 700 : gameState.turnRemainingMs > 1200 ? 380 : 200
+      if (now - lastTickTime >= tickInterval) {
+        SoundFX.fuseTick(altTick)
+        altTick = !altTick
+        lastTickTime = now
+      }
+    } else {
+      turnBanner?.classList.remove('fuse-panic')
+      prefixBox?.classList.remove('fuse-panic')
+    }
   }
 
   function advanceTurnIndex() {
@@ -637,20 +963,55 @@
   }
 
   function shakeInput(reason) {
-    playTone(155, 0.16, 'sawtooth', 0.1)
-    prefixInputWrapper.classList.remove('shake')
+    SoundFX.errorBuzz()
+    prefixInputWrapper.classList.remove('visor-shake', 'visor-error-flash')
     void prefixInputWrapper.offsetWidth
-    prefixInputWrapper.classList.add('shake')
+    prefixInputWrapper.classList.add('visor-shake', 'visor-error-flash')
+    setTimeout(() => {
+      prefixInputWrapper.classList.remove('visor-shake')
+      setTimeout(() => prefixInputWrapper.classList.remove('visor-error-flash'), 240)
+    }, 120)
     showToast(reason, 2000)
   }
 
   function triggerExplosionEffect(playerId, playerName, eliminated) {
+    // 1. Camera shake on the arena for 150ms
+    const arena = document.querySelector('.game-arena')
+    if (arena) {
+      arena.classList.remove('arena-shake')
+      void arena.offsetWidth
+      arena.classList.add('arena-shake')
+      setTimeout(() => arena.classList.remove('arena-shake'), 160)
+    }
+
+    // 2. Heavy impact thump sound
+    SoundFX.explosionThump()
+
+    // 3. Shake player card and animate lost heart cracking/falling
     const card = document.getElementById(`pcard-${playerId}`)
     if (card) {
       card.classList.remove('exploded')
       void card.offsetWidth
       card.classList.add('exploded')
+
+      const hearts = card.querySelectorAll('.heart-icon')
+      if (hearts && hearts.length > 0) {
+        const targetHeart =
+          Array.from(hearts).reverse().find((h) => h.classList.contains('lost')) ||
+          hearts[hearts.length - 1]
+        if (targetHeart) {
+          targetHeart.classList.remove('heart-lost-crack')
+          void targetHeart.offsetWidth
+          targetHeart.classList.add('heart-lost-crack')
+        }
+      }
+
+      const rect = card.getBoundingClientRect()
+      spawnDebris(rect)
+    } else {
+      spawnDebris(null)
     }
+
     showToast(
       eliminated
         ? `💥 Tempo esgotado! ${playerName} foi eliminado(a)!`
@@ -1166,15 +1527,48 @@
     refreshLucideIcons()
   })
 
+  wordInput.addEventListener('keydown', (e) => {
+    if (e.key && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      SoundFX.keyTap()
+      prefixInputWrapper.classList.remove('input-micro-tap')
+      void prefixInputWrapper.offsetWidth
+      prefixInputWrapper.classList.add('input-micro-tap')
+    }
+  })
+
   wordInput.addEventListener('input', () => {
     const clean = normalizePt(wordInput.value)
     room.sendToHost({ type: 'LIVE_TYPING', text: clean, selectedStarter: gameState.selectedStarter })
+
+    const activePref = getActivePrefixForTyping()
+    if (clean.length > 0) {
+      if (activePref) {
+        // Locked prefix mode: matches prefix continuation
+        prefixInputWrapper.classList.add('prefix-matched')
+        prefixInputWrapper.classList.remove('prefix-mismatch')
+      } else {
+        // 4 starters mode: check if first char matches one of the 4 starters
+        const first = clean.charAt(0)
+        if (gameState.starterLetters.includes(first)) {
+          gameState.selectedStarter = first
+          prefixInputWrapper.classList.add('prefix-matched')
+          prefixInputWrapper.classList.remove('prefix-mismatch')
+          renderUI()
+        } else {
+          prefixInputWrapper.classList.remove('prefix-matched')
+          prefixInputWrapper.classList.add('prefix-mismatch')
+        }
+      }
+    } else {
+      prefixInputWrapper.classList.remove('prefix-matched', 'prefix-mismatch')
+    }
   })
 
   wordForm.addEventListener('submit', (e) => {
     e.preventDefault()
     const typed = normalizePt(wordInput.value)
     wordInput.value = ''
+    prefixInputWrapper.classList.remove('prefix-matched', 'prefix-mismatch')
     room.sendToHost({
       type: 'SUBMIT_WORD',
       word: typed,
