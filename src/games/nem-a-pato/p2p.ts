@@ -1,5 +1,3 @@
-import type { DuckAvatar } from './types'
-
 let scriptLoaderPromise: Promise<any> | null = null
 
 export function loadNBPRoom(): Promise<any> {
