@@ -39,17 +39,115 @@ let table3d = null
       this._init()
       if (!this.ctx) return
       const t = this.ctx.currentTime
-      const osc = this.ctx.createOscillator()
+
+      // 1. Transiente inicial de estalo seco (card slap snap)
+      const slapOsc = this.ctx.createOscillator()
+      const slapGain = this.ctx.createGain()
+      slapOsc.type = 'triangle'
+      slapOsc.frequency.setValueAtTime(380, t)
+      slapOsc.frequency.exponentialRampToValueAtTime(75, t + 0.045)
+      slapGain.gain.setValueAtTime(0.42, t)
+      slapGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05)
+      slapOsc.connect(slapGain)
+      slapGain.connect(this.ctx.destination)
+      slapOsc.start(t)
+      slapOsc.stop(t + 0.05)
+
+      // 2. Ruído filtrado do arremesso/estalo
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.04)
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25))
+      }
+      const noise = this.ctx.createBufferSource()
+      noise.buffer = buffer
+      const filter = this.ctx.createBiquadFilter()
+      filter.type = 'bandpass'
+      filter.frequency.setValueAtTime(1400, t)
+      filter.Q.setValueAtTime(1.5, t)
+      const noiseGain = this.ctx.createGain()
+      noiseGain.gain.setValueAtTime(0.28, t)
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04)
+      noise.connect(filter)
+      filter.connect(noiseGain)
+      noiseGain.connect(this.ctx.destination)
+      noise.start(t)
+
+      // 3. Batida oca e grave da madeira/feltro
+      const thudOsc = this.ctx.createOscillator()
+      const thudGain = this.ctx.createGain()
+      thudOsc.type = 'sine'
+      thudOsc.frequency.setValueAtTime(125, t)
+      thudOsc.frequency.exponentialRampToValueAtTime(32, t + 0.14)
+      thudGain.gain.setValueAtTime(0.45, t)
+      thudGain.gain.exponentialRampToValueAtTime(0.001, t + 0.16)
+      thudOsc.connect(thudGain)
+      thudGain.connect(this.ctx.destination)
+      thudOsc.start(t)
+      thudOsc.stop(t + 0.16)
+    }
+
+    playShuffleDeal() {
+      if (!this.enabled) return
+      this._init()
+      if (!this.ctx) return
+      const t = this.ctx.currentTime
+
+      const burstCount = 5
+      for (let b = 0; b < burstCount; b++) {
+        const startTime = t + b * 0.045
+        const dur = 0.038
+        const bufferSize = Math.floor(this.ctx.sampleRate * dur)
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate)
+        const data = buffer.getChannelData(0)
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1
+        }
+        const noise = this.ctx.createBufferSource()
+        noise.buffer = buffer
+        const filter = this.ctx.createBiquadFilter()
+        filter.type = 'bandpass'
+        filter.frequency.setValueAtTime(1800 - b * 140, startTime)
+        filter.Q.setValueAtTime(2.2, startTime)
+        const gain = this.ctx.createGain()
+        gain.gain.setValueAtTime(0.18, startTime)
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + dur)
+        noise.connect(filter)
+        filter.connect(gain)
+        gain.connect(this.ctx.destination)
+        noise.start(startTime)
+      }
+    }
+
+    playTrickSweep() {
+      if (!this.enabled) return
+      this._init()
+      if (!this.ctx) return
+      const t = this.ctx.currentTime
+
+      const dur = 0.32
+      const bufferSize = Math.floor(this.ctx.sampleRate * dur)
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1
+      }
+      const noise = this.ctx.createBufferSource()
+      noise.buffer = buffer
+      const filter = this.ctx.createBiquadFilter()
+      filter.type = 'bandpass'
+      filter.frequency.setValueAtTime(1100, t)
+      filter.frequency.exponentialRampToValueAtTime(280, t + dur)
+      filter.Q.setValueAtTime(1.8, t)
       const gain = this.ctx.createGain()
-      osc.type = 'triangle'
-      osc.frequency.setValueAtTime(140, t)
-      osc.frequency.exponentialRampToValueAtTime(40, t + 0.14)
-      gain.gain.setValueAtTime(0.35, t)
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16)
-      osc.connect(gain)
+      gain.gain.setValueAtTime(0.01, t)
+      gain.gain.linearRampToValueAtTime(0.24, t + 0.08)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur)
+      noise.connect(filter)
+      filter.connect(gain)
       gain.connect(this.ctx.destination)
-      osc.start(t)
-      osc.stop(t + 0.16)
+      noise.start(t)
     }
 
     playTrucoShout() {
@@ -57,18 +155,52 @@ let table3d = null
       this._init()
       if (!this.ctx) return
       const t = this.ctx.currentTime
-      ;[349.23, 440, 523.25, 698.46].forEach((f, idx) => {
+
+      // 1. Sub-bass boom
+      const boomOsc = this.ctx.createOscillator()
+      const boomGain = this.ctx.createGain()
+      boomOsc.type = 'sine'
+      boomOsc.frequency.setValueAtTime(120, t)
+      boomOsc.frequency.exponentialRampToValueAtTime(32, t + 0.45)
+      boomGain.gain.setValueAtTime(0.5, t)
+      boomGain.gain.exponentialRampToValueAtTime(0.001, t + 0.48)
+      boomOsc.connect(boomGain)
+      boomGain.connect(this.ctx.destination)
+      boomOsc.start(t)
+      boomOsc.stop(t + 0.48)
+
+      // 2. Acorde dramático tenso em staccato (A3, C4, Eb4, F#4)
+      const freqs = [220, 261.63, 311.13, 369.99, 440]
+      freqs.forEach((f, idx) => {
         const osc = this.ctx.createOscillator()
         const gain = this.ctx.createGain()
         osc.type = 'sawtooth'
-        osc.frequency.setValueAtTime(f, t + idx * 0.08)
-        gain.gain.setValueAtTime(0.18, t + idx * 0.08)
-        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.08 + 0.25)
+        osc.frequency.setValueAtTime(f, t + idx * 0.02)
+        gain.gain.setValueAtTime(0.12, t + idx * 0.02)
+        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.02 + 0.38)
         osc.connect(gain)
         gain.connect(this.ctx.destination)
-        osc.start(t + idx * 0.08)
-        osc.stop(t + idx * 0.08 + 0.25)
+        osc.start(t + idx * 0.02)
+        osc.stop(t + idx * 0.02 + 0.38)
       })
+    }
+
+    playButton() {
+      if (!this.enabled) return
+      this._init()
+      if (!this.ctx) return
+      const t = this.ctx.currentTime
+      const osc = this.ctx.createOscillator()
+      const gain = this.ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(620, t)
+      osc.frequency.exponentialRampToValueAtTime(280, t + 0.04)
+      gain.gain.setValueAtTime(0.15, t)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.04)
+      osc.connect(gain)
+      gain.connect(this.ctx.destination)
+      osc.start(t)
+      osc.stop(t + 0.04)
     }
 
     playWin() {
@@ -80,13 +212,13 @@ let table3d = null
         const osc = this.ctx.createOscillator()
         const gain = this.ctx.createGain()
         osc.type = 'sine'
-        osc.frequency.setValueAtTime(f, t + idx * 0.1)
-        gain.gain.setValueAtTime(0.2, t + idx * 0.1)
-        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.1 + 0.3)
+        osc.frequency.setValueAtTime(f, t + idx * 0.09)
+        gain.gain.setValueAtTime(0.24, t + idx * 0.09)
+        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.09 + 0.32)
         osc.connect(gain)
         gain.connect(this.ctx.destination)
-        osc.start(t + idx * 0.1)
-        osc.stop(t + idx * 0.1 + 0.3)
+        osc.start(t + idx * 0.09)
+        osc.stop(t + idx * 0.09 + 0.32)
       })
     }
   }
@@ -286,7 +418,7 @@ let table3d = null
     state.turn = state.roundStarterIdx
 
     syncState()
-    sound.playSlam()
+    sound.playShuffleDeal()
   }
 
   // --- MÁQUINA DE ESTADOS & AÇÕES (HOST) ---
@@ -499,15 +631,28 @@ let table3d = null
 
       // Pausa confortável para contemplar a vitória da mão antes de pontuar e embaralhar a próxima
       setTimeout(() => {
-        state.playedCardsInTrick = []
-        if (handWinner === 'tied_hand') {
-          state.isResolvingTrick = false
-          state.handWinner = null
-          startNewHand()
+        if (table3d?.sweepCards) {
+          table3d.sweepCards(result, () => {
+            state.playedCardsInTrick = []
+            if (handWinner === 'tied_hand') {
+              state.isResolvingTrick = false
+              state.handWinner = null
+              startNewHand()
+            } else {
+              awardHandToTeam(handWinner, state.stake)
+            }
+          })
         } else {
-          awardHandToTeam(handWinner, state.stake)
+          state.playedCardsInTrick = []
+          if (handWinner === 'tied_hand') {
+            state.isResolvingTrick = false
+            state.handWinner = null
+            startNewHand()
+          } else {
+            awardHandToTeam(handWinner, state.stake)
+          }
         }
-      }, 2600)
+      }, 2400)
     } else {
       // Mão ainda em disputa: quem ganhou a vaza começa jogando a próxima
       if (!isTied) {
@@ -515,9 +660,17 @@ let table3d = null
         if (winnerIdx >= 0) state.turn = winnerIdx
       }
       state.currentTrick++
-      state.playedCardsInTrick = []
-      state.isResolvingTrick = false
-      syncState()
+      if (table3d?.sweepCards) {
+        table3d.sweepCards(result, () => {
+          state.playedCardsInTrick = []
+          state.isResolvingTrick = false
+          syncState()
+        })
+      } else {
+        state.playedCardsInTrick = []
+        state.isResolvingTrick = false
+        syncState()
+      }
     }
   }
 
@@ -669,7 +822,10 @@ let table3d = null
     if (table3d) return
     const canvas = document.getElementById('truco-canvas-3d')
     if (canvas) {
-      table3d = createTrucoTable(canvas)
+      table3d = createTrucoTable(canvas, {
+        onSlam: () => sound.playSlam(),
+        onSweep: () => sound.playTrickSweep(),
+      })
     }
   }
 
@@ -726,16 +882,54 @@ let table3d = null
     }
   }
 
+  let prevScoreUs = 0
+  let prevScoreThem = 0
+
   function renderTable() {
     if (state.phase === 'lobby') return
 
-    // Placar
+    // Placar Físico de Tentos (Nós vs Eles)
     const usElem = document.getElementById('score-us')
     const themElem = document.getElementById('score-them')
     const stakeElem = document.getElementById('stake-badge')
-    if (usElem) usElem.textContent = state.scoreTeamUs
-    if (themElem) themElem.textContent = state.scoreTeamThem
+    const scoreboard = document.querySelector('.truco-scoreboard')
+
+    if (usElem) {
+      if (state.scoreTeamUs !== prevScoreUs) {
+        usElem.textContent = state.scoreTeamUs
+        usElem.classList.remove('score-pulse')
+        void usElem.offsetWidth
+        usElem.classList.add('score-pulse')
+        prevScoreUs = state.scoreTeamUs
+      }
+    }
+    if (themElem) {
+      if (state.scoreTeamThem !== prevScoreThem) {
+        themElem.textContent = state.scoreTeamThem
+        themElem.classList.remove('score-pulse')
+        void themElem.offsetWidth
+        themElem.classList.add('score-pulse')
+        prevScoreThem = state.scoreTeamThem
+      }
+    }
     if (stakeElem) stakeElem.textContent = `VALE ${state.stake} ${state.stake === 1 ? 'TENTO' : 'TENTOS'}`
+
+    // Regra de Mão de 11: Se Nós ou Eles tem 11 pontos, destaca o placar com moldura especial e alerta
+    if (scoreboard) {
+      const isHandOf11 = state.scoreTeamUs === 11 || state.scoreTeamThem === 11
+      scoreboard.classList.toggle('is-hand-of-11', isHandOf11)
+      let badge11 = scoreboard.querySelector('.hand-11-badge')
+      if (isHandOf11) {
+        if (!badge11) {
+          badge11 = document.createElement('div')
+          badge11.className = 'hand-11-badge'
+          scoreboard.appendChild(badge11)
+        }
+        badge11.textContent = '⚠️ MÃO DE 11: TRUCO PROIBIDO'
+      } else if (badge11) {
+        badge11.remove()
+      }
+    }
 
     // Vazas (Melhor de 3)
     ;[1, 2, 3].forEach((idx) => {
@@ -780,10 +974,12 @@ let table3d = null
     renderLocalHand()
   }
 
+  let lastChallengeBetLevel = null
   function renderChallengeBanner() {
     const banner = document.getElementById('truco-challenge-banner')
     const title = document.getElementById('challenge-banner-title')
     const actions = document.getElementById('challenge-banner-actions')
+    const tableWrap = document.querySelector('.truco-table-wrap')
     if (!banner) return
 
     if (state.pendingBet) {
@@ -793,7 +989,27 @@ let table3d = null
       const isMyTeamChallenged = state.pendingBet.challengerTeam !== myTeam
 
       const labels = { 3: 'TRUCO!', 6: 'SEIS!', 9: 'NOVE!', 12: 'DOZE!' }
-      if (title) title.textContent = `🚨 ${challenger?.name || 'Alguém'} gritou ${labels[state.pendingBet.level]}!`
+      if (title) {
+        title.innerHTML = `🚨 <strong>${challenger?.name || 'Alguém'}</strong> gritou <span class="shout-word">${labels[state.pendingBet.level]}</span>`
+      }
+
+      // Se for um novo grito/aumento, aplica carimbo com impacto cinemático e tremor na mesa
+      if (lastChallengeBetLevel !== state.pendingBet.level) {
+        lastChallengeBetLevel = state.pendingBet.level
+        banner.classList.remove('impact-stamp')
+        void banner.offsetWidth
+        banner.classList.add('impact-stamp')
+
+        if (tableWrap) {
+          tableWrap.classList.add('arena-truco-shake', 'truco-tension-pulse')
+          setTimeout(() => {
+            tableWrap.classList.remove('arena-truco-shake')
+          }, 200)
+        }
+        if (table3d?.triggerCameraShake) {
+          table3d.triggerCameraShake(160, 0.08)
+        }
+      }
 
       if (isMyTeamChallenged && actions) {
         const myTeamScore = myTeam === 'us' ? state.scoreTeamUs : state.scoreTeamThem
@@ -806,17 +1022,64 @@ let table3d = null
           <button type="button" class="btn-fold" id="btn-fold-bet">Correr (Dá ${foldPts} ${foldPts === 1 ? 'Tento' : 'Tentos'})</button>
         `
 
-        document.getElementById('btn-accept-bet').onclick = () => sendAction({ type: 'ACCEPT_BET' })
-        if (canRaise) {
-          document.getElementById('btn-raise-bet').onclick = () => sendAction({ type: 'RAISE_BET' })
+        document.getElementById('btn-accept-bet').onclick = () => {
+          sound.playButton()
+          sendAction({ type: 'ACCEPT_BET' })
         }
-        document.getElementById('btn-fold-bet').onclick = () => sendAction({ type: 'FOLD_BET' })
+        if (canRaise) {
+          document.getElementById('btn-raise-bet').onclick = () => {
+            sound.playButton()
+            sendAction({ type: 'RAISE_BET' })
+          }
+        }
+        document.getElementById('btn-fold-bet').onclick = () => {
+          sound.playButton()
+          sendAction({ type: 'FOLD_BET' })
+        }
       } else {
         if (actions) actions.innerHTML = `<span style="font-size:0.85rem; color:#fff;">Aguardando adversários responderem...</span>`
       }
     } else {
       banner.hidden = true
+      lastChallengeBetLevel = null
+      if (tableWrap) tableWrap.classList.remove('truco-tension-pulse')
     }
+  }
+
+  function setupHand3DHover(cardsRow) {
+    if (!cardsRow) return
+    const slots = cardsRow.querySelectorAll('.card-pick-slot')
+    slots.forEach((slot) => {
+      const cardEl = slot.querySelector('.real-card')
+      if (!cardEl) return
+
+      let sheen = cardEl.querySelector('.card-specular-sheen')
+      if (!sheen) {
+        sheen = document.createElement('div')
+        sheen.className = 'card-specular-sheen'
+        cardEl.appendChild(sheen)
+      }
+
+      slot.onpointermove = (e) => {
+        const rect = slot.getBoundingClientRect()
+        if (!rect.width || !rect.height) return
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+        const px = (x / rect.width) * 100
+        const py = (y / rect.height) * 100
+        const rotY = ((x - rect.width / 2) / (rect.width / 2)) * 14
+        const rotX = -((y - rect.height / 2) / (rect.height / 2)) * 14
+
+        cardEl.style.transform = `perspective(800px) rotateX(${rotX.toFixed(1)}deg) rotateY(${rotY.toFixed(1)}deg) translateY(-26px) scale(1.1)`
+        sheen.style.opacity = '1'
+        sheen.style.background = `radial-gradient(circle at ${px.toFixed(0)}% ${py.toFixed(0)}%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 65%)`
+      }
+
+      slot.onpointerleave = () => {
+        cardEl.style.transform = ''
+        sheen.style.opacity = '0'
+      }
+    })
   }
 
   function renderLocalHand() {
@@ -866,6 +1129,8 @@ let table3d = null
           return `<div data-card-id="${card.id}" class="card-pick-slot">${cardHtml}</div>`
         })
         .join('')
+
+      setupHand3DHover(cardsRow)
 
       cardsRow.querySelectorAll('[data-card-id]').forEach((slot) => {
         slot.onclick = () => {
