@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Exploding Kittens · NBP Games</title>
+  <link rel="stylesheet" href="./style.css?v=20261112v1" />
+  <script src="/vendor/peerjs.min.js"></script>
+  <script src="/vendor/nbp-p2p.js"></script>
+</head>
+<body>
+  <div id="app" class="ek-app">
+    <!-- Top Header -->
+    <header class="ek-topbar">
+      <div class="ek-brand">
+        <span class="ek-brand-badge" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="22" height="22">
+            <circle cx="16" cy="18" r="10" fill="#1c1716" stroke="#ff9800" stroke-width="2" />
+            <polygon points="8,12 6,5 13,9" fill="#1c1716" stroke="#ff9800" stroke-width="1.5" />
+            <polygon points="24,12 26,5 19,9" fill="#1c1716" stroke="#ff9800" stroke-width="1.5" />
+            <circle cx="12.5" cy="17" r="2" fill="#fff8e1" />
+            <circle cx="19.5" cy="17" r="2" fill="#fff8e1" />
+            <path d="M20 9 Q24 4 27 6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" />
+            <circle cx="27.5" cy="6" r="2.2" fill="#ffeb3b" />
+          </svg>
+        </span>
+        <div>
+          <h1 class="ek-title">EXPLODING KITTENS</h1>
+          <span id="room-status-pill" class="ek-status-pill">Modo Local</span>
+        </div>
+      </div>
+
+      <div class="ek-topbar-actions">
+        <button id="btn-rules" class="btn-tactile btn-secondary" type="button">Regras</button>
+        <button id="btn-sound" class="btn-tactile btn-secondary" type="button" aria-label="Alternar Som">Som: ON</button>
+        <button id="btn-back-lobby" class="btn-tactile btn-danger" type="button" hidden>Sair da Mesa</button>
+      </div>
+    </header>
+
+    <!-- LOBBY / SETUP VIEW -->
+    <main id="lobby-view" class="ek-lobby-view">
+      <section class="ek-lobby-hero">
+        <div class="ek-lobby-card">
+          <div class="ek-lobby-intro">
+            <span class="ek-pill-tag">56 Cartas Originais • 2 a 5 Jogadores</span>
+            <h2>Sobreviva aos Gatinhos Explosivos</h2>
+            <p>
+              Compre cartas até alguém pegar um <strong>Exploding Kitten</strong>. Use
+              <strong>Desarme</strong>, <strong>Ataque</strong>, <strong>Pulo</strong>,
+              <strong>Veja o Futuro</strong>, <strong>Não!</strong> e combos de gatos para
+              empurrar o perigo para os outros jogadores.
+            </p>
+          </div>
+
+          <div class="ek-profile-row">
+            <label for="player-name-input">Seu Apelido na Mesa</label>
+            <input id="player-name-input" type="text" maxlength="18" placeholder="Ex: GatoMestre" />
+          </div>
+
+          <div class="ek-mode-grid">
+            <!-- Solo vs Bots -->
+            <div class="ek-mode-box">
+              <h3>Jogar Solo vs Bots</h3>
+              <p>Partida imediata contra bots estratégicos com as 56 cartas oficiais.</p>
+              <div class="ek-bot-count-row">
+                <label for="solo-count-select">Jogadores na mesa:</label>
+                <select id="solo-count-select">
+                  <option value="2">2 Jogadores (1v1)</option>
+                  <option value="3">3 Jogadores</option>
+                  <option value="4" selected>4 Jogadores</option>
+                  <option value="5">5 Jogadores</option>
+                </select>
+              </div>
+              <button id="btn-start-solo" class="btn-tactile btn-primary btn-full" type="button">
+                Iniciar Partida Solo
+              </button>
+            </div>
+
+            <!-- Multiplayer P2P -->
+            <div class="ek-mode-box">
+              <h3>Mesa Multiplayer P2P</h3>
+              <p>Crie uma sala e envie o link para amigos, ou entre usando o código.</p>
+              <div class="ek-multi-buttons">
+                <button id="btn-create-room" class="btn-tactile btn-amber" type="button">
+                  Criar Sala
+                </button>
+                <div class="ek-join-group">
+                  <input id="join-code-input" type="text" maxlength="10" placeholder="EXP-1234" />
+                  <button id="btn-join-room" class="btn-tactile btn-secondary" type="button">
+                    Entrar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Multiplayer Waiting Room (visible when connected in P2P lobby) -->
+          <div id="p2p-lobby-panel" class="ek-p2p-panel" hidden>
+            <div class="ek-p2p-header">
+              <div>
+                <span class="ek-p2p-label">Código da Sala</span>
+                <strong id="p2p-room-code" class="ek-p2p-code">EXP-0000</strong>
+              </div>
+              <div class="ek-p2p-header-actions">
+                <button id="btn-copy-invite" class="btn-tactile btn-secondary" type="button">Copiar Convite</button>
+                <button id="btn-add-bot-p2p" class="btn-tactile btn-secondary" type="button" hidden>+ Adicionar Bot</button>
+                <button id="btn-leave-room" class="btn-tactile btn-danger" type="button">Sair</button>
+              </div>
+            </div>
+
+            <div class="ek-p2p-players-wrap">
+              <h4>Jogadores na Sala (<span id="p2p-player-count">1</span>/5)</h4>
+              <ul id="p2p-players-list" class="ek-p2p-players-list"></ul>
+            </div>
+
+            <div id="p2p-host-controls" class="ek-p2p-footer" hidden>
+              <button id="btn-start-p2p" class="btn-tactile btn-primary btn-full" type="button">
+                Distribuir Cartas e Começar!
+              </button>
+            </div>
+            <p id="p2p-wait-msg" class="ek-wait-msg" hidden>
+              Aguardando o Host iniciar a partida...
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- GAME TABLE VIEW -->
+    <main id="table-view" class="ek-table-view" hidden>
+      <div id="table-surface" class="ek-table-wrap">
+        <div class="ek-felt-surface">
+          <!-- Opponents Row -->
+          <section id="opponents-row" class="ek-opponents-row" aria-label="Oponentes"></section>
+
+          <!-- Center Arena: Draw Pile, Discard Pile, Nope Banner, Log -->
+          <section class="ek-center-arena">
+            <div class="ek-piles-cluster">
+              <!-- Draw Pile -->
+              <div class="ek-pile-slot">
+                <button id="btn-draw-card" class="ek-draw-pile" type="button" aria-label="Comprar carta do topo">
+                  <div class="ek-deck-stack">
+                    <img src="./cards/back.png" alt="Pilha de Compra" draggable="false" />
+                  </div>
+                  <span id="draw-count-badge" class="ek-pile-badge">40</span>
+                </button>
+                <span class="ek-pile-label">Pilha de Compra</span>
+                <span id="ek-risk-label" class="ek-risk-label">Risco EK: 0%</span>
+              </div>
+
+              <!-- Discard Pile -->
+              <div class="ek-pile-slot">
+                <div id="discard-pile-box" class="ek-discard-pile" title="Última carta jogada">
+                  <div id="discard-empty" class="ek-discard-empty">Descarte Vazio</div>
+                  <img id="discard-top-img" src="" alt="Topo do descarte" hidden draggable="false" />
+                  <span id="discard-count-badge" class="ek-pile-badge">0</span>
+                </div>
+                <span class="ek-pile-label">Descartes</span>
+              </div>
+            </div>
+
+            <!-- Turn & Reaction Center Banner -->
+            <div class="ek-center-status">
+              <div id="turn-banner" class="ek-turn-banner">Seu Turno! Jogue cartas ou compre para encerrar.</div>
+
+              <!-- Nope Window Reaction Box -->
+              <div id="nope-window-box" class="ek-nope-box" hidden>
+                <div class="ek-nope-info">
+                  <strong id="nope-action-text">Jogador jogou Ataque!</strong>
+                  <span id="nope-chain-badge" class="ek-nope-chain" hidden>ANULADO!</span>
+                </div>
+                <div class="ek-nope-progress-track">
+                  <div id="nope-progress-bar" class="ek-nope-progress-bar"></div>
+                </div>
+                <button id="btn-play-nope" class="btn-tactile btn-nope" type="button">
+                  JOGAR NÃO!
+                </button>
+              </div>
+
+              <!-- Feed Log -->
+              <ul id="game-log" class="ek-game-log" aria-live="polite"></ul>
+            </div>
+          </section>
+
+          <!-- Player Controls & Hand -->
+          <section class="ek-player-zone">
+            <div class="ek-action-bar">
+              <div class="ek-me-status">
+                <span id="me-name-label" class="ek-me-name">Você</span>
+                <span id="me-turn-pill" class="ek-me-turn-pill" hidden>SEU TURNO</span>
+                <span id="me-extra-turns" class="ek-extra-turns" hidden>2 turnos</span>
+              </div>
+              <div class="ek-selection-actions">
+                <span id="selection-hint" class="ek-selection-hint">Selecione 1 ação, 2/3 iguais ou 5 diferentes</span>
+                <button id="btn-clear-selection" class="btn-tactile btn-secondary" type="button" hidden>Limpar</button>
+                <button id="btn-play-selected" class="btn-tactile btn-primary" type="button" disabled>Jogar</button>
+                <button id="btn-end-draw" class="btn-tactile btn-amber" type="button">Comprar Carta</button>
+              </div>
+            </div>
+
+            <div id="player-hand" class="ek-player-hand" aria-label="Sua mão de cartas"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODALS -->
+    <div id="modal-backdrop" class="ek-modal-backdrop" hidden>
+      <!-- Generic Target / Trio / Discard / Favor / Future / Defuse / Victory / Rules -->
+      <div id="modal-card" class="ek-modal-card" role="dialog" aria-modal="true">
+        <div class="ek-modal-header">
+          <h3 id="modal-title">Título</h3>
+          <button id="modal-close-btn" class="ek-modal-close" type="button" aria-label="Fechar">&times;</button>
+        </div>
+        <div id="modal-body" class="ek-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Card Zoom Inspector -->
+    <div id="zoom-backdrop" class="ek-modal-backdrop" hidden>
+      <div class="ek-zoom-card">
+        <img id="zoom-img" src="" alt="Carta ampliada" />
+        <div class="ek-zoom-meta">
+          <h4 id="zoom-title">Carta</h4>
+          <p id="zoom-desc">Descrição</p>
+          <button id="btn-close-zoom" class="btn-tactile btn-secondary" type="button">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./engine.js?v=20261112v1"></script>
+  <script src="./audio.js?v=20261112v1"></script>
+  <script src="./game.js?v=20261112v1"></script>
+</body>
+</html>

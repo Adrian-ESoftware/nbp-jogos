@@ -1073,6 +1073,39 @@ html, body {
   gap: 20px;
 }
 
+.multi-grid.is-lobby {
+  grid-template-columns: 1fr;
+}
+
+.multi-grid.is-lobby .multi-players-sidebar {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+}
+
+.player-role-badge {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #27272a;
+  color: #cbd5e1;
+  border: 1px solid #3f3f46;
+}
+
+.player-role-badge.host {
+  background: rgba(250, 204, 21, 0.14);
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.4);
+}
+
+.player-role-badge.bot {
+  background: rgba(56, 189, 248, 0.14);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
 .multi-screen-card {
   padding: 18px;
 }
@@ -1342,7 +1375,8 @@ html, body {
     grid-template-columns: 1fr;
   }
 
-  .multi-grid {
+  .multi-grid,
+  .multi-grid.is-lobby .multi-players-sidebar {
     grid-template-columns: 1fr;
   }
 

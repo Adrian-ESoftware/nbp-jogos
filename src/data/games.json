@@ -219,6 +219,31 @@
         "icon": "/games/truco-nbp/icon.svg"
       },
       "entry": "/games/truco-nbp/index.html"
+    },
+    {
+      "id": "exploding-kittens",
+      "title": "Exploding Kittens",
+      "description": "O clássico jogo de cartas de roleta russa felina com todas as 56 cartas ilustradas! Jogue Solo contra Bots ou em salas P2P para 2 a 5 jogadores: use Desarme, Ataque, Pulo, Veja o Futuro, Não! e combos de gatos para sobreviver aos gatinhos explosivos.",
+      "developer": "NBP Games",
+      "genres": [
+        "Cartas",
+        "Party",
+        "Estratégia",
+        "Multiplayer"
+      ],
+      "modes": [
+        "singleplayer",
+        "multiplayer"
+      ],
+      "status": "published",
+      "featured": true,
+      "engine": "html5",
+      "assets": {
+        "cover": "/games/exploding-kittens/cover.svg",
+        "banner": "/games/exploding-kittens/banner.svg",
+        "icon": "/games/exploding-kittens/icon.svg"
+      },
+      "entry": "/games/exploding-kittens/index.html"
     }
   ]
 }

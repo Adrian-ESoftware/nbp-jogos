@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Exploding Kittens Icon">
+  <defs>
+    <radialGradient id="ibg" cx="50%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#9c1d1d" />
+      <stop offset="100%" stop-color="#2b0606" />
+    </radialGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#ibg)" />
+  <path d="M74 26 Q90 12 102 18" fill="none" stroke="#e0d6c8" stroke-width="4" stroke-linecap="round" />
+  <circle cx="104" cy="18" r="6" fill="#ffeb3b" />
+  <circle cx="104" cy="18" r="3" fill="#ff5722" />
+  <circle cx="64" cy="68" r="34" fill="#1c1716" stroke="#ff9800" stroke-width="3" />
+  <polygon points="36,48 31,26 52,38" fill="#1c1716" stroke="#ff9800" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="92,48 97,26 76,38" fill="#1c1716" stroke="#ff9800" stroke-width="2.5" stroke-linejoin="round" />
+  <circle cx="52" cy="64" r="6.5" fill="#fff8e1" />
+  <circle cx="76" cy="64" r="6.5" fill="#fff8e1" />
+  <circle cx="53" cy="64" r="3" fill="#111" />
+  <circle cx="75" cy="64" r="3" fill="#111" />
+  <polygon points="61,72 67,72 64,76" fill="#ff7043" />
+  <path d="M56 80 Q64 86 72 80" fill="none" stroke="#fff8e1" stroke-width="2.5" stroke-linecap="round" />
+</svg>

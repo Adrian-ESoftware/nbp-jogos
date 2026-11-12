@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" role="img" aria-label="Exploding Kittens Banner">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#9e1b1b" />
+      <stop offset="55%" stop-color="#3f0808" />
+      <stop offset="100%" stop-color="#120303" />
+    </radialGradient>
+    <linearGradient id="titleGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffe082" />
+      <stop offset="55%" stop-color="#ff7043" />
+      <stop offset="100%" stop-color="#c62828" />
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000" flood-opacity="0.65" />
+    </filter>
+  </defs>
+
+  <rect width="600" height="900" fill="url(#bg)" />
+  <rect x="20" y="20" width="560" height="860" rx="28" fill="none" stroke="#d49b4b" stroke-opacity="0.35" stroke-width="3" />
+
+  <!-- Cards behind -->
+  <g transform="translate(185 380) rotate(-14)" filter="url(#sh)">
+    <rect x="-75" y="-110" width="150" height="220" rx="14" fill="#fffaf0" stroke="#7cb342" stroke-width="6" />
+    <text x="0" y="-68" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#558b2f">DESARME</text>
+    <circle cx="0" cy="6" r="42" fill="#dcedc8" />
+    <text x="0" y="14" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="13" fill="#33691e">SALVO!</text>
+  </g>
+  <g transform="translate(415 390) rotate(14)" filter="url(#sh)">
+    <rect x="-75" y="-110" width="150" height="220" rx="14" fill="#fffaf0" stroke="#fb8c00" stroke-width="6" />
+    <text x="0" y="-68" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#e65100">ATAQUE</text>
+    <circle cx="0" cy="6" r="42" fill="#ffe0b2" />
+    <text x="0" y="14" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="13" fill="#bf360c">2 TURNOS</text>
+  </g>
+
+  <!-- Center Bomb Cat -->
+  <g transform="translate(300 320)" filter="url(#sh)">
+    <path d="M35 -82 Q70 -125 105 -108" fill="none" stroke="#d7ccc8" stroke-width="7" stroke-linecap="round" />
+    <circle cx="109" cy="-106" r="13" fill="#ffeb3b" />
+    <circle cx="109" cy="-106" r="6" fill="#ff5722" />
+    <circle cx="0" cy="0" r="88" fill="#1c1716" stroke="#ffa726" stroke-width="5" />
+    <polygon points="-68,-48 -80,-105 -25,-75" fill="#1c1716" stroke="#ffa726" stroke-width="4" stroke-linejoin="round" />
+    <polygon points="68,-48 80,-105 25,-75" fill="#1c1716" stroke="#ffa726" stroke-width="4" stroke-linejoin="round" />
+    <circle cx="-28" cy="-12" r="15" fill="#fff8e1" />
+    <circle cx="28" cy="-12" r="15" fill="#fff8e1" />
+    <circle cx="-25" cy="-12" r="7" fill="#111" />
+    <circle cx="25" cy="-12" r="7" fill="#111" />
+    <polygon points="-8,10 8,10 0,20" fill="#ff7043" />
+    <path d="M-20 28 Q0 42 20 28" fill="none" stroke="#fff8e1" stroke-width="4.5" stroke-linecap="round" />
+  </g>
+
+  <text x="300" y="575" text-anchor="middle" font-family="Impact, 'Arial Black', sans-serif" font-size="74" letter-spacing="3" fill="url(#titleGrad)" stroke="#140303" stroke-width="3">EXPLODING</text>
+  <text x="300" y="655" text-anchor="middle" font-family="Impact, 'Arial Black', sans-serif" font-size="70" letter-spacing="5" fill="#fff5e6" stroke="#140303" stroke-width="3">KITTENS</text>
+  <text x="300" y="720" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="18" letter-spacing="2" fill="#ffcc80">SOBREVIVA AOS GATINHOS EXPLOSIVOS</text>
+</svg>

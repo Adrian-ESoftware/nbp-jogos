@@ -975,7 +975,17 @@
     // Lobby vs Match controls
     const isLobby = vsState.status === 'lobby'
     document.getElementById('multi-setup-box').hidden = !isLobby
-    document.getElementById('multi-arena-view').hidden = isLobby
+    document.getElementById('multi-arena-view').hidden = false
+    document.querySelector('.arena-top-hud').hidden = isLobby
+    document.querySelector('.multi-screen-card').hidden = isLobby
+    document.querySelector('.multi-grid').classList.toggle('is-lobby', isLobby)
+
+    const playersTitle = document.querySelector('.players-card-title')
+    if (playersTitle) {
+      playersTitle.textContent = isLobby
+        ? `Treinadores na Sala (${vsState.players.length}/${vsState.maxPlayers})`
+        : 'Treinadores na Arena'
+    }
 
     // Host controls for bots
     btnAddBot.disabled = !multiRoom?.isHost || vsState.players.length >= vsState.maxPlayers
@@ -1075,19 +1085,34 @@
       const stats = document.createElement('div')
       stats.className = 'player-stats'
 
-      if (vsState.arenaType === 'royale') {
-        const hearts = document.createElement('div')
-        hearts.className = 'player-hearts'
-        for (let i = 0; i < 3; i++) {
-          hearts.textContent += i < p.hearts ? '❤️' : '🖤'
+      if (vsState.status === 'lobby') {
+        const roleBadge = document.createElement('span')
+        if (p.isHost) {
+          roleBadge.className = 'player-role-badge host'
+          roleBadge.textContent = '👑 Host'
+        } else if (p.isBot) {
+          roleBadge.className = 'player-role-badge bot'
+          roleBadge.textContent = '🤖 Bot'
+        } else {
+          roleBadge.className = 'player-role-badge'
+          roleBadge.textContent = '⚡ Pronto'
         }
-        stats.appendChild(hearts)
-      }
+        stats.appendChild(roleBadge)
+      } else {
+        if (vsState.arenaType === 'royale') {
+          const hearts = document.createElement('div')
+          hearts.className = 'player-hearts'
+          for (let i = 0; i < 3; i++) {
+            hearts.textContent += i < p.hearts ? '❤️' : '🖤'
+          }
+          stats.appendChild(hearts)
+        }
 
-      const score = document.createElement('span')
-      score.className = 'player-score'
-      score.textContent = `${p.score} pts`
-      stats.appendChild(score)
+        const score = document.createElement('span')
+        score.className = 'player-score'
+        score.textContent = `${p.score} pts`
+        stats.appendChild(score)
+      }
 
       item.appendChild(info)
       item.appendChild(stats)
@@ -1248,6 +1273,20 @@
         handleSoloAnswer(matched.id)
       } else {
         showToast('Pokémon não reconhecido!', 'error')
+      }
+    })
+
+    // Atualiza nome do treinador no lobby
+    playerNameInput.addEventListener('change', () => {
+      const name = playerNameInput.value.trim()
+      if (!name || !multiRoom) return
+      multiRoom.setPlayerName(name)
+      const me = vsState.players.find((p) => p.id === multiRoom.profile.id)
+      if (me) me.name = multiRoom.profile.name
+      if (multiRoom.isHost) {
+        syncMultiState()
+      } else if (vsState.roomCode) {
+        multiRoom.sendToHost({ type: 'JOIN_REQUEST', profile: multiRoom.profile })
       }
     })
 
