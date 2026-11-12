@@ -152,58 +152,144 @@
       }
     }
 
+    // 1. Tilintar metálico agudo de moedas batendo (frequências inarmônicas de ouro)
     playCoin() {
       if (!this.enabled) return
       this._init()
       if (!this.ctx) return
-      const t = this.ctx.currentTime
-      const osc = this.ctx.createOscillator()
-      const gain = this.ctx.createGain()
-      osc.type = 'sine'
-      osc.frequency.setValueAtTime(987.77, t) // B5
-      osc.frequency.exponentialRampToValueAtTime(1318.51, t + 0.08) // E6
-      gain.gain.setValueAtTime(0.18, t)
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35)
-      osc.connect(gain)
-      gain.connect(this.ctx.destination)
-      osc.start(t)
-      osc.stop(t + 0.35)
+      try {
+        const t = this.ctx.currentTime
+        const partials = [2420, 3840, 5260, 7550]
+        partials.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator()
+          const gain = this.ctx.createGain()
+          osc.type = idx % 2 === 0 ? 'sine' : 'triangle'
+          const jitter = (Math.random() - 0.5) * 60
+          osc.frequency.setValueAtTime(freq + jitter, t)
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.92, t + 0.12)
+
+          const vol = 0.08 / (idx + 1)
+          gain.gain.setValueAtTime(vol, t)
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.14 + idx * 0.03)
+
+          osc.connect(gain)
+          gain.connect(this.ctx.destination)
+          osc.start(t)
+          osc.stop(t + 0.22)
+        })
+      } catch (_) {}
     }
 
+    playCoinCascade(count = 3) {
+      if (!this.enabled) return
+      for (let i = 0; i < Math.min(count, 5); i++) {
+        setTimeout(() => this.playCoin(), i * 65)
+      }
+    }
+
+    // 2. Deslize pesado de carta na madeira ao revelar/comprar influência
     playCard() {
       if (!this.enabled) return
       this._init()
       if (!this.ctx) return
-      const t = this.ctx.currentTime
-      const osc = this.ctx.createOscillator()
-      const gain = this.ctx.createGain()
-      osc.type = 'triangle'
-      osc.frequency.setValueAtTime(260, t)
-      osc.frequency.exponentialRampToValueAtTime(140, t + 0.1)
-      gain.gain.setValueAtTime(0.12, t)
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12)
-      osc.connect(gain)
-      gain.connect(this.ctx.destination)
-      osc.start(t)
-      osc.stop(t + 0.12)
+      try {
+        const t = this.ctx.currentTime
+        const bufferSize = Math.floor(this.ctx.sampleRate * 0.14)
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate)
+        const data = buffer.getChannelData(0)
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4))
+        }
+        const noise = this.ctx.createBufferSource()
+        noise.buffer = buffer
+
+        const filter = this.ctx.createBiquadFilter()
+        filter.type = 'bandpass'
+        filter.frequency.setValueAtTime(920, t)
+        filter.frequency.exponentialRampToValueAtTime(320, t + 0.13)
+        filter.Q.value = 1.4
+
+        const gain = this.ctx.createGain()
+        gain.gain.setValueAtTime(0.12, t)
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14)
+
+        noise.connect(filter)
+        filter.connect(gain)
+        gain.connect(this.ctx.destination)
+        noise.start(t)
+
+        // Impacto sutil na madeira
+        const thud = this.ctx.createOscillator()
+        const tGain = this.ctx.createGain()
+        thud.type = 'triangle'
+        thud.frequency.setValueAtTime(140, t)
+        thud.frequency.exponentialRampToValueAtTime(45, t + 0.04)
+        tGain.gain.setValueAtTime(0.08, t)
+        tGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04)
+        thud.connect(tGain)
+        tGain.connect(this.ctx.destination)
+        thud.start(t)
+        thud.stop(t + 0.045)
+      } catch (_) {}
     }
 
-    playChallenge() {
+    // 3. Batida grave de martelo/tambor de tensão (Golpe de Estado ou Contestação)
+    playWarDrum() {
       if (!this.enabled) return
       this._init()
       if (!this.ctx) return
-      const t = this.ctx.currentTime
-      const osc = this.ctx.createOscillator()
-      const gain = this.ctx.createGain()
-      osc.type = 'sawtooth'
-      osc.frequency.setValueAtTime(150, t)
-      osc.frequency.exponentialRampToValueAtTime(90, t + 0.4)
-      gain.gain.setValueAtTime(0.25, t)
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45)
-      osc.connect(gain)
-      gain.connect(this.ctx.destination)
-      osc.start(t)
-      osc.stop(t + 0.45)
+      try {
+        const t = this.ctx.currentTime
+        const osc = this.ctx.createOscillator()
+        const gain = this.ctx.createGain()
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(120, t)
+        osc.frequency.exponentialRampToValueAtTime(32, t + 0.38)
+
+        gain.gain.setValueAtTime(0.38, t)
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.42)
+
+        osc.connect(gain)
+        gain.connect(this.ctx.destination)
+        osc.start(t)
+        osc.stop(t + 0.42)
+
+        // Impacto percussivo metálico/madeira do martelo
+        const smack = this.ctx.createOscillator()
+        const sGain = this.ctx.createGain()
+        smack.type = 'triangle'
+        smack.frequency.setValueAtTime(260, t)
+        smack.frequency.exponentialRampToValueAtTime(50, t + 0.06)
+        sGain.gain.setValueAtTime(0.22, t)
+        sGain.gain.exponentialRampToValueAtTime(0.001, t + 0.07)
+        smack.connect(sGain)
+        sGain.connect(this.ctx.destination)
+        smack.start(t)
+        smack.stop(t + 0.07)
+      } catch (_) {}
+    }
+
+    playChallenge() {
+      this.playWarDrum()
+      if (!this.enabled) return
+      this._init()
+      if (!this.ctx) return
+      try {
+        const t = this.ctx.currentTime
+        ;[185.0, 220.0, 277.18].forEach((f, idx) => {
+          const osc = this.ctx.createOscillator()
+          const gain = this.ctx.createGain()
+          osc.type = 'sawtooth'
+          osc.frequency.setValueAtTime(f, t + 0.04)
+          osc.frequency.exponentialRampToValueAtTime(f * 0.95, t + 0.4)
+          gain.gain.setValueAtTime(0.08, t + 0.04)
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.45)
+          osc.connect(gain)
+          gain.connect(this.ctx.destination)
+          osc.start(t + 0.04)
+          osc.stop(t + 0.45)
+        })
+      } catch (_) {}
     }
 
     playSuccess() {
@@ -534,7 +620,10 @@
       if (actionDef.id === 'coup') {
         activePlayer.coins -= 7
         state.treasury += 7
-        sound.playCoin()
+        sound.playWarDrum()
+        table3D?.transferCoins(activePlayer.id === room.profile.id ? 'player' : 'opponent', 'treasury', 7)
+        table3D?.triggerCameraShake(180)
+        table3D?.flashLighting()
         addLog(`${activePlayer.name} desferiu um Golpe de Estado contra ${getPlayerName(action.targetId)}!`, 'action')
         promptLoseInfluence(action.targetId, 'Golpe de Estado', () => {
           advanceTurn()
@@ -547,6 +636,7 @@
         activePlayer.coins += 1
         state.treasury = Math.max(0, state.treasury - 1)
         sound.playCoin()
+        table3D?.transferCoins('treasury', activePlayer.id === room.profile.id ? 'player' : 'opponent', 1)
         addLog(`${activePlayer.name} pegou Renda (+1 moeda).`)
         advanceTurn()
         syncState()
@@ -572,7 +662,10 @@
         // Desconta as 3 moedas de imediato conforme a regra padrão
         activePlayer.coins -= 3
         state.treasury += 3
-        sound.playCoin()
+        sound.playWarDrum()
+        table3D?.transferCoins(activePlayer.id === room.profile.id ? 'player' : 'opponent', 'treasury', 3)
+        table3D?.triggerCameraShake(150)
+        table3D?.flashLighting()
       }
 
       const targetStr = action.targetId ? ` contra ${getPlayerName(action.targetId)}` : ''
@@ -707,6 +800,8 @@
     const claimedChar = actionState.claimedCharacter
 
     sound.playChallenge()
+    table3D?.triggerCameraShake(160)
+    table3D?.flashLighting()
     addLog(`${challenger.name} desafiou a alegação de ${actor.name} de possuir o ${CHARACTERS[claimedChar].name}!`, 'challenge')
 
     // Checa se o ator tem a carta alegada viva
@@ -753,6 +848,8 @@
     const claimedChar = actionState.blockedWithCharacter
 
     sound.playChallenge()
+    table3D?.triggerCameraShake(160)
+    table3D?.flashLighting()
     addLog(`${challenger.name} desafiou o bloqueio de ${blocker.name} com ${CHARACTERS[claimedChar].name}!`, 'challenge')
 
     const matchedCard = blocker.cards.find((c) => !c.revealed && c.character === claimedChar)
@@ -793,19 +890,22 @@
       actor.coins += 1
       state.treasury = Math.max(0, state.treasury - 1)
       sound.playCoin()
+      table3D?.transferCoins('treasury', actor.id === room.profile.id ? 'player' : 'opponent', 1)
       advanceTurn()
       syncState()
     } else if (actionId === 'foreign_aid') {
       actor.coins += 2
       state.treasury = Math.max(0, state.treasury - 2)
-      sound.playCoin()
+      sound.playCoinCascade(2)
+      table3D?.transferCoins('treasury', actor.id === room.profile.id ? 'player' : 'opponent', 2)
       addLog(`${actor.name} recebeu Ajuda Externa (+2 moedas).`)
       advanceTurn()
       syncState()
     } else if (actionId === 'tax') {
       actor.coins += 3
       state.treasury = Math.max(0, state.treasury - 3)
-      sound.playCoin()
+      sound.playCoinCascade(3)
+      table3D?.transferCoins('treasury', actor.id === room.profile.id ? 'player' : 'opponent', 3)
       addLog(`${actor.name} cobrou Taxa da Corte com o Duque (+3 moedas).`)
       advanceTurn()
       syncState()
@@ -814,18 +914,23 @@
       const stolen = Math.min(2, target.coins)
       target.coins -= stolen
       actor.coins += stolen
-      sound.playCoin()
+      sound.playCoinCascade(stolen)
+      table3D?.transferCoins(target.id === room.profile.id ? 'player' : 'opponent', actor.id === room.profile.id ? 'player' : 'opponent', stolen)
       addLog(`${actor.name} extorquiu ${stolen} moedas de ${target.name} com o Capitão.`)
       advanceTurn()
       syncState()
     } else if (actionId === 'assassinate') {
       const target = state.players.find((p) => p.id === targetId)
+      sound.playWarDrum()
+      table3D?.triggerCameraShake(150)
+      table3D?.flashLighting()
       addLog(`O assassinato de ${target.name} teve êxito!`, 'challenge')
       promptLoseInfluence(targetId, 'Assassinato Executado', () => {
         advanceTurn()
       })
       syncState()
     } else if (actionId === 'exchange') {
+      sound.playCard()
       // Compra 2 cartas da Corte
       const drawnCards = [state.deck.pop(), state.deck.pop()].filter(Boolean)
       const activeCardsCount = actor.cards.filter((c) => !c.revealed).length
@@ -1331,6 +1436,7 @@
           `
         })
         .join('')
+      setupCard3DHover()
     }
 
     // 2. Stats Centrais & Log da Corte
@@ -1338,6 +1444,11 @@
     const deckElem = document.getElementById('deck-count')
     if (treasuryElem) treasuryElem.textContent = state.treasury
     if (deckElem) deckElem.textContent = `${state.deck.length} Cartas`
+
+    if (table3D) {
+      table3D.updateTreasury(state.treasury)
+      table3D.updateDeck(state.deck.length)
+    }
 
     const feedElem = document.getElementById('court-log-feed')
     if (feedElem) {
@@ -1359,14 +1470,17 @@
     const reactionMsg = document.getElementById('reaction-message')
     const countdownElem = document.getElementById('reaction-countdown')
     const actionsElem = document.getElementById('reaction-actions')
+    const tableWrap = document.querySelector('.poker-table-wrap')
 
     if (!reactionBar || !state.pendingAction) {
       if (reactionBar) reactionBar.hidden = true
+      if (tableWrap) tableWrap.classList.remove('high-tension-arena')
       clearInterval(reactionTimer)
       return
     }
 
     reactionBar.hidden = false
+    if (tableWrap) tableWrap.classList.add('high-tension-arena')
     const act = state.pendingAction
     const actorName = getPlayerName(act.actorId)
     const myId = room.profile.id
@@ -1583,6 +1697,7 @@
           `
         })
         .join('')
+      setupCard3DHover()
     }
 
     // Botões de Ação do Turno
@@ -1659,6 +1774,7 @@
             sendAction({ type: 'CHOOSE_LOSE_INFLUENCE', cardId: cId })
           }
         })
+        setupCard3DHover()
       }
     } else {
       modal.hidden = true
@@ -1885,65 +2001,462 @@
     }
   }
 
-  // --- ILUMINAÇÃO & PARTÍCULAS NO FELTRO DA MESA ---
-  let canvasInitialized = false
-  function initTableCanvas() {
-    const canvas = document.getElementById('table-felt-canvas')
-    if (!canvas || canvasInitialized) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    canvasInitialized = true
+  // --- 3D HOVER TÁTIL PARA CARTAS DO JOGADOR ---
+  function setupCard3DHover() {
+    const cards = document.querySelectorAll('.luxury-card:not(.dead)')
+    cards.forEach((card) => {
+      if (card.dataset.hoverAttached) return
+      card.dataset.hoverAttached = 'true'
 
-    function resize() {
-      const rect = canvas.getBoundingClientRect()
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      canvas.width = rect.width * dpr
-      canvas.height = rect.height * dpr
-      ctx.scale(dpr, dpr)
-    }
-    resize()
-    window.addEventListener('resize', resize)
-
-    const particles = []
-    for (let i = 0; i < 40; i++) {
-      particles.push({
-        x: Math.random() * 800,
-        y: Math.random() * 500,
-        radius: Math.random() * 1.8 + 0.6,
-        alpha: Math.random() * 0.45 + 0.15,
-        dx: (Math.random() - 0.5) * 0.35,
-        dy: (Math.random() - 0.5) * 0.35,
-        pulse: Math.random() * Math.PI,
-      })
-    }
-
-    function animate() {
-      const rect = canvas.getBoundingClientRect()
-      if (!rect.width || !rect.height) {
-        requestAnimationFrame(animate)
-        return
+      let specular = card.querySelector('.card-specular')
+      if (!specular) {
+        specular = document.createElement('div')
+        specular.className = 'card-specular'
+        specular.setAttribute('aria-hidden', 'true')
+        card.appendChild(specular)
       }
-      ctx.clearRect(0, 0, rect.width, rect.height)
 
-      particles.forEach((p) => {
-        p.x += p.dx
-        p.y += p.dy
-        p.pulse += 0.025
-        if (p.x < 0) p.x = rect.width
-        if (p.x > rect.width) p.x = 0
-        if (p.y < 0) p.y = rect.height
-        if (p.y > rect.height) p.y = 0
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+        const centerX = rect.width / 2
+        const centerY = rect.height / 2
 
-        const currentAlpha = p.alpha + Math.sin(p.pulse) * 0.12
-        ctx.fillStyle = `rgba(245, 158, 11, ${Math.max(0, currentAlpha)})`
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
-        ctx.fill()
+        const rotateX = ((centerY - y) / centerY) * 12
+        const rotateY = ((x - centerX) / centerX) * 12
+
+        card.style.transform = `perspective(800px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-22px) scale(1.08)`
+        card.style.zIndex = '20'
+
+        specular.style.opacity = '1'
+        specular.style.background = `radial-gradient(circle 130px at ${x}px ${y}px, rgba(255, 255, 255, 0.32) 0%, transparent 80%)`
       })
 
-      requestAnimationFrame(animate)
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = ''
+        card.style.zIndex = ''
+        specular.style.opacity = '0'
+      })
+    })
+  }
+
+  // --- CENA 3D DA MESA DE CONSELHO SECRETO (THREE.JS PBR & JUICE) ---
+  let table3D = null
+
+  class Table3D {
+    constructor(canvas, THREE) {
+      this.canvas = canvas
+      this.THREE = THREE
+      this.renderer = null
+      this.scene = null
+      this.camera = null
+      this.spotLight = null
+      this.candleL = null
+      this.candleR = null
+      this.treasuryGroup = null
+      this.deckGroup = null
+      this.flyingCoins = []
+      this.shakeIntensity = 0
+      this.shakeDecay = 0
+      this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0 }
+      this.baseCamY = 8.2
+      this.baseCamZ = 9.4
+      this.lastTreasuryCount = -1
+      this.lastDeckCount = -1
     }
-    animate()
+
+    init() {
+      const THREE = this.THREE
+      const rect = this.canvas.getBoundingClientRect()
+      const width = rect.width || 840
+      const height = rect.height || 540
+
+      this.renderer = new THREE.WebGLRenderer({
+        canvas: this.canvas,
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance',
+      })
+      this.renderer.setSize(width, height, false)
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+      this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+      this.renderer.toneMappingExposure = 1.18
+      this.renderer.shadowMap.enabled = true
+      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+      this.scene = new THREE.Scene()
+      this.camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100)
+      this.camera.position.set(0, this.baseCamY, this.baseCamZ)
+      this.camera.lookAt(0, -0.4, 0)
+
+      // Environment Map via PMREMGenerator
+      try {
+        const pmrem = new THREE.PMREMGenerator(this.renderer)
+        pmrem.compileEquirectangularShader()
+        const eCanvas = document.createElement('canvas')
+        eCanvas.width = 512
+        eCanvas.height = 256
+        const eCtx = eCanvas.getContext('2d')
+        const bgGrad = eCtx.createLinearGradient(0, 0, 0, 256)
+        bgGrad.addColorStop(0, '#1c050d')
+        bgGrad.addColorStop(0.5, '#0b0205')
+        bgGrad.addColorStop(1, '#040102')
+        eCtx.fillStyle = bgGrad
+        eCtx.fillRect(0, 0, 512, 256)
+
+        const drawBloom = (x, y, r, color) => {
+          const g = eCtx.createRadialGradient(x, y, 0, x, y, r)
+          g.addColorStop(0, color)
+          g.addColorStop(1, 'transparent')
+          eCtx.fillStyle = g
+          eCtx.beginPath()
+          eCtx.arc(x, y, r, 0, Math.PI * 2)
+          eCtx.fill()
+        }
+        drawBloom(256, 50, 120, '#fef08a')
+        drawBloom(110, 110, 80, '#f59e0b')
+        drawBloom(400, 110, 80, '#f59e0b')
+        drawBloom(256, 190, 90, '#991b1b')
+
+        const tex = new THREE.CanvasTexture(eCanvas)
+        tex.mapping = THREE.EquirectangularReflectionMapping
+        this.scene.environment = pmrem.fromEquirectangular(tex).texture
+        pmrem.dispose()
+        tex.dispose()
+      } catch (_) {}
+
+      // Iluminação Realista PBR
+      const ambient = new THREE.AmbientLight(0x280e14, 1.4)
+      this.scene.add(ambient)
+
+      this.spotLight = new THREE.SpotLight(0xffedd5, 5.0, 30, Math.PI / 3.6, 0.65, 1.2)
+      this.spotLight.position.set(0, 9.8, 1.0)
+      this.spotLight.target.position.set(0, 0, 0)
+      this.spotLight.castShadow = true
+      this.spotLight.shadow.mapSize.set(1024, 1024)
+      this.spotLight.shadow.bias = -0.0001
+      this.spotLight.shadow.radius = 2.4
+      this.scene.add(this.spotLight)
+      this.scene.add(this.spotLight.target)
+
+      this.candleL = new THREE.PointLight(0xd97706, 1.6, 15, 1.8)
+      this.candleL.position.set(-5.6, 2.8, 1.2)
+      this.scene.add(this.candleL)
+
+      this.candleR = new THREE.PointLight(0xd97706, 1.6, 15, 1.8)
+      this.candleR.position.set(5.6, 2.8, 1.2)
+      this.scene.add(this.candleR)
+
+      // Mesa Real (Madeira nobre entalhada + Veludo Carmesim + Ouro velho)
+      this.buildTable()
+
+      // Tesouro e Baralho 3D
+      this.buildTreasuryAndDeck()
+
+      window.addEventListener('resize', () => this.resize())
+      window.addEventListener('mousemove', (e) => {
+        this.mouse.targetX = (e.clientX / window.innerWidth - 0.5) * 0.9
+        this.mouse.targetY = (e.clientY / window.innerHeight - 0.5) * 0.6
+      })
+
+      this.animate()
+    }
+
+    buildTable() {
+      const THREE = this.THREE
+      const tableGroup = new THREE.Group()
+
+      // Moldura de madeira nobre entalhada
+      const woodMat = new THREE.MeshStandardMaterial({
+        color: 0x1b050c,
+        roughness: 0.42,
+        metalness: 0.14,
+        envMapIntensity: 0.9,
+      })
+      const outerRim = new THREE.Mesh(
+        new THREE.CylinderGeometry(6.6, 7.0, 0.55, 48),
+        woodMat
+      )
+      outerRim.position.y = -0.3
+      outerRim.receiveShadow = true
+      tableGroup.add(outerRim)
+
+      // Friso de ouro velho
+      const goldTrimMat = new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        metalness: 0.88,
+        roughness: 0.22,
+        envMapIntensity: 1.4,
+      })
+      const goldRing = new THREE.Mesh(
+        new THREE.TorusGeometry(6.18, 0.05, 12, 64),
+        goldTrimMat
+      )
+      goldRing.rotation.x = Math.PI / 2
+      goldRing.position.y = -0.01
+      tableGroup.add(goldRing)
+
+      // Tampo interno de veludo carmesim fosco aveludado
+      const feltMat = new THREE.MeshStandardMaterial({
+        color: 0x140207,
+        roughness: 0.78,
+        metalness: 0.05,
+        envMapIntensity: 0.4,
+      })
+      const innerFelt = new THREE.Mesh(
+        new THREE.CylinderGeometry(6.15, 6.15, 0.52, 48),
+        feltMat
+      )
+      innerFelt.position.y = -0.28
+      innerFelt.receiveShadow = true
+      tableGroup.add(innerFelt)
+
+      this.scene.add(tableGroup)
+    }
+
+    buildTreasuryAndDeck() {
+      const THREE = this.THREE
+      this.coinMat = new THREE.MeshStandardMaterial({
+        color: 0xf5b722,
+        metalness: 0.88,
+        roughness: 0.22,
+        envMapIntensity: 1.5,
+      })
+      this.coinGeom = new THREE.CylinderGeometry(0.38, 0.38, 0.055, 24)
+
+      this.treasuryGroup = new THREE.Group()
+      this.treasuryGroup.position.set(1.7, 0, -0.15)
+      this.scene.add(this.treasuryGroup)
+
+      this.deckGroup = new THREE.Group()
+      this.deckGroup.position.set(-1.7, 0, -0.15)
+      this.deckGroup.rotation.y = -0.08
+      this.scene.add(this.deckGroup)
+    }
+
+    updateTreasury(count) {
+      if (this.lastTreasuryCount === count) return
+      this.lastTreasuryCount = count
+      const THREE = this.THREE
+      while (this.treasuryGroup.children.length > 0) {
+        const c = this.treasuryGroup.children.pop()
+        c.geometry?.dispose()
+      }
+
+      const visualCoins = Math.min(count, 36)
+      const piles = [
+        { x: 0, z: 0, count: Math.ceil(visualCoins * 0.45) },
+        { x: 0.45, z: 0.35, count: Math.floor(visualCoins * 0.3) },
+        { x: -0.4, z: 0.3, count: Math.floor(visualCoins * 0.25) },
+      ]
+
+      piles.forEach((pile) => {
+        for (let i = 0; i < pile.count; i++) {
+          const coin = new THREE.Mesh(this.coinGeom, this.coinMat)
+          const angleJitter = (Math.random() - 0.5) * 0.12
+          coin.position.set(
+            pile.x + (Math.random() - 0.5) * 0.04,
+            i * 0.058,
+            pile.z + (Math.random() - 0.5) * 0.04
+          )
+          coin.rotation.y = angleJitter + i * 0.2
+          coin.castShadow = true
+          coin.receiveShadow = true
+          this.treasuryGroup.add(coin)
+        }
+      })
+    }
+
+    updateDeck(deckCount) {
+      if (this.lastDeckCount === deckCount) return
+      this.lastDeckCount = deckCount
+      const THREE = this.THREE
+      while (this.deckGroup.children.length > 0) {
+        const c = this.deckGroup.children.pop()
+        c.geometry?.dispose()
+      }
+
+      const visualCards = Math.max(1, Math.min(deckCount, 15))
+      const deckHeight = visualCards * 0.025
+      const deckGeom = new THREE.BoxGeometry(1.48, deckHeight, 2.16)
+      const deckMat = new THREE.MeshStandardMaterial({
+        color: 0x220510,
+        roughness: 0.45,
+        metalness: 0.12,
+        envMapIntensity: 0.8,
+      })
+      const deckMesh = new THREE.Mesh(deckGeom, deckMat)
+      deckMesh.position.y = deckHeight / 2
+      deckMesh.castShadow = true
+      deckMesh.receiveShadow = true
+      this.deckGroup.add(deckMesh)
+
+      const topMat = new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        metalness: 0.85,
+        roughness: 0.25,
+      })
+      const topFrame = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.4, 2.08),
+        topMat
+      )
+      topFrame.rotation.x = -Math.PI / 2
+      topFrame.position.y = deckHeight + 0.002
+      this.deckGroup.add(topFrame)
+    }
+
+    transferCoins(fromPos, toPos, count = 1, onComplete) {
+      const THREE = this.THREE
+      const resolvePos = (pos) => {
+        if (pos instanceof THREE.Vector3) return pos
+        if (pos === 'treasury') return new THREE.Vector3(1.7, 0.2, -0.15)
+        if (pos === 'player') return new THREE.Vector3(0, 0.1, 3.6)
+        return new THREE.Vector3(-1.8, 0.1, -2.6)
+      }
+
+      const start = resolvePos(fromPos)
+      const end = resolvePos(toPos)
+      const coinCount = Math.max(1, Math.min(count, 8))
+
+      for (let i = 0; i < coinCount; i++) {
+        const coin = new THREE.Mesh(this.coinGeom, this.coinMat)
+        coin.castShadow = true
+        coin.position.copy(start)
+        this.scene.add(coin)
+
+        this.flyingCoins.push({
+          mesh: coin,
+          start: start.clone(),
+          end: end.clone(),
+          progress: 0,
+          delay: i * 0.05,
+          speed: 1.45,
+          peakY: 1.6 + Math.random() * 0.4,
+          rotSpeedX: 8.0 + Math.random() * 4.0,
+          rotSpeedZ: 5.0 + Math.random() * 3.0,
+          bouncing: false,
+          bounceTime: 0,
+          isLast: i === coinCount - 1,
+          onComplete,
+        })
+      }
+    }
+
+    triggerCameraShake(durationMs = 150) {
+      this.shakeIntensity = 0.24
+      this.shakeDecay = this.shakeIntensity / (durationMs / 1000)
+    }
+
+    flashLighting() {
+      if (this.spotLight) {
+        this.spotLight.intensity = 9.5
+        const timer = setInterval(() => {
+          this.spotLight.intensity = Math.max(5.0, this.spotLight.intensity - 0.45)
+          if (this.spotLight.intensity <= 5.0) clearInterval(timer)
+        }, 20)
+      }
+      const flashEl = document.getElementById('arena-flash-overlay')
+      if (flashEl) {
+        flashEl.classList.remove('active')
+        void flashEl.offsetWidth
+        flashEl.classList.add('active')
+        setTimeout(() => flashEl.classList.remove('active'), 200)
+      }
+    }
+
+    resize() {
+      const rect = this.canvas.getBoundingClientRect()
+      if (!rect.width || !rect.height) return
+      this.camera.aspect = rect.width / rect.height
+      this.camera.updateProjectionMatrix()
+      this.renderer.setSize(rect.width, rect.height, false)
+    }
+
+    animate() {
+      requestAnimationFrame(() => this.animate())
+
+      const dt = 0.016
+      // Atualizar moedas voadoras
+      for (let i = this.flyingCoins.length - 1; i >= 0; i--) {
+        const fc = this.flyingCoins[i]
+        if (fc.delay > 0) {
+          fc.delay -= dt
+          continue
+        }
+        if (!fc.bouncing) {
+          fc.progress += dt * fc.speed
+          const t = Math.min(1, fc.progress)
+          fc.mesh.position.x = fc.start.x + (fc.end.x - fc.start.x) * t
+          fc.mesh.position.z = fc.start.z + (fc.end.z - fc.start.z) * t
+          fc.mesh.position.y =
+            fc.start.y + (fc.end.y - fc.start.y) * t + Math.sin(t * Math.PI) * fc.peakY
+          fc.mesh.rotation.x += fc.rotSpeedX * dt
+          fc.mesh.rotation.z += fc.rotSpeedZ * dt
+
+          if (t >= 1) {
+            fc.bouncing = true
+            sound.playCoin()
+          }
+        } else {
+          fc.bounceTime += dt * 5.0
+          const b = Math.abs(Math.sin(fc.bounceTime * Math.PI)) * 0.22 * Math.max(0, 1 - fc.bounceTime * 0.6)
+          fc.mesh.position.y = fc.end.y + b
+          if (fc.bounceTime >= 1.2) {
+            this.scene.remove(fc.mesh)
+            fc.mesh.geometry?.dispose()
+            if (fc.isLast && fc.onComplete) fc.onComplete()
+            this.flyingCoins.splice(i, 1)
+          }
+        }
+      }
+
+      // Interpolação suave do mouse com paralaxe e respiração
+      this.mouse.x += (this.mouse.targetX - this.mouse.x) * 0.05
+      this.mouse.y += (this.mouse.targetY - this.mouse.y) * 0.05
+
+      const nowSec = performance.now() * 0.001
+      const breathX = Math.sin(nowSec * 0.4) * 0.08
+      const breathY = Math.cos(nowSec * 0.3) * 0.06
+
+      let shakeX = 0
+      let shakeY = 0
+      if (this.shakeIntensity > 0) {
+        shakeX = (Math.random() - 0.5) * this.shakeIntensity
+        shakeY = (Math.random() - 0.5) * this.shakeIntensity
+        this.shakeIntensity = Math.max(0, this.shakeIntensity - this.shakeDecay * dt)
+      }
+
+      this.camera.position.x = this.mouse.x * 0.45 + breathX + shakeX
+      this.camera.position.y = this.baseCamY + this.mouse.y * 0.35 + breathY + shakeY
+      this.camera.position.z = this.baseCamZ
+      this.camera.lookAt(0, -0.35, 0)
+
+      // Bruxuleio suave de velas
+      if (this.candleL && this.candleR) {
+        const flick = Math.sin(nowSec * 7) * 0.12 + (Math.random() - 0.5) * 0.06
+        this.candleL.intensity = 1.6 + flick
+        this.candleR.intensity = 1.6 - flick
+      }
+
+      this.renderer.render(this.scene, this.camera)
+    }
+  }
+
+  async function initTableCanvas() {
+    const canvas = document.getElementById('table-felt-canvas')
+    if (!canvas || table3D) return
+    try {
+      const THREE = await import('../../vendor/three.module.js')
+      table3D = new Table3D(canvas, THREE)
+      table3D.init()
+      if (state) {
+        table3D.updateTreasury(state.treasury)
+        table3D.updateDeck(state.deck.length)
+      }
+    } catch (err) {
+      console.warn('Erro ao carregar Three.js para mesa 3D:', err)
+    }
   }
 
   // --- CONFIGURAÇÃO DE EVENTOS DE DOM ---
