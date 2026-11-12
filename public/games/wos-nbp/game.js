@@ -33,10 +33,11 @@
     'PLANTA','PLANETA','ESCOLA','ESCALA','COLHER','CASTELO','ESTRELA','JANELA','abelha','orelha','espelho','caminho'
   ];
 
-  // Gerenciador de Efeitos Sonoros Sintetizados (Web Audio API)
+  // Gerenciador de Efeitos Sonoros Sintetizados Tácteis (Web Audio API)
   const SoundFX = {
     enabled: localStorage.getItem('wos_sound_off') !== '1',
     ctx: null,
+    lastTickSec: -1,
     init() {
       if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -45,6 +46,158 @@
       if (this.ctx && this.ctx.state === 'suspended') {
         this.ctx.resume().catch(() => {});
       }
+      return this.ctx;
+    },
+    // Clique seco tátil de madeira/baquelite ao digitar ou clicar nas peças
+    woodTap() {
+      if (!this.enabled) return;
+      try {
+        const ctx = this.init();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        const baseFreq = 820 + (Math.random() * 80 - 40);
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.02);
+
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.026);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.03);
+      } catch (_) {}
+    },
+    // Som rápido de peças de madeira batendo juntas ao embaralhar
+    woodShuffle() {
+      if (!this.enabled) return;
+      try {
+        const ctx = this.init();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        const taps = [0, 0.03, 0.065, 0.11, 0.16];
+        taps.forEach((tOffset, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          const f = 680 + i * 50 + (Math.random() * 40 - 20);
+          osc.frequency.setValueAtTime(f, now + tOffset);
+          osc.frequency.exponentialRampToValueAtTime(160, now + tOffset + 0.025);
+
+          const vol = 0.14 - i * 0.015;
+          gain.gain.setValueAtTime(vol, now + tOffset);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + tOffset + 0.03);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + tOffset);
+          osc.stop(now + tOffset + 0.035);
+        });
+      } catch (_) {}
+    },
+    // Acorde ascendente harmonioso em cascata ao revelar uma palavra
+    cascadeReveal(len = 5, isHitMax = false) {
+      if (!this.enabled) return;
+      try {
+        const ctx = this.init();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        // Escala pentatônica maior ascendente (C5, D5, E5, G5, A5, C6, D6, E6)
+        const scale = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51];
+        const count = Math.min(len || 5, scale.length);
+
+        for (let i = 0; i < count; i++) {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const freq = scale[i];
+          const startTime = now + i * 0.04;
+
+          osc.type = isHitMax ? 'triangle' : 'sine';
+          osc.frequency.setValueAtTime(freq, startTime);
+
+          const dur = 0.16 + (i === count - 1 ? 0.18 : 0);
+          const vol = isHitMax ? 0.17 : 0.13;
+          gain.gain.setValueAtTime(vol, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + dur + 0.02);
+        }
+
+        // Brilho harmônico especial para o Anagrama (HitMax)
+        if (isHitMax) {
+          const highOsc = ctx.createOscillator();
+          const highGain = ctx.createGain();
+          highOsc.type = 'sine';
+          highOsc.frequency.setValueAtTime(2093.0, now + count * 0.04);
+          highGain.gain.setValueAtTime(0.12, now + count * 0.04);
+          highGain.gain.exponentialRampToValueAtTime(0.001, now + count * 0.04 + 0.4);
+          highOsc.connect(highGain);
+          highGain.connect(ctx.destination);
+          highOsc.start(now + count * 0.04);
+          highOsc.stop(now + count * 0.04 + 0.42);
+        }
+      } catch (_) {}
+    },
+    // Tique-taque sutil nos últimos 5 segundos do relógio
+    clockTick(sec) {
+      if (!this.enabled) return;
+      if (this.lastTickSec === sec) return;
+      this.lastTickSec = sec;
+      try {
+        const ctx = this.init();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        const isTick = sec % 2 === 0;
+        const freq = isTick ? 1120 : 840;
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.exponentialRampToValueAtTime(220, now + 0.022);
+
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.028);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.032);
+      } catch (_) {}
+    },
+    // Batidinha oca de advertência para palavra inválida ou repetida
+    invalid() {
+      if (!this.enabled) return;
+      try {
+        const ctx = this.init();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+
+        [0, 0.06].forEach((offset) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(240, now + offset);
+          osc.frequency.exponentialRampToValueAtTime(90, now + offset + 0.035);
+
+          gain.gain.setValueAtTime(0.13, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.04);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.045);
+        });
+      } catch (_) {}
     },
     tone(freq, dur, type = 'sine', vol = 0.12, delay = 0) {
       if (!this.enabled) return;
@@ -64,18 +217,29 @@
         osc.stop(now + dur);
       } catch (_) {}
     },
-    play(name) {
+    play(name, arg) {
       if (!this.enabled) return;
       switch (name) {
+        case 'tap':
+          this.woodTap();
+          break;
+        case 'shuffle':
+          this.woodShuffle();
+          break;
+        case 'cascade':
+          this.cascadeReveal(arg?.len || 5, arg?.isHitMax || false);
+          break;
+        case 'tick':
+          this.clockTick(typeof arg === 'number' ? arg : 0);
+          break;
+        case 'invalid':
+          this.invalid();
+          break;
         case 'hit':
-          this.tone(523.25, 0.11, 'triangle', 0.14, 0);
-          this.tone(659.25, 0.16, 'triangle', 0.14, 0.07);
+          this.cascadeReveal(arg?.len || 5, false);
           break;
         case 'hitmax':
-          this.tone(523.25, 0.1, 'triangle', 0.16, 0);
-          this.tone(659.25, 0.1, 'triangle', 0.16, 0.07);
-          this.tone(783.99, 0.12, 'triangle', 0.16, 0.14);
-          this.tone(1046.5, 0.26, 'sine', 0.18, 0.21);
+          this.cascadeReveal(arg?.len || 7, true);
           break;
         case 'bonus':
           this.tone(587.33, 0.09, 'sine', 0.11, 0);
@@ -86,13 +250,6 @@
           this.tone(554.37, 0.12, 'triangle', 0.15, 0.09);
           this.tone(659.25, 0.12, 'triangle', 0.15, 0.18);
           this.tone(880, 0.32, 'triangle', 0.18, 0.27);
-          break;
-        case 'shuffle':
-          this.tone(330, 0.06, 'sine', 0.06, 0);
-          this.tone(392, 0.07, 'sine', 0.06, 0.05);
-          break;
-        case 'tap':
-          this.tone(740 + Math.random() * 60, 0.035, 'triangle', 0.08, 0);
           break;
         case 'reveal':
           this.tone(311.13, 0.14, 'sawtooth', 0.09, 0);
@@ -1089,10 +1246,74 @@
     setTimeout(() => el.boardPanel.classList.remove(cls), 750);
   }
 
+  function highlightRepeatedSlot(word) {
+    if (!el.wordsGrid) return;
+    const slots = el.wordsGrid.querySelectorAll('.word-slot');
+    for (const slotEl of slots) {
+      if (slotEl.dataset.word === word) {
+        slotEl.classList.remove('slot-repeated-shake');
+        void slotEl.offsetWidth;
+        slotEl.classList.add('slot-repeated-shake');
+        setTimeout(() => slotEl.classList.remove('slot-repeated-shake'), 450);
+        break;
+      }
+    }
+  }
+
+  function spawnFloatingScore(targetEl, text, label) {
+    if (!targetEl || !el.boardPanel) return;
+    try {
+      const rect = targetEl.getBoundingClientRect();
+      const boardRect = el.boardPanel.getBoundingClientRect();
+
+      const badge = document.createElement('div');
+      badge.className = 'floating-score-pill' + (label && (label.includes('ANAGRAMA') || label.includes('RARA')) ? ' pill-rare' : '');
+      badge.innerHTML = `<strong>${escapeHtml(text)}</strong>${label ? `<span>${escapeHtml(label)}</span>` : ''}`;
+
+      const x = rect.left - boardRect.left + rect.width / 2;
+      const y = rect.top - boardRect.top + 6;
+
+      badge.style.left = `${Math.max(50, Math.min(boardRect.width - 50, x))}px`;
+      badge.style.top = `${Math.max(20, y)}px`;
+
+      el.boardPanel.appendChild(badge);
+      setTimeout(() => badge.remove(), 1250);
+    } catch (_) {}
+  }
+
+  function spawnTileParticles(targetEl, count = 10, isCyan = false) {
+    if (!targetEl || !el.boardPanel) return;
+    try {
+      const rect = targetEl.getBoundingClientRect();
+      const boardRect = el.boardPanel.getBoundingClientRect();
+      const cx = rect.left - boardRect.left + rect.width / 2;
+      const cy = rect.top - boardRect.top + rect.height / 2;
+
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('span');
+        p.className = 'wos-sparkle-particle' + (isCyan ? ' sparkle-cyan' : '');
+        const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.4 - 0.2);
+        const dist = 22 + Math.random() * 34;
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist - 12;
+
+        p.style.setProperty('--tx', `${tx}px`);
+        p.style.setProperty('--ty', `${ty}px`);
+        p.style.left = `${cx}px`;
+        p.style.top = `${cy}px`;
+        p.style.animationDelay = `${Math.random() * 0.04}s`;
+
+        el.boardPanel.appendChild(p);
+        setTimeout(() => p.remove(), 700);
+      }
+    } catch (_) {}
+  }
+
   function showLocalGuessFeedback(msg) {
     if (!el.guessFeedbackToast) return;
     el.guessFeedbackToast.textContent = msg;
     el.guessFeedbackToast.hidden = false;
+    SoundFX.play('invalid');
     if (el.guessInput) {
       el.guessInput.classList.remove('input-shake');
       void el.guessInput.offsetWidth;
@@ -1139,6 +1360,7 @@
     if (slot) {
       if (slot.solvedBy) {
         if (playerId === local.myId) {
+          highlightRepeatedSlot(slot.word);
           showLocalGuessFeedback(`⚠️ "${slot.display}" já foi encontrada por ${slot.solvedByName}!`);
         }
         return;
@@ -1148,6 +1370,8 @@
 
       slot.solvedBy = playerId;
       slot.solvedByName = player.name;
+      slot.justSolvedAt = Date.now();
+      slot.animatedFloating = false;
       player.score += slot.points;
       player.turnScore = (player.turnScore || 0) + slot.points;
       player.wordsFound += 1;
@@ -1224,6 +1448,9 @@
       player.turnScore = (player.turnScore || 0) + bonusPts;
       state.totalPoints += bonusPts;
       SoundFX.play('bonus');
+      if (el.guessForm) {
+        spawnFloatingScore(el.guessForm, `+${bonusPts} pts`, 'BÔNUS! ⭐');
+      }
       pushFeed(`⭐ ${player.name} achou palavra bônus "${dict.accentMap.get(norm) || norm}" (+${bonusPts} pts)`, 'bonus');
       broadcastState();
       renderAll();
@@ -1361,12 +1588,26 @@
     el.wheelDock.classList.toggle('goal-achieved', isGoalMet);
     el.lockIcon.textContent = isGoalMet ? '🔓' : '🔒';
 
-    // Barra de tempo
+    // Barra de tempo fluida com transição suave e tensão
     const timePct = state.roundDuration > 0
       ? Math.max(0, Math.min(100, (state.timeLeft / state.roundDuration) * 100))
       : 0;
     el.timerBarFill.style.width = `${timePct}%`;
-    el.timerBarFill.classList.toggle('danger', state.timeLeft <= state.revealTime);
+
+    el.timerBarFill.classList.remove('timer-normal', 'timer-warning', 'timer-panic', 'danger');
+    el.boardPanel.classList.remove('stage-panic-pulse');
+
+    if (state.timeLeft <= 10 && state.status === 'playing') {
+      el.timerBarFill.classList.add('timer-panic');
+      el.boardPanel.classList.add('stage-panic-pulse');
+      if (state.timeLeft <= 5 && state.timeLeft > 0) {
+        SoundFX.play('tick', state.timeLeft);
+      }
+    } else if (state.timeLeft <= 30 && state.status === 'playing') {
+      el.timerBarFill.classList.add('timer-warning');
+    } else {
+      el.timerBarFill.classList.add('timer-normal');
+    }
 
     // Checkpoints de cadeado na barra de tempo
     if (config.padlockMode === 'checkpoints') {
@@ -1405,8 +1646,10 @@
 
   function renderWordsGrid() {
     el.wordsGrid.innerHTML = '';
+    const now = Date.now();
     state.slots.forEach((slot) => {
       const row = document.createElement('div');
+      row.dataset.word = slot.word;
       const classes = ['word-slot'];
       if (slot.hitMax) classes.push('hitmax-slot');
       if (slot.solvedBy) classes.push('solved');
@@ -1416,11 +1659,16 @@
       const boxes = document.createElement('div');
       boxes.className = 'slot-boxes';
 
+      const isJustSolved = slot.solvedBy && slot.justSolvedAt && (now - slot.justSolvedAt < 2200);
+
       const displayChars = (slot.solvedBy || slot.expired ? slot.display : slot.word).split('');
       for (let i = 0; i < slot.len; i++) {
         const cell = document.createElement('span');
         const isHinted = !slot.solvedBy && !slot.expired && slot.revealedPositions.includes(i);
-        cell.className = 'slot-char' + (isHinted ? ' hint-revealed' : '');
+        cell.className = 'slot-char' + (isHinted ? ' hint-revealed' : '') + (isJustSolved ? ' cascade-char' : '');
+        if (isJustSolved) {
+          cell.style.animationDelay = `${i * 0.04}s`;
+        }
         if (slot.solvedBy || slot.expired || isHinted) {
           cell.textContent = displayChars[i] || slot.word[i];
         } else {
@@ -1442,16 +1690,39 @@
       row.appendChild(boxes);
       row.appendChild(finder);
       el.wordsGrid.appendChild(row);
+
+      // Dispara badge de pontuação flutuante e partículas na descoberta recente
+      if (isJustSolved && !slot.animatedFloating) {
+        slot.animatedFloating = true;
+        setTimeout(() => {
+          const freshRow = el.wordsGrid.querySelector(`[data-word="${slot.word}"]`);
+          if (freshRow) {
+            spawnFloatingScore(
+              freshRow,
+              `+${slot.points} pts`,
+              slot.hitMax ? 'ANAGRAMA! 💎' : slot.len >= 6 ? 'PALAVRA RARA!' : 'COMBO!'
+            );
+            if (slot.hitMax || slot.len >= 6) {
+              spawnTileParticles(freshRow, slot.hitMax ? 14 : 8, slot.hitMax);
+            }
+          }
+        }, 25);
+      }
     });
   }
 
   function renderWheel(animateFlip) {
     el.letterTiles.innerHTML = '';
-    state.wheelTiles.forEach((tile) => {
+    state.wheelTiles.forEach((tile, idx) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       const classes = ['letter-tile'];
-      if (animateFlip) classes.push('shuffle-flip');
+      if (animateFlip) {
+        classes.push('shuffle-jump');
+        const rot = (Math.random() * 16 - 8).toFixed(1);
+        btn.style.setProperty('--shuffle-rot', `${rot}deg`);
+        btn.style.animationDelay = `${idx * 0.035}s`;
+      }
       if (tile.isMystery && tile.displayChar.startsWith('?')) classes.push('mystery-tile');
       if (tile.isFake && tile.fakeRevealed) classes.push('fake-revealed');
       btn.className = classes.join(' ');
@@ -1469,6 +1740,8 @@
         if (tile.isFake && tile.fakeRevealed) return;
         if (tile.displayChar.startsWith('?')) return;
         SoundFX.play('tap');
+        btn.classList.add('tile-pressed');
+        setTimeout(() => btn.classList.remove('tile-pressed'), 140);
         if (el.guessInput.value.length < 12) {
           el.guessInput.value += tile.displayChar;
           el.guessInput.focus();
@@ -1937,8 +2210,25 @@
     el.btnLeaveRoom.addEventListener('click', () => leaveRoomToSolo());
 
     el.btnBackspace.addEventListener('click', () => {
+      SoundFX.play('tap');
       el.guessInput.value = el.guessInput.value.slice(0, -1);
       el.guessInput.focus();
+    });
+
+    el.guessInput.addEventListener('input', (e) => {
+      SoundFX.play('tap');
+      if (e.data) {
+        const typedChar = e.data.toUpperCase();
+        const tileBtns = el.letterTiles.querySelectorAll('.letter-tile');
+        for (const btn of tileBtns) {
+          const charSpan = btn.querySelector('span');
+          if (charSpan && charSpan.textContent === typedChar) {
+            btn.classList.add('tile-pressed');
+            setTimeout(() => btn.classList.remove('tile-pressed'), 140);
+            break;
+          }
+        }
+      }
     });
 
     el.guessForm.addEventListener('submit', (e) => {
