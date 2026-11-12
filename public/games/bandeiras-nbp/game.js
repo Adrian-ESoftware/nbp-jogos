@@ -63,24 +63,148 @@
       .trim()
   }
 
+  // ==================== PROCEDURAL SOUND FX (WEB AUDIO API) ====================
+  const SoundFX = {
+    ctx: null,
+    getCtx() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext
+        if (AudioCtx) this.ctx = new AudioCtx()
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {})
+      }
+      return this.ctx
+    },
+    // 1. Som sutil de página/tecido virando na troca de bandeira
+    pageTurn() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const bufferSize = Math.floor(ctx.sampleRate * 0.12)
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+        const data = buffer.getChannelData(0)
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35))
+        }
+        const noise = ctx.createBufferSource()
+        noise.buffer = buffer
+
+        const filter = ctx.createBiquadFilter()
+        filter.type = 'bandpass'
+        filter.frequency.setValueAtTime(1100, now)
+        filter.frequency.exponentialRampToValueAtTime(420, now + 0.12)
+        filter.Q.value = 1.2
+
+        const gain = ctx.createGain()
+        gain.gain.setValueAtTime(0.09, now)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12)
+
+        noise.connect(filter)
+        filter.connect(gain)
+        gain.connect(ctx.destination)
+        noise.start(now)
+      } catch (_) {}
+    },
+    // 2. Clique tátil nos botões
+    btnClick() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.type = 'triangle'
+        osc.frequency.setValueAtTime(680 + Math.random() * 120, now)
+        osc.frequency.exponentialRampToValueAtTime(240, now + 0.02)
+        gain.gain.setValueAtTime(0.045, now)
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02)
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(now)
+        osc.stop(now + 0.02)
+      } catch (_) {}
+    },
+    // 3. Carimbo seco com acorde curto ascendente ao acertar
+    stampCorrect() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        // Impacto inicial de carimbo
+        const stamp = ctx.createOscillator()
+        const sGain = ctx.createGain()
+        stamp.type = 'triangle'
+        stamp.frequency.setValueAtTime(210, now)
+        stamp.frequency.exponentialRampToValueAtTime(60, now + 0.035)
+        sGain.gain.setValueAtTime(0.12, now)
+        sGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035)
+        stamp.connect(sGain)
+        sGain.connect(ctx.destination)
+        stamp.start(now)
+        stamp.stop(now + 0.035)
+
+        // Tríade ascendente alegre
+        const notes = [523.25, 659.25, 783.99]
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator()
+          const gain = ctx.createGain()
+          osc.type = 'sine'
+          osc.frequency.setValueAtTime(freq, now + 0.035 + idx * 0.045)
+          gain.gain.setValueAtTime(0.08, now + 0.035 + idx * 0.045)
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035 + idx * 0.045 + 0.28)
+          osc.connect(gain)
+          gain.connect(ctx.destination)
+          osc.start(now + 0.035 + idx * 0.045)
+          osc.stop(now + 0.035 + idx * 0.045 + 0.28)
+        })
+      } catch (_) {}
+    },
+    // 4. Som grave abafado ao errar
+    errorDull() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const filter = ctx.createBiquadFilter()
+        const gain = ctx.createGain()
+        osc.type = 'sawtooth'
+        osc.frequency.setValueAtTime(115, now)
+        osc.frequency.exponentialRampToValueAtTime(70, now + 0.17)
+        filter.type = 'lowpass'
+        filter.frequency.setValueAtTime(260, now)
+        gain.gain.setValueAtTime(0.13, now)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.17)
+        osc.connect(filter)
+        filter.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(now)
+        osc.stop(now + 0.17)
+      } catch (_) {}
+    },
+  }
+
   function playTone(freq, duration = 0.08, type = 'sine', gainVal = 0.08) {
     if (!soundEnabled) return
     try {
-      if (!audioCtx) {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext
-        audioCtx = new AudioCtx()
-      }
-      if (audioCtx.state === 'suspended') audioCtx.resume()
-      const osc = audioCtx.createOscillator()
-      const gain = audioCtx.createGain()
+      const ctx = SoundFX.getCtx()
+      if (!ctx) return
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
       osc.type = type
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime)
-      gain.gain.setValueAtTime(gainVal, audioCtx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration)
+      osc.frequency.setValueAtTime(freq, ctx.currentTime)
+      gain.gain.setValueAtTime(gainVal, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
       osc.connect(gain)
-      gain.connect(audioCtx.destination)
+      gain.connect(ctx.destination)
       osc.start()
-      osc.stop(audioCtx.currentTime + duration)
+      osc.stop(ctx.currentTime + duration)
     } catch {
       // Ignore audio errors
     }
@@ -88,6 +212,62 @@
 
   function playChord(notes, stepMs = 75) {
     notes.forEach((n, idx) => setTimeout(() => playTone(n, 0.15, 'triangle', 0.1), idx * stepMs))
+  }
+
+  // ==================== 3D FLAG HOVER & FLOATING BADGES ====================
+  function setupFlag3DHover() {
+    const frames = document.querySelectorAll('.flag-frame')
+    frames.forEach((frame) => {
+      if (frame.dataset.hoverAttached) return
+      frame.dataset.hoverAttached = 'true'
+
+      const specular = frame.querySelector('.flag-specular')
+
+      frame.addEventListener('mousemove', (e) => {
+        const rect = frame.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+        const centerX = rect.width / 2
+        const centerY = rect.height / 2
+
+        const rotateX = ((centerY - y) / centerY) * 9
+        const rotateY = ((x - centerX) / centerX) * 9
+
+        frame.style.transform = `perspective(800px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.025)`
+
+        if (specular) {
+          specular.style.opacity = '1'
+          specular.style.background = `radial-gradient(circle 140px at ${x}px ${y}px, rgba(255, 255, 255, 0.28) 0%, transparent 80%)`
+        }
+      })
+
+      frame.addEventListener('mouseleave', () => {
+        frame.style.transform = ''
+        if (specular) {
+          specular.style.opacity = '0'
+        }
+      })
+    })
+  }
+
+  function spawnFloatingBadge(text, type = 'score', targetEl) {
+    const badge = document.createElement('div')
+    badge.className = `floating-badge ${type}`
+    badge.textContent = text
+
+    let x = window.innerWidth / 2
+    let y = window.innerHeight * 0.4
+    if (targetEl) {
+      const rect = targetEl.getBoundingClientRect()
+      x = rect.left + rect.width / 2
+      y = rect.top + rect.height * 0.25
+    }
+
+    badge.style.left = `${x}px`
+    badge.style.top = `${y}px`
+    document.body.appendChild(badge)
+
+    setTimeout(() => badge.remove(), 950)
   }
 
   function showToast(msg, duration = 2200) {
@@ -215,6 +395,18 @@
   function updateHud() {
     hudScore.textContent = String(state.score)
     hudStreak.textContent = String(state.streak)
+
+    const streakPill = hudStreak ? hudStreak.closest('.hud-pill') : null
+    if (streakPill) {
+      streakPill.classList.remove('streak-warm', 'streak-hot', 'streak-mega')
+      if (state.streak >= 8) {
+        streakPill.classList.add('streak-mega')
+      } else if (state.streak >= 4) {
+        streakPill.classList.add('streak-hot')
+      } else if (state.streak >= 2) {
+        streakPill.classList.add('streak-warm')
+      }
+    }
   }
 
   // ==================== MODO 1: QUIZ DE BANDEIRAS ====================
@@ -293,6 +485,15 @@
     void card.offsetWidth
     card.classList.add('enter')
 
+    const flagFrame = card.querySelector('.flag-frame')
+    if (flagFrame) {
+      flagFrame.classList.remove('slide-exit')
+      flagFrame.classList.remove('slide-enter')
+      void flagFrame.offsetWidth
+      flagFrame.classList.add('slide-enter')
+    }
+    setupFlag3DHover()
+
     const regionBadge = document.getElementById('quiz-region-badge')
     regionBadge.textContent = current.regiao
     regionBadge.hidden = !state.showContinent
@@ -313,7 +514,10 @@
       btn.className = 'option-btn'
       btn.textContent = opt.nome
       btn.dataset.code = opt.code
-      btn.addEventListener('click', () => handleQuizAnswer(opt, btn, current))
+      btn.addEventListener('click', () => {
+        SoundFX.btnClick()
+        handleQuizAnswer(opt, btn, current)
+      })
       optionsEl.appendChild(btn)
     }
 
@@ -343,12 +547,19 @@
       state.streak++
       state.bestStreak = Math.max(state.bestStreak, state.streak)
       const bonus = state.quizMultipleChoice ? 100 : 150
-      state.score += bonus + state.streak * 20
+      const earned = bonus + state.streak * 20
+      state.score += earned
       if (!state.quizMultipleChoice) {
         quizWriteInput.classList.add('correct')
         quizWriteInput.value = target.nome
       }
-      playChord([523.25, 659.25, 783.99], 60)
+      SoundFX.stampCorrect()
+      spawnFloatingBadge(`+${earned}`, 'score', btnEl || document.getElementById('quiz-flag-card'))
+      if (state.streak >= 3) {
+        setTimeout(() => {
+          spawnFloatingBadge(`SEQUÊNCIA x${state.streak}! 🔥`, 'streak', document.querySelector('.hud-pill.streak') || document.getElementById('quiz-flag-card'))
+        }, 160)
+      }
     } else {
       if (btnEl) btnEl.classList.add('wrong')
       if (!state.quizMultipleChoice) {
@@ -356,7 +567,7 @@
         quizWriteInput.value = `Era: ${target.nome}`
       }
       state.streak = 0
-      playTone(170, 0.2, 'sawtooth', 0.1)
+      SoundFX.errorDull()
     }
 
     quizWriteInput.disabled = true
@@ -376,10 +587,18 @@
           `${state.score} pontos · Melhor sequência: 🔥 ${state.bestStreak}`
         )
       } else {
-        state.quizIndex++
-        renderQuizRound()
+        const flagFrame = document.querySelector('#quiz-flag-card .flag-frame')
+        if (flagFrame) {
+          flagFrame.classList.remove('slide-enter')
+          flagFrame.classList.add('slide-exit')
+        }
+        setTimeout(() => {
+          SoundFX.pageTurn()
+          state.quizIndex++
+          renderQuizRound()
+        }, 220)
       }
-    }, 1450)
+    }, 1350)
   }
 
   function submitQuizWrittenGuess(selectedItem) {
@@ -1844,6 +2063,7 @@
         renderVersusUI()
       }
     }
+    setTimeout(setupFlag3DHover, 60)
   }
 
   // Controls & Listeners
