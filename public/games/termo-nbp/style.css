@@ -327,84 +327,96 @@ body {
 .board-row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 5px;
+  gap: 6px;
 }
 
 .tile {
   aspect-ratio: 1 / 1;
-  border-radius: 9px;
+  border-radius: 8px;
   border: 2px solid rgba(148, 163, 184, 0.25);
-  background: rgba(15, 23, 42, 0.65);
+  background: rgba(15, 23, 42, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 3px 0 rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
-  font-size: clamp(1rem, 2.2vw, 1.55rem);
+  font-size: clamp(1.1rem, 2.4vw, 1.65rem);
   text-transform: uppercase;
   color: var(--text);
-  transition: border-color 0.12s ease, transform 0.12s ease;
-  perspective: 600px;
+  transition: border-color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+  perspective: 800px;
+  transform-style: preserve-3d;
 }
 
 .mode-quarteto .tile {
   font-size: clamp(0.85rem, 1.5vw, 1.15rem);
   border-radius: 7px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 0 rgba(0, 0, 0, 0.45);
 }
 
 .board-row.active-row .tile {
-  background: rgba(30, 41, 59, 0.9);
+  background: rgba(30, 41, 59, 0.95);
   border-color: rgba(148, 163, 184, 0.45);
   cursor: pointer;
 }
 
 .board-row.active-row .tile.cursor {
   border-color: var(--accent);
-  border-bottom-width: 5px;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.28);
+  border-bottom-width: 4px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 3px 0 rgba(14, 165, 233, 0.65), 0 0 12px rgba(56, 189, 248, 0.35);
 }
 
 .tile.filled {
-  border-color: rgba(248, 250, 252, 0.55);
+  border-color: rgba(248, 250, 252, 0.65);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 3px 0 rgba(0, 0, 0, 0.55);
 }
 
-/* Tile States */
+/* Tile States with 3D Bevels & Rich Colors */
 .tile.correct {
-  background: var(--correct);
-  border-color: var(--correct-border);
-  color: #fff;
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border-color: #34d399;
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.4), 0 3px 0 #047857;
+  color: #ffffff;
 }
 
 .tile.present {
-  background: var(--present);
-  border-color: var(--present-border);
-  color: #fff;
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  border-color: #fbbf24;
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.4), 0 3px 0 #b45309;
+  color: #ffffff;
 }
 
 .tile.absent {
-  background: var(--absent);
-  border-color: rgba(71, 85, 105, 0.4);
+  background: linear-gradient(180deg, #242c3d 0%, #171d2a 100%);
+  border-color: #3b465c;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 3px 0 #0d121c;
   color: #94a3b8;
 }
 
-/* Keyframe Animations */
+/* Micro-Animations */
+/* 1. Pop ao Digitar (scale: 1.12 -> 1.0 em ~100ms com destaque na borda) */
 .tile.pop {
-  animation: tile-pop 0.14s ease-out;
+  animation: tile-pop 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes tile-pop {
   0% {
-    transform: scale(0.85);
+    transform: scale(0.96);
+    border-color: rgba(248, 250, 252, 0.7);
   }
   50% {
     transform: scale(1.12);
+    border-color: #38bdf8;
+    box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.3), 0 4px 0 rgba(0, 0, 0, 0.6), 0 0 12px rgba(56, 189, 248, 0.4);
   }
   100% {
     transform: scale(1);
   }
 }
 
+/* 2. Giro 3D na Revelação (Flip no eixo X com troca de cor no ponto médio 90deg) */
 .tile.flip {
-  animation: tile-flip 0.48s ease-in-out forwards;
+  animation: tile-flip 0.5s ease-in-out forwards;
 }
 
 @keyframes tile-flip {
@@ -419,39 +431,45 @@ body {
   }
 }
 
+/* 3. Vitória: salto ondulado em sequência na linha vencedora */
 .tile.bounce {
-  animation: tile-bounce 0.55s ease;
+  animation: tile-bounce-wave 0.5s cubic-bezier(0.28, 0.84, 0.42, 1);
 }
 
-@keyframes tile-bounce {
+@keyframes tile-bounce-wave {
   0%,
   100% {
     transform: translateY(0);
   }
   40% {
-    transform: translateY(-14px) scale(1.05);
+    transform: translateY(-16px) scale(1.06);
   }
   70% {
-    transform: translateY(3px);
+    transform: translateY(2px);
   }
 }
 
+/* 4. Palavra Inválida: tremor horizontal curto (100ms) */
 .board-row.shake {
-  animation: row-shake 0.42s ease;
+  animation: row-shake-100 0.1s linear;
 }
 
-@keyframes row-shake {
+@keyframes row-shake-100 {
   0%,
   100% {
     transform: translateX(0);
   }
-  20%,
-  60% {
+  20% {
     transform: translateX(-7px);
   }
-  40%,
-  80% {
+  40% {
     transform: translateX(7px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(5px);
   }
 }
 
@@ -480,31 +498,37 @@ body {
 .key {
   position: relative;
   flex: 1;
-  height: 44px;
+  height: 46px;
   max-width: 54px;
   border-radius: 8px;
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  background: var(--surface-2);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: linear-gradient(180deg, #334155 0%, #243042 100%);
   color: var(--text);
   font-weight: 800;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   text-transform: uppercase;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  transition: transform 0.1s ease, filter 0.15s ease;
+  box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.2), 0 3px 0 #141c2b, 0 5px 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+}
+
+.key:hover {
+  filter: brightness(1.08);
+}
+
+.key:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 1px 0 #141c2b;
 }
 
 .key.wide {
   flex: 1.65;
   max-width: 88px;
-  font-size: 0.78rem;
-}
-
-.key:active {
-  transform: scale(0.93);
+  font-size: 0.8rem;
 }
 
 .key-label {
@@ -534,13 +558,13 @@ body {
 }
 
 .quad.correct {
-  background: var(--correct);
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
 }
 .quad.present {
-  background: var(--present);
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
 }
 .quad.absent {
-  background: #0f1420;
+  background: #171d2a;
 }
 
 /* Modals */

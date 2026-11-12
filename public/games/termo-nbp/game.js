@@ -57,25 +57,140 @@
       .trim()
   }
 
+  // ==================== PROCEDURAL SOUND FX (WEB AUDIO API) ====================
+  const SoundFX = {
+    ctx: null,
+    getCtx() {
+      if (!this.ctx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext
+        if (AudioContextClass) this.ctx = new AudioContextClass()
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {})
+      }
+      return this.ctx
+    },
+    // Clique seco de tecla mecânica ao digitar letra
+    keyClick() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.type = 'triangle'
+        osc.frequency.setValueAtTime(650 + Math.random() * 160, now)
+        osc.frequency.exponentialRampToValueAtTime(220, now + 0.02)
+        gain.gain.setValueAtTime(0.045, now)
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02)
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(now)
+        osc.stop(now + 0.02)
+      } catch (_) {}
+    },
+    // Clique de apagar / backspace
+    keyDelete() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.type = 'triangle'
+        osc.frequency.setValueAtTime(320 + Math.random() * 50, now)
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.025)
+        gain.gain.setValueAtTime(0.04, now)
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025)
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(now)
+        osc.stop(now + 0.025)
+      } catch (_) {}
+    },
+    // Som suave de "virada de peça" em sequência durante o flip das letras
+    tileFlip(colIdx = 0) {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        const baseFreq = 380 + colIdx * 45
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(baseFreq, now)
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.3, now + 0.04)
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.8, now + 0.08)
+        gain.gain.setValueAtTime(0.06, now)
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08)
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(now)
+        osc.stop(now + 0.08)
+      } catch (_) {}
+    },
+    // Acorde curto de vitória ao acertar a palavra
+    victoryChord() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const notes = [523.25, 659.25, 783.99, 1046.5] // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator()
+          const gain = ctx.createGain()
+          osc.type = 'triangle'
+          osc.frequency.setValueAtTime(freq, now + idx * 0.055)
+          gain.gain.setValueAtTime(0.08, now + idx * 0.055)
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.055 + 0.35)
+          osc.connect(gain)
+          gain.connect(ctx.destination)
+          osc.start(now + idx * 0.055)
+          osc.stop(now + idx * 0.055 + 0.35)
+        })
+      } catch (_) {}
+    },
+    // Zumbido rápido de erro
+    errorBuzz() {
+      if (!soundEnabled) return
+      const ctx = this.getCtx()
+      if (!ctx) return
+      try {
+        const now = ctx.currentTime
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.type = 'sawtooth'
+        osc.frequency.setValueAtTime(140, now)
+        gain.gain.setValueAtTime(0.08, now)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1)
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.start(now)
+        osc.stop(now + 0.1)
+      } catch (_) {}
+    },
+  }
+
   // Simple Web Audio Synth for tactile feedback
   function playTone(freq, duration = 0.07, type = 'sine', gainVal = 0.08) {
     if (!soundEnabled) return
     try {
-      if (!audioCtx) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext
-        audioCtx = new AudioContextClass()
-      }
-      if (audioCtx.state === 'suspended') audioCtx.resume()
-      const osc = audioCtx.createOscillator()
-      const gain = audioCtx.createGain()
+      const ctx = SoundFX.getCtx()
+      if (!ctx) return
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
       osc.type = type
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime)
-      gain.gain.setValueAtTime(gainVal, audioCtx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration)
+      osc.frequency.setValueAtTime(freq, ctx.currentTime)
+      gain.gain.setValueAtTime(gainVal, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
       osc.connect(gain)
-      gain.connect(audioCtx.destination)
+      gain.connect(ctx.destination)
       osc.start()
-      osc.stop(audioCtx.currentTime + duration)
+      osc.stop(ctx.currentTime + duration)
     } catch {
       // Ignore audio errors
     }
@@ -315,7 +430,7 @@
   }
 
   function shakeCurrentRow() {
-    playTone(150, 0.14, 'sawtooth', 0.09)
+    SoundFX.errorBuzz()
     const cfg = MODE_CONFIG[state.mode]
     for (let b = 0; b < cfg.boards; b++) {
       if (state.targets[b].solved) continue
@@ -341,7 +456,7 @@
       return
     }
     if (key === 'BACK') {
-      playTone(260, 0.04)
+      SoundFX.keyDelete()
       if (state.currentInput[state.cursor]) {
         state.currentInput[state.cursor] = ''
       } else if (state.cursor > 0) {
@@ -357,7 +472,7 @@
     }
 
     if (/^[a-z]$/.test(key)) {
-      playTone(440 + state.cursor * 35, 0.045)
+      SoundFX.keyClick()
       const popIndex = state.cursor
       state.currentInput[state.cursor] = key
       if (state.cursor < 4) {
@@ -377,14 +492,14 @@
     const rawGuess = state.currentInput.join('')
     if (rawGuess.length < 5 || state.currentInput.some((c) => !c)) {
       shakeCurrentRow()
-      showToast('Digite uma palavra de 5 letras!')
+      showToast('Palavra não aceita')
       return
     }
 
     const guessNorm = normalizePt(rawGuess)
     if (!validSet.has(guessNorm)) {
       shakeCurrentRow()
-      showToast('Essa palavra não é aceita no dicionário!')
+      showToast('Palavra não aceita')
       return
     }
 
@@ -405,18 +520,18 @@
       }
     }
 
-    // Staggered 3D Flip Animation across all unsolved boards
-    const STAGGER_MS = 105
+    // Staggered 3D Flip Animation across all unsolved boards (0.12s stagger)
+    const STAGGER_MS = 120
     for (let c = 0; c < 5; c++) {
       setTimeout(() => {
-        playTone(320 + c * 55, 0.06, 'triangle', 0.07)
+        SoundFX.tileFlip(c)
         for (let b = 0; b < cfg.boards; b++) {
           if (state.targets[b].solved) continue
           const tile = document.getElementById(`tile-${b}-${rowIdx}-${c}`)
           if (!tile) continue
           tile.classList.add('flip')
 
-          // Change color and show accented letter at half-flip (230ms)
+          // Change color and show accented letter at exact midpoint (90deg, 250ms)
           setTimeout(() => {
             // If word is exact match, show target's accented char; otherwise show guess's accented char
             const isExactWord = guessNorm === state.targets[b].norm
@@ -424,7 +539,7 @@
             tile.textContent = wordToUse[c].toUpperCase()
             tile.classList.remove('filled')
             tile.classList.add(evalsByBoard[b][c])
-          }, 230)
+          }, 250)
         }
       }, c * STAGGER_MS)
     }
@@ -441,18 +556,18 @@
           const card = document.getElementById(`board-${b}`)
           if (card) card.classList.add('solved')
 
-          // Bounce wave on solved row
+          // Bounce wave on solved row in sequence (stagger: 0.08s = 80ms)
           for (let c = 0; c < 5; c++) {
             const tile = document.getElementById(`tile-${b}-${rowIdx}-${c}`)
             setTimeout(() => {
               if (tile) tile.classList.add('bounce')
-            }, c * 65)
+            }, c * 80)
           }
         }
       }
 
       if (newlySolved) {
-        playChord([523.25, 659.25, 783.99, 1046.5], 70)
+        SoundFX.victoryChord()
       }
 
       state.history.push({ guessNorm, displayWord, evalsByBoard })
@@ -484,7 +599,7 @@
       state.cursor = 0
       state.isRevealing = false
       renderActiveRow()
-    }, 5 * STAGGER_MS + 300)
+    }, 5 * STAGGER_MS + 350)
   }
 
   function loadStats() {
