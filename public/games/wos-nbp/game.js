@@ -48,12 +48,25 @@
       }
       return this.ctx;
     },
-    // Clique seco tátil de madeira/baquelite ao digitar ou clicar nas peças
-    woodTap() {
+    withContext(fn) {
       if (!this.enabled) return;
       try {
         const ctx = this.init();
         if (!ctx) return;
+        if (ctx.state === 'suspended') {
+          ctx.resume()
+            .then(() => {
+              if (ctx.state === 'running') fn(ctx);
+            })
+            .catch(() => {});
+        } else if (ctx.state === 'running') {
+          fn(ctx);
+        }
+      } catch (_) {}
+    },
+    // Clique seco tátil de madeira/baquelite ao digitar ou clicar nas peças
+    woodTap() {
+      this.withContext((ctx) => {
         const now = ctx.currentTime;
 
         const osc = ctx.createOscillator();
@@ -70,14 +83,11 @@
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.03);
-      } catch (_) {}
+      });
     },
     // Som rápido de peças de madeira batendo juntas ao embaralhar
     woodShuffle() {
-      if (!this.enabled) return;
-      try {
-        const ctx = this.init();
-        if (!ctx) return;
+      this.withContext((ctx) => {
         const now = ctx.currentTime;
 
         const taps = [0, 0.03, 0.065, 0.11, 0.16];
@@ -98,14 +108,11 @@
           osc.start(now + tOffset);
           osc.stop(now + tOffset + 0.035);
         });
-      } catch (_) {}
+      });
     },
     // Acorde ascendente harmonioso em cascata ao revelar uma palavra
     cascadeReveal(len = 5, isHitMax = false) {
-      if (!this.enabled) return;
-      try {
-        const ctx = this.init();
-        if (!ctx) return;
+      this.withContext((ctx) => {
         const now = ctx.currentTime;
 
         // Escala pentatônica maior ascendente (C5, D5, E5, G5, A5, C6, D6, E6)
@@ -145,16 +152,15 @@
           highOsc.start(now + count * 0.04);
           highOsc.stop(now + count * 0.04 + 0.42);
         }
-      } catch (_) {}
+      });
     },
     // Tique-taque sutil nos últimos 5 segundos do relógio
     clockTick(sec) {
       if (!this.enabled) return;
       if (this.lastTickSec === sec) return;
-      this.lastTickSec = sec;
-      try {
-        const ctx = this.init();
-        if (!ctx) return;
+      this.withContext((ctx) => {
+        if (this.lastTickSec === sec) return;
+        this.lastTickSec = sec;
         const now = ctx.currentTime;
 
         const osc = ctx.createOscillator();
@@ -172,14 +178,11 @@
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.032);
-      } catch (_) {}
+      });
     },
     // Batidinha oca de advertência para palavra inválida ou repetida
     invalid() {
-      if (!this.enabled) return;
-      try {
-        const ctx = this.init();
-        if (!ctx) return;
+      this.withContext((ctx) => {
         const now = ctx.currentTime;
 
         [0, 0.06].forEach((offset) => {
@@ -197,25 +200,22 @@
           osc.start(now + offset);
           osc.stop(now + offset + 0.045);
         });
-      } catch (_) {}
+      });
     },
     tone(freq, dur, type = 'sine', vol = 0.12, delay = 0) {
-      if (!this.enabled) return;
-      try {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime + delay;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+      this.withContext((ctx) => {
+        const now = ctx.currentTime + delay;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, now);
         gain.gain.setValueAtTime(vol, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
         osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(ctx.destination);
         osc.start(now);
-        osc.stop(now + dur);
-      } catch (_) {}
+        osc.stop(now + dur + 0.01);
+      });
     },
     play(name, arg) {
       if (!this.enabled) return;
@@ -1645,28 +1645,31 @@
   }
 
   function renderWordsGrid() {
+    const prevScrollTop = el.wordsGrid.scrollTop;
     el.wordsGrid.innerHTML = '';
     const now = Date.now();
     state.slots.forEach((slot) => {
       const row = document.createElement('div');
       row.dataset.word = slot.word;
+      const isJustSolved = slot.solvedBy && slot.justSolvedAt && (now - slot.justSolvedAt < 2200);
+      const shouldAnimateReveal = Boolean(isJustSolved && !slot.animatedCascade);
+
       const classes = ['word-slot'];
       if (slot.hitMax) classes.push('hitmax-slot');
       if (slot.solvedBy) classes.push('solved');
       else if (slot.expired) classes.push('expired-slot');
+      if (shouldAnimateReveal) classes.push('just-solved');
       row.className = classes.join(' ');
 
       const boxes = document.createElement('div');
       boxes.className = 'slot-boxes';
 
-      const isJustSolved = slot.solvedBy && slot.justSolvedAt && (now - slot.justSolvedAt < 2200);
-
       const displayChars = (slot.solvedBy || slot.expired ? slot.display : slot.word).split('');
       for (let i = 0; i < slot.len; i++) {
         const cell = document.createElement('span');
         const isHinted = !slot.solvedBy && !slot.expired && slot.revealedPositions.includes(i);
-        cell.className = 'slot-char' + (isHinted ? ' hint-revealed' : '') + (isJustSolved ? ' cascade-char' : '');
-        if (isJustSolved) {
+        cell.className = 'slot-char' + (isHinted ? ' hint-revealed' : '') + (shouldAnimateReveal ? ' cascade-char' : '');
+        if (shouldAnimateReveal) {
           cell.style.animationDelay = `${i * 0.04}s`;
         }
         if (slot.solvedBy || slot.expired || isHinted) {
@@ -1675,6 +1678,10 @@
           cell.textContent = '';
         }
         boxes.appendChild(cell);
+      }
+
+      if (shouldAnimateReveal) {
+        slot.animatedCascade = true;
       }
 
       const finder = document.createElement('span');
@@ -1709,6 +1716,7 @@
         }, 25);
       }
     });
+    el.wordsGrid.scrollTop = prevScrollTop;
   }
 
   function renderWheel(animateFlip) {
@@ -2152,6 +2160,13 @@
 
   // Eventos de UI
   function bindEvents() {
+    const unlockAudio = () => {
+      if (SoundFX.enabled) SoundFX.init();
+    };
+    ['pointerdown', 'keydown', 'touchstart', 'click'].forEach((evt) => {
+      document.addEventListener(evt, unlockAudio, { passive: true, capture: true });
+    });
+
     el.playerNameInput.value = local.myName;
     el.btnSoundToggle.textContent = SoundFX.enabled ? '🔊' : '🔇';
 
