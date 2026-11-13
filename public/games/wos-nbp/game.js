@@ -1974,11 +1974,75 @@
       el.shuffleIntervalLabel.textContent = config.shuffleInterval + 's';
     }
     const prevStatus = state.status;
+    const prevLevel = state.level;
+    const prevTotalPoints = state.totalPoints || 0;
+    const prevGoalPoints = state.goalPoints || 0;
+    const prevSlotsByWord = new Map((state.slots || []).map((s) => [s.word, s]));
+    const prevSolvedWords = new Set((state.slots || []).filter((s) => s.solvedBy).map((s) => s.word));
+    const prevBonusLen = (state.bonusWords || []).length;
+    const prevWheelOrder = (state.wheelTiles || []).map((t) => t.id).join(',');
+    const prevHintCount = (state.slots || []).reduce(
+      (sum, s) => sum + (s.revealedPositions ? s.revealedPositions.length : 0),
+      0
+    );
+    const prevFakeRevealedCount = (state.wheelTiles || []).filter((t) => t.isFake && t.fakeRevealed).length;
+
     if (remoteState) {
       Object.assign(state, remoteState);
     }
+
+    // Preserva flags locais de animação para slots já resolvidos anteriormente no cliente
+    if (Array.isArray(state.slots)) {
+      state.slots.forEach((slot) => {
+        const prevSlot = prevSlotsByWord.get(slot.word);
+        if (prevSlot && prevSlot.solvedBy && slot.solvedBy) {
+          slot.animatedCascade = prevSlot.animatedCascade;
+          slot.animatedFloating = prevSlot.animatedFloating;
+        }
+      });
+    }
+
+    if (state.status === 'playing' && prevStatus === 'playing' && state.level === prevLevel) {
+      const newlySolved = (state.slots || []).filter((s) => s.solvedBy && !prevSolvedWords.has(s.word));
+      if (newlySolved.length > 0) {
+        const lastSolved = newlySolved[newlySolved.length - 1];
+        const anyHitMax = newlySolved.some((s) => s.hitMax);
+        const crossedGoalNow = prevTotalPoints < prevGoalPoints && (state.totalPoints || 0) >= (state.goalPoints || 0);
+        if (anyHitMax) {
+          SoundFX.play('hitmax', { len: lastSolved.len, isHitMax: true });
+          showBannerFeedback(
+            `<strong data-color="cyan">${escapeHtml(lastSolved.solvedByName || 'Jogador')}</strong> ENCONTROU O ANAGRAMA <strong data-color="yellow">${lastSolved.display}</strong>!`
+          );
+        } else {
+          SoundFX.play(crossedGoalNow ? 'goal' : 'hit', { len: lastSolved.len });
+          showBannerFeedback(
+            `<strong data-color="green">${escapeHtml(lastSolved.solvedByName || 'Jogador')}</strong> ENCONTROU <strong data-color="yellow">${lastSolved.display}</strong>!`
+          );
+        }
+        flashBoard(anyHitMax);
+      } else if ((state.bonusWords || []).length > prevBonusLen) {
+        SoundFX.play('bonus');
+      }
+
+      const newWheelOrder = (state.wheelTiles || []).map((t) => t.id).join(',');
+      if (newWheelOrder && prevWheelOrder && newWheelOrder !== prevWheelOrder) {
+        SoundFX.play('shuffle');
+      }
+
+      const newHintCount = (state.slots || []).reduce(
+        (sum, s) => sum + (s.revealedPositions ? s.revealedPositions.length : 0),
+        0
+      );
+      const newFakeRevealedCount = (state.wheelTiles || []).filter((t) => t.isFake && t.fakeRevealed).length;
+      if (newHintCount > prevHintCount || newFakeRevealedCount > prevFakeRevealedCount) {
+        SoundFX.play('reveal');
+      }
+    }
+
     renderAll();
     if (state.status !== 'playing' && prevStatus === 'playing') {
+      const outcome = computeLevelSkip();
+      SoundFX.play(outcome.passed ? 'win' : 'gameover');
       showRoundModal();
     } else if (state.status === 'playing') {
       hideRoundModal();
